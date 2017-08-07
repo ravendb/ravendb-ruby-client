@@ -121,7 +121,7 @@ module RavenDB
       @id
     end
 
-    def toJson()
+    def to_json
       return {
         "Type" => @type,
         "Id" => @id,
