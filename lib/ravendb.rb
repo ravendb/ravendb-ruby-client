@@ -10,7 +10,6 @@ module RavenDB
   #     config.default_database = 'NortWindTest'
   #   end
   #
-  #   RavenDB.store.initialize
   #   RavenDB.store.open_session do |session|
   #     session.store(Product.new("Products/1", "Test Product")) 
   #     session.save_changes 
