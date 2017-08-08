@@ -10,18 +10,20 @@ class Observable
   end  
 end 
 
-class EventListener
-  @event = nil
-  @listener = nil
+module RavenDB
+  class EventListener
+    @event = nil
+    @listener = nil
 
-  def initialize(event, listener)
-    @event = event
-    @listener = listener
-  end  
-
-  def update(event, data = nil)
-    if @event == event
-      @listener.call(data)
+    def initialize(event, listener)
+      @event = event
+      @listener = listener
     end  
-  end
-end  
+
+    def update(event, data = nil)
+      if @event == event
+        @listener.call(data)
+      end  
+    end
+  end 
+end 

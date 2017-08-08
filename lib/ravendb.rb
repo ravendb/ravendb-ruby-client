@@ -16,6 +16,6 @@ module RavenDB
   #   end 
   #
   def self.store
-    @store ||= RavenDB::DocumentStore.new
+    @store ||= DocumentStore.new
   end
 end

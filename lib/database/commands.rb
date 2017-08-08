@@ -14,7 +14,11 @@ module RavenDB
     @payload = nil
     @headers = {}
     @failed_nodes = nil;
-    @_lastResponse = {};
+    @_last_response = {};
+
+    def server_response
+      @_last_response
+    end  
 
     def initialize(end_point, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
       @end_point = end_point;
@@ -66,17 +70,17 @@ module RavenDB
     end  
 
     def set_response(response)
-      @_lastResponse = response.json
+      @_last_response = response.json
 
-      if @_lastResponse
+      if @_last_response
         ExceptionsRaiser.try_raise_from(response)
-        return @_lastResponse
+        return @_last_response
       end   
     end  
 
     protected
     def assert_node(node)
-      raise ArgumentError, 'Argument "node" should be an instance of ServerNode' unless json.is_a? RavenDB::ServerNode
+      raise ArgumentError, 'Argument "node" should be an instance of ServerNode' unless json.is_a? ServerNode
     end
 
     protected

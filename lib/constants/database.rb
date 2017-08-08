@@ -1,5 +1,4 @@
 module RavenDB
-
   class AccessMode
     None = "None"
     ReadOnly = "ReadOnly"

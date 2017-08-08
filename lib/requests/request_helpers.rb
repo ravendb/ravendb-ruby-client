@@ -306,6 +306,4 @@ module RavenDB
       end
     end
   end
-
-  
 end 
