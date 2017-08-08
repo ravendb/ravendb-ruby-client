@@ -133,4 +133,101 @@ module RavenDB
       }
     end
   end
+
+  class DeleteCommandData < RavenCommandData
+    def initialize(id, change_vector = nil)
+      super(id, change_vector)
+      @type = Net::HTTP::Delete::METHOD
+    end
+  end
+
+  class PatchCommandData < RavenCommandData
+    @scripted_patch = nil
+    @patch_if_missing = nil
+    @additional_data = nil
+    @debug_mode = false
+
+    def initialize(id, scripted_patch, change_vector, patch_if_missing = nil, debug_mode = nil)
+      super(id, changeVector)
+
+      @type = Net::HTTP::Patch::METHOD
+      @scripted_patch = scripted_patch
+      @patch_if_missing = patch_if_missing
+      @debug_mode = debug_mode
+    end
+
+    def to_json
+      json = super().merge({
+        "Patch" => @scripted_patch.to_json,
+        "DebugMode" => @debug_mode
+      })
+            
+      if !@patch_if_missing.nil?
+        json["PatchIfMissing"] = @patch_if_missing.to_json
+      end
+
+      return json
+    end
+  end
+
+  class PutCommandData < RavenCommandData
+    @document = nil
+    @metadata = nil
+
+    def initialize(id, document, change_vector = nil, metadata = nil)
+      super(id, change_vector)
+
+      @type = Net::HTTP::Put::METHOD
+      @document = document
+      @metadata = metadata
+    end
+
+    def to_json
+      json = super()
+      document = @document
+
+      if (@metadata) {
+        document["@metadata"] = @metadata
+      }
+
+      json["Document"] = document
+      return json
+    end
+  end
+
+  class SaveChangesData
+    @commands = []
+    @deferred_command_count = 0
+    @documents = []
+
+    def deferred_commands_count
+      @deferred_command_count
+    end
+
+    def commands_count
+      return @commands.size
+    end
+
+    def initialize(commands = nil, deferred_command_count = 0, documents = nil)
+      @commands = commands || []
+      @documents = documents || []
+      @deferred_commands_count = deferred_command_count
+    end        
+
+    def add_command(command)
+      @commands.push(command)
+    end
+
+    def add_document(document)
+      @documents.push(document)
+    end
+
+    def get_document(index)
+      return @documents.at(index)
+    end
+
+    def create_batch_command
+      return BatchCommand.new(@commands)
+    end
+  end
 end
