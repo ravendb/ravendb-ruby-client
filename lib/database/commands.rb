@@ -142,6 +142,50 @@ module RavenDB
     end
   end
 
+  class CreateDatabaseCommand < RavenCommand
+    @replication_factor = 1
+    @database_document = nil
+    @from_node = nil
+
+    def initialize(database_document, replication_factor = 1, from_node = nil) {
+      super('', Net::HTTP::Put::METHOD)
+      @database_document = database_document
+      @replication_factor = replication_factor || 1
+      @from_node = from_node
+    end
+
+    def create_request(server_node)
+      dbName = @databaseDocument.database_id.sub! 'Raven/Databases/', ''
+      assert_node(server_node)
+
+      if dbName.nil? || !dbName
+        raise InvalidOperationException, 'Empty name is not valid'
+      end
+
+      if /^[A-Za-z0-9_\-\.]+$/.match(dbName).nil?
+        raise InvalidOperationException, 'Database name can only contain only A-Z, a-z, \"_\", \".\" or \"-\"'
+      end
+
+      if !@databaseDocument.settings.key?('Raven/DataDir') 
+        raise InvalidOperationException, "The Raven/DataDir setting is mandatory"
+      end
+
+      @params = {"name" => dbName, "replication-factor" => @replication_factor}
+      @end_point = "#{server_node.url}/admin/databases"
+      @payload = @database_document.to_json
+    end
+
+    def set_response(response)
+      result = super.set_response(response)
+
+      if (!response.body) {
+        raise ErrorResponseException, 'Response is invalid.'
+      }
+
+      return result
+    end
+  end
+
   class RavenCommandData
     @type = nil
     @id = nil
