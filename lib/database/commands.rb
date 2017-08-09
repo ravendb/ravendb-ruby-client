@@ -752,11 +752,11 @@ module RavenDB
   class PutIndexesCommand < RavenCommand
     @indexes = []
 
-    def initialize(indexesToAdd, *moreIndexesToAdd)
-      indexes = indexesToAdd.is_a?(Array) ? indexesToAdd : [indexesToAdd]
+    def initialize(indexes_to_add, *more_indexes_to_add)
+      indexes = indexes_to_add.is_a?(Array) ? indexes_to_add : [indexes_to_add]
 
-      if moreIndexesToAdd.is_a?(Array) && !moreIndexesToAdd.empty?
-        indexes = indexes.concat(moreIndexesToAdd)
+      if more_indexes_to_add.is_a?(Array) && !more_indexes_to_add.empty?
+        indexes = indexes.concat(more_indexes_to_add)
       end
       
       super('', Net::HTTP::Put::METHOD)
@@ -804,7 +804,7 @@ module RavenDB
     @metadata_only = false
     @index_entries_only = false
 
-    def initialize(index_query, conventions, includes = nil, metadata_only = false, index_entries_only = false) {
+    def initialize(index_query, conventions, includes = nil, metadata_only = false, index_entries_only = false)
       super('', RequestMethods.Post, null, null, {})
 
       if !indexName
@@ -873,15 +873,16 @@ module RavenDB
       end
     end
 
-    public setResponse(response: IResponse): IRavenResponse | IRavenResponse[] | void {
-      const result: IRavenResponse = <IRavenResponse>super.setResponse(response);
+    def set_response(response)
+      result = super(response)
 
-      if (!response.body) {
-        throw new IndexDoesNotExistException(StringUtil.format('Could not find index {0}', @indexName));
+      if !response.body
+        raise IndexDoesNotExistException, "Could not find index"
       }
-        return result;
-    }
-  }
+
+      return result
+    end
+  end
 
   class RavenCommandData
     @type = nil
