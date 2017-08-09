@@ -9,12 +9,12 @@ module RavenDB
     @_urls = []  
     @_database = nil
     @_conventions = nil
-    @_requestExecutors = nil
+    @_request_executors = nil
     @_operations = nil
     @_admin = nil
 
     def database
-      @_database;
+      @_database
     end
 
     def urls
@@ -42,10 +42,22 @@ module RavenDB
     end
 
     def get_request_executor(database = nil)
-      dbName = database || @_database
-      forSingleNode = conventions.DisableTopologyUpdates
+      db_name = database || @_database
+      for_single_node = conventions.DisableTopologyUpdates
 
-      //TODO: return 
+      if !@_request_executors
+        @_request_executors = {}
+      end
+      
+      if !@_request_executors.key?(for_single_node)
+        @_request_executors[for_single_node] = {}
+      end  
+
+      if !@_request_executors[for_single_node].key?(db_name)
+        @_request_executors[for_single_node][db_name] = create_request_executor(db_name, for_single_node)
+      end    
+
+      return @_request_executors[for_single_node][db_name]
     end
 
     def conventions
@@ -109,10 +121,10 @@ module RavenDB
 
     protected 
     def create_request_executor(database = nil, for_single_node = nil)
-      dbName = database || @_database;
+      db_name = database || @_database;
       executor = (true === for_single_node)
-        ? RequestExecutor.create_for_single_node(singleNodeUrl, dbName)
-        : RequestExecutor.create(@urls, dbName);
+        ? RequestExecutor.create_for_single_node(singleNodeUrl, db_name)
+        : RequestExecutor.create(@urls, db_name);
       
       return executor
     end

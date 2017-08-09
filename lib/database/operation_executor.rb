@@ -205,7 +205,7 @@ module RavenDB
       conventions = store.conventions
 
       return conventions.DisableTopologyUpdates
-        ? ClusterRequestExecutor.createForSingleNode(store.single_node_url)
+        ? ClusterRequestExecutor.create_for_single_node(store.single_node_url)
         : ClusterRequestExecutor.create(store.urls)
     end
 

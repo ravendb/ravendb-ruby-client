@@ -155,22 +155,22 @@ module RavenDB
     end
 
     def create_request(server_node)
-      dbName = @databaseDocument.database_id.sub! "Raven/Databases/", ""
+      db_name = @database_document.database_id.sub! "Raven/Databases/", ""
       assert_node(server_node)
 
-      if dbName.nil? || !dbName
+      if db_name.nil? || !db_name
         raise InvalidOperationException, "Empty name is not valid"
       end
 
-      if /^[A-Za-z0-9_\-\.]+$/.match(dbName).nil?
+      if /^[A-Za-z0-9_\-\.]+$/.match(db_name).nil?
         raise InvalidOperationException, "Database name can only contain only A-Z, a-z, \"_\", \".\" or \"-\""
       end
 
-      if !@databaseDocument.settings.key?("Raven/DataDir") 
+      if !@database_document.settings.key?("Raven/DataDir") 
         raise InvalidOperationException, "The Raven/DataDir setting is mandatory"
       end
 
-      @params = {"name" => dbName, "replication-factor" => @replication_factor}
+      @params = {"name" => db_name, "replication-factor" => @replication_factor}
       @end_point = "#{server_node.url}/admin/databases"
       @payload = @database_document.to_json
     end
@@ -272,8 +272,8 @@ module RavenDB
     end
 
     def create_request(server_node)
-      dbName = @databaseDocument.database_id.sub! "Raven/Databases/", ""
-      @params = {"name" => dbName}
+      db_name = @database_document.database_id.sub! "Raven/Databases/", ""
+      @params = {"name" => db_name}
       @end_point = "#{server_node.url}/admin/databases"
 
       if @hard_delete
