@@ -1,3 +1,4 @@
+require 'time'
 require 'thread'
 require 'constants/database'
 require 'constants/documents'
@@ -67,6 +68,66 @@ class RequestExecutor
     elsif (@_withoutTopology && options["single_node_topology"]) {
       @_node_selector = NodeSelector.new(self, options["single_node_topology"])
     end
+  end
+
+  protected
+  def prepare_command(command, server_node)
+    command.create_request(server_node)
+    request = command.to_request_options
+
+    @headers.each do |header, value|
+      request.add_field(header, value)
+    end
+
+    if !@_without_topology
+      request.add_field("Topology-Etag", @_topology_etag)
+    end
+
+    return request
+  end
+
+  protected 
+  def execute_command(command, server_node)
+    if !command.is_a?(RavenCommand)
+      raise InvalidOperationException, 'Not a valid command'
+    end
+
+    if !command.is_a?(ServerNode)
+      raise InvalidOperationException, 'Not a valid server node'
+    end
+
+    request = prepare_command(command, node)
+    #TODO: handle server down & raise TopologyNodeDownException
+    response = Net::HTTP.request(request)
+    is_server_error = [Net::HTTPRequestTimeout, Net::HTTPBadGateway,
+      Net:HTTPGatewayTimeout, Net::HTTPServiceUnavailable].any? { 
+      | response_type | response.is_a?(response_type)
+    }
+
+    if response.is_a?(Net::HTTPNotFound)
+      response.body = nil
+    end  
+
+    if is_server_error
+      if command.was_failed
+        message = 'Unsuccessfull request'
+        json = response.json
+
+        if json && json.Error
+            message += ": #{json.Error}";
+        end
+
+        raise UnsuccessfulRequestException, message
+      end
+
+      raise TopologyNodeDownException, "Node #{server_node.url} is down"
+    end
+    
+    if !@_without_topology && response.key?("Refresh-Topology")
+      update_topology(server_node)
+    end
+    
+    return command.set_response(response)
   end
 
   protected
