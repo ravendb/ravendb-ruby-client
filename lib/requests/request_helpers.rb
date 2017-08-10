@@ -208,6 +208,7 @@ module RavenDB
     @_current_node_index = 0
     @initial_database = nil
     @topology = nil
+    @_lock = nil
 
     def nodes
       assert_topology
@@ -228,6 +229,7 @@ module RavenDB
 
     def initialize(request_executor, topology) {
       @topology = topology
+      @_lock = Mutex.new
 
       request_executor.on(RavenServerEvent.TOPOLOGY_UPDATED, { |data|
         on_topology_updated(data)
@@ -245,9 +247,8 @@ module RavenDB
     protected 
     def assign_topology(topology, force_update)
       old_topology = @topology
-      lock = Mutex.new
       
-      (Thread.new { lock.syncronize do
+      (Thread.new { @_lock.syncronize do
         if !force_update
           @_current_node_index = 0
         end  

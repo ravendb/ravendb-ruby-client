@@ -1,7 +1,7 @@
 require "observer"
 
 class Observable
-  def trigger(event, data = nil)
+  def emit(event, data = nil)
     notify_observers(event, data);
   end
   
