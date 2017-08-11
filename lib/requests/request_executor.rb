@@ -298,7 +298,7 @@ class RequestExecutor
 
         if @_failed_nodes_statuses.key?(server_node)
           @_failed_nodes_statuses[server_node].dispose
-
+          @_failed_nodes_statuses.delete(server_node)
         end  
       end  
     rescue
@@ -306,8 +306,7 @@ class RequestExecutor
     end    
 
     if isStillFailed && @_failed_nodes_statuses.key?(server_node)
-      @_failed_nodes_statuses[server_node].retry_update()
-      @_failed_nodes_statuses.delete(server_node)
+      @_failed_nodes_statuses[server_node].retry_update()      
     end
   end
 
