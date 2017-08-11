@@ -830,7 +830,7 @@ module RavenDB
       assert_node(server_node)
 
       query = @index_query
-      @payload = { PageSize: query.page_size, Start: query.start }
+      @payload = { "PageSize" => query.page_size, "Start" => query.start }
       @endPoint = "#{server_node.url}/databases/#{server_node.database}/queries"
 
       if query.query
