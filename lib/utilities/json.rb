@@ -6,10 +6,12 @@ class Net::HTTPResponse
     json = body
 
     if !json.is_a? Hash
-      json = JSON.parse(json)
-    rescue
-      if raise_when_invalid
-        raise ErrorResponseException, 'Not a valid JSON'  
+      begin
+        json = JSON.parse(json)
+      rescue
+        if raise_when_invalid
+          raise ErrorResponseException, 'Not a valid JSON'  
+        end  
       end  
     end  
 

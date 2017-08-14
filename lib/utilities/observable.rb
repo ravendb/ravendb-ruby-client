@@ -1,11 +1,11 @@
-require "observer"
+require 'observer'
 
-class Observable
+module Observable
   def emit(event, data = nil)
     notify_observers(event, data);
   end
   
-  def on(event, listener)
+  def on(event, &listener)
     add_observer(EventListener.new(event, listener))
   end  
 end 
@@ -15,7 +15,7 @@ module RavenDB
     @event = nil
     @listener = nil
 
-    def initialize(event, listener)
+    def initialize(event, &listener)
       @event = event
       @listener = listener
     end  

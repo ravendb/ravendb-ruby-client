@@ -87,10 +87,10 @@ module RavenDB
       return topology;
     end
 
-    def initialize(etag = 0, nodes = []) {
+    def initialize(etag = 0, nodes = [])
       @_etag = etag
       @_nodes = nodes;
-    }
+    end
 
     def nodes
       @_nodes
@@ -125,7 +125,7 @@ module RavenDB
 
   class NodeStatus
     MaxTimerPeriod = 60 * 5 * 1000;
-    TimerPeriodStep = .1 * 1000;
+    TimerPeriodStep = 0.1 * 1000;
     
     @_node_index = nil
     @_node = nil
@@ -151,8 +151,8 @@ module RavenDB
       @_node
     end
 
-    def initialize(node_index, node, on_update)
-      @_on_update = onUpdate
+    def initialize(node_index, node, &on_update)
+      @_on_update = on_update
       @_node_index = node_index
       @_node = node
     end
@@ -184,13 +184,13 @@ module RavenDB
     @_script = nil
     @values = {}
 
-    def initialize(script, values = nil) {
+    def initialize(script, values = nil)
       @_script = script
 
-      if (values) {
+      if values
         @values = values
-      }
-    }
+      end
+    end
 
     def script
       @_script
@@ -227,21 +227,21 @@ module RavenDB
       return @nodes.at(@_current_node_index)
     end
 
-    def initialize(request_executor, topology) {
+    def initialize(request_executor, topology)
       @topology = topology
       @_lock = Mutex.new
 
-      request_executor.on(RavenServerEvent.TOPOLOGY_UPDATED, { |data|
+      request_executor.on(RavenServerEvent.TOPOLOGY_UPDATED) { |data|
         on_topology_updated(data)
-      })
+      }
 
-      request_executor.on(RavenServerEvent.REQUEST_FAILED, { |data|
+      request_executor.on(RavenServerEvent.REQUEST_FAILED) { |data|
         on_request_failed(data)
-      })
+      }
 
-      request_executor.on(RavenServerEvent.NODE_STATUS_UPDATED, { |data|
+      request_executor.on(RavenServerEvent.NODE_STATUS_UPDATED) { |data|
         on_node_restored(data)
-      })
+      }
     end
 
     protected 
@@ -259,7 +259,7 @@ module RavenDB
           assign_topology(topology, force_update)  
         end  
       end }).join
-    }
+    end
 
     protected 
     def on_topology_updated(topology_data)

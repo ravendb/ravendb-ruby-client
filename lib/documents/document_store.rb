@@ -1,4 +1,4 @@
-require 'database/operations_executor'
+require 'database/operation_executor'
 require 'documents/conventions'
 require 'requests/request_executor'
 require 'database/exceptions'
@@ -75,7 +75,7 @@ module RavenDB
     end
 
     def self.create(url_or_urls, default_database)
-      return new self(url_or_urls, default_database)
+      return self.new(url_or_urls, default_database)
     end
 
     def configure(configure_callback)
@@ -96,11 +96,10 @@ module RavenDB
       if !@_initialized
         if !this._database
           raise InvalidOperationException, "Default database isn't set."
-        end
-    end   
-
+        end    
+      end  
+      
       @_initialized = true
-
       return self
     end  
 
@@ -124,9 +123,9 @@ module RavenDB
     protected 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database;
-      executor = (true === for_single_node)
-        ? RequestExecutor.create_for_single_node(singleNodeUrl, db_name)
-        : RequestExecutor.create(@urls, db_name);
+      executor = (true === for_single_node) ? 
+        RequestExecutor.create_for_single_node(singleNodeUrl, db_name) :
+        RequestExecutor.create(urls, db_name);
       
       return executor
     end

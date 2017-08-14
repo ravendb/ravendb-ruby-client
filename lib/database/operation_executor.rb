@@ -41,20 +41,20 @@ module RavenDB
         end
         
         case response["Status"]
-          when OperationStatus::Completed
-            return {
-              "status" => response["Status"],
-              "response" => response
-            }
-          when OperationStatus::Faulted
-            return {
-              "status" => response["Status"],
-              "exception" => InvalidOperationException.new(response["Result"]["Error"])
-            }  
-          else
-            return {
-              "status" => OperationStatus::Running
-            }  
+        when OperationStatus::Completed
+          return {
+            "status" => response["Status"],
+            "response" => response
+          }
+        when OperationStatus::Faulted
+          return {
+            "status" => response["Status"],
+            "exception" => InvalidOperationException.new(response["Result"]["Error"])
+          }  
+        else
+          return {
+            "status" => OperationStatus::Running
+          }  
         end
       rescue => exception
         return {
@@ -67,13 +67,13 @@ module RavenDB
     protected 
     def on_next(result)
       case result["status"]
-        when OperationStatus::Completed
-          return result["response"]
-        when OperationStatus::Faulted
-          raise result.exception        
-        else
-          sleep .5
-          return on_next(fetch_operation_status)
+      when OperationStatus::Completed
+        return result["response"]
+      when OperationStatus::Faulted
+        raise result.exception        
+      else
+        sleep 0.5
+        return on_next(fetch_operation_status)
       end
     end
   end
@@ -89,9 +89,9 @@ module RavenDB
 
     protected 
     def request_executor
-      if (!@_request_executor) {
+      if !@_request_executor
         @_request_executor = request_executor_factory
-      }
+      end
 
       return @_request_executor
     end
@@ -109,16 +109,16 @@ module RavenDB
       
       if operation.is_a?(AbstractOperation)
         begin
-          command = operation.is_a?(Operation)
-            ? operation.getCommand(conventions, store)
-            : operation.getCommand(conventions);   
+          command = operation.is_a?(Operation) ? 
+            operation.getCommand(conventions, store) : 
+            operation.getCommand(conventions);   
         rescue => exception
-          errorMessage = "Can't instantiate command required for run operation: #{exception.message}";
+          error_message = "Can't instantiate command required for run operation: #{exception.message}";
         end      
       end  
       
       if !command
-        raise InvalidOperationException, errorMessage
+        raise InvalidOperationException, error_message
       end
 
       result = executor.execute(command)
@@ -157,7 +157,7 @@ module RavenDB
     def request_executor_factory
       return @store.get_request_executor(@database)
     end
-  }
+  end
 
   class OperationExecutor < AbstractDatabaseOperationExecutor
     protected 
@@ -170,32 +170,32 @@ module RavenDB
         awaiter = OperationAwaiter.new(@request_executor, json["OperationId"])
 
         return awaiter.wait_for_completion
-      }
+      end
 
       if operation.is_a?(PatchResultOperation)
-        patchResult = nil
+        patch_result = nil
 
         case command.server_response
-          when Net::HttpNotModified
-            patchResult = {
-              "Status" => PatchStatuses.NotModified
-            }
-          case Net::HttpNotFound
-            patchResult = {
-              "Status" => PatchStatuses.DocumentDoesNotExist
-            }
-          else
-            patchResult = {
-              "Status" => json["Status"],
-              "Document" => conventions.convert_to_document(json["ModifiedDocument"])
-            }          
-        }
+        when Net::HttpNotModified
+          patch_result = {
+            "Status" => PatchStatuses.NotModified
+          }
+        when Net::HttpNotFound
+          patch_result = {
+            "Status" => PatchStatuses.DocumentDoesNotExist
+          }
+        else
+          patch_result = {
+            "Status" => json["Status"],
+            "Document" => conventions.convert_to_document(json["ModifiedDocument"])
+          }          
+        end
 
-        response = patchResult
+        response = patch_result
       end
 
       return super(operation, command, response)
-    end
+    end    
   end
 
   class ServerOperationExecutor < AbstractOperationExecutor
@@ -204,9 +204,9 @@ module RavenDB
       store = @store;
       conventions = store.conventions
 
-      return conventions.DisableTopologyUpdates
-        ? ClusterRequestExecutor.create_for_single_node(store.single_node_url)
-        : ClusterRequestExecutor.create(store.urls)
+      return conventions.DisableTopologyUpdates ?
+       ClusterRequestExecutor.create_for_single_node(store.single_node_url) : 
+       ClusterRequestExecutor.create(store.urls)
     end
 
     def send(operation)
@@ -216,7 +216,7 @@ module RavenDB
     end
   end
 
-  export class AdminOperationExecutor extends AbstractDatabaseOperationExecutor {
+  export class AdminOperationExecutor extends AbstractDatabaseOperationExecutor
     @_server = nil
 
     def server

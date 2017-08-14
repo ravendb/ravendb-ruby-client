@@ -15,34 +15,34 @@ module RavenDB
     @params = {}
     @payload = nil
     @headers = {}
-    @failed_nodes = nil;
-    @_last_response = {};
+    @failed_nodes = nil
+    @_last_response = {}
+
+    def initialize(end_point, method=Net::HTTP::Get::METHOD, params={}, payload=nil, headers={})
+      @end_point = end_point
+      @method = method
+      @params = params
+      @payload = payload
+      @headers = headers
+      @failed_nodes = Set.new([])  
+    end
 
     def server_response
-      @_last_response
+      return @_last_response
     end  
-
-    def initialize(end_point, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
-      @end_point = end_point;
-      @method = method;
-      @params = params;
-      @payload = payload;
-      @headers = headers;
-      @failed_nodes = Set.new [];
-    end
 
     def was_failed()
       !@failed_nodes.empty?
     end
-  
+
     def add_failed_node(node)
       assert_node(node)
-      @failed_nodes.add(node);
+      @failed_nodes.add(node)
     end
-  
+
     def was_failed_with_node(node)
       assert_node(node)
-      return @failed_nodes.include?(node);
+      return @failed_nodes.include?(node)
     end
 
     def create_request(server_node)
@@ -82,7 +82,7 @@ module RavenDB
 
     protected
     def assert_node(node)
-      raise ArgumentError, "Argument "node" should be an instance of ServerNode" unless json.is_a? ServerNode
+      raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless json.is_a? ServerNode
     end
 
     protected
@@ -130,15 +130,15 @@ module RavenDB
       end
 
       @end_point = "#{server_node.url}/databases/#{server_node.database}/bulk_docs"
-      @payload = {"Commands" => commands.map({ |data| data.to_json })}
+      @payload = {"Commands" => commands.map { |data| data.to_json }}
     end
 
     def set_response(response)
       result = super(response)
 
-      if !response.body {
+      if !response.body
         raise InvalidOperationException, "Invalid response body received"
-      }
+      end
 
       return result["Results"]
     end
@@ -178,9 +178,9 @@ module RavenDB
     def set_response(response)
       result = super.set_response(response)
 
-      if (!response.body) {
+      if !response.body
         raise ErrorResponseException, "Response is invalid."
-      }
+      end
 
       return result
     end
@@ -212,7 +212,7 @@ module RavenDB
       end
 
       if !options.is_a(QueryOperationOptions)
-        raise InvalidOperationException("Options must be instance of QueryOperationOptions class"
+        raise InvalidOperationException, "Options must be instance of QueryOperationOptions class"
       end
 
       @params = {
@@ -228,11 +228,11 @@ module RavenDB
       end
 
       if options.max_ops_per_sec
-        @add_params("maxOpsPerSec", options.max_ops_per_sec)
+        add_params("maxOpsPerSec", options["max_ops_per_sec"])
       end  
 
       if options.stale_timeout
-        @add_params("staleTimeout", options.stale_timeout)
+        add_params("staleTimeout", options["stale_timeout"])
       end  
     end
   end
@@ -277,7 +277,7 @@ module RavenDB
       @end_point = "#{server_node.url}/admin/databases"
 
       if @hard_delete
-        @add_params("hard-delete", "true")
+        add_params("hard-delete", "true")
       end
 
       if from_node
@@ -393,7 +393,7 @@ module RavenDB
       @end_point = "#{server_node.url}/topology"
 
       if @force_url
-        @add_params("url", @force_url)
+        add_params("url", @force_url)
       end        
     end
 
@@ -419,13 +419,13 @@ module RavenDB
     @includes = nil
     @metadata_only = false
 
-    def initialize(id_or_ids, includes = nil, metadata_only = false) {
+    def initialize(id_or_ids, includes = nil, metadata_only = false)
       super("", Net::HTTP::Get::METHOD, nil, nil, {});
 
       @id_or_ids = id_or_ids
       @includes = includes
       @metadata_only = metadata_only
-    }
+    end
 
     def create_request(server_node)
       assert_node(server_node)
@@ -450,10 +450,9 @@ module RavenDB
           add_params("metadata-only", "True")
         end  
 
-        if ids.map({ |id| id.size }).sum > 1024
+        if (ids.map { |id| id.size }).sum > 1024
           @payload = {"Ids" => ids}
-          @method = Net::HTTP::Post::METHOD
-          return
+          @method = Net::HTTP::Post::METHOD          
         end
       end
 
@@ -464,13 +463,13 @@ module RavenDB
       result = super(response);   
 
       if response.is_a?(Net::HTTPNotFound)
-        return
+        return;
       end
 
       if !response.body
         raise ErrorResponseException, "Failed to load document from the database "\
   "please check the connection to the server"
-      }
+      end
 
       return result
     end
@@ -500,7 +499,7 @@ module RavenDB
       end
 
       if !response.body
-        return
+        return;
       end
 
       return result["Results"]
@@ -510,8 +509,8 @@ module RavenDB
   class GetIndexCommand < GetIndexesCommand
     @index_name = nil
 
-    def initialize(index_name
-      super()
+    def initialize(index_name)
+      super
       @index_name = index_name
     end
 
@@ -586,7 +585,7 @@ module RavenDB
     def initialize(index_name, query_to_update, patch = nil, options = nil)
       super(Net::HTTP::Patch::METHOD, index_name, query_to_update, options)
       @patch = patch
-    }
+    end
 
     def create_request(server_node)
       assert_node(server_node)
@@ -688,7 +687,7 @@ module RavenDB
     @name = nil
     @api_key = nil
 
-    def initialize(name, api_key) {
+    def initialize(name, api_key)
       super('', Net::HTTP::Put::METHOD)
 
       if !name
@@ -781,7 +780,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @end_point = "#{server_node.url}/databases/#{server_node.database}/indexes"
-      @payload = {"Indexes": @indexes.map({ |index| index.to_json })}
+      @payload = {"Indexes": @indexes.map { |index| index.to_json }}
     end
 
     def set_response(response)
@@ -858,7 +857,7 @@ module RavenDB
       end
       
       if query.sort_hints
-        query.sort_hints.each({ |hint| => add_params(hint, null) })
+        query.sort_hints.each{ |hint| add_params(hint, null) }
       end
 
       if RQLJoinOperator.isAnd(query.default_operator)
@@ -878,7 +877,7 @@ module RavenDB
 
       if !response.body
         raise IndexDoesNotExistException, "Could not find index"
-      }
+      end
 
       return result
     end
@@ -959,9 +958,9 @@ module RavenDB
       json = super()
       document = @document
 
-      if (@metadata) {
+      if @metadata
         document["@metadata"] = @metadata
-      }
+      end
 
       json["Document"] = document
       return json

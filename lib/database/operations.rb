@@ -155,8 +155,8 @@ module RavenDB
 
   class PatchOperation < PatchResultOperation
     @id = nil
-    patch = nil
-    options = nil
+    @patch = nil
+    @options = nil
 
     def initialize(id, patch, options = nil)
       super()
@@ -188,7 +188,7 @@ module RavenDB
   class PutIndexesOperation < AdminOperation
     @indexes = []
 
-    def initialize(indexes_to_add, ...more_indexes_to_add)
+    def initialize(indexes_to_add, *more_indexes_to_add)
       indexes = indexes_to_add.is_a?(Array) ? indexes_to_add : [indexes_to_add]
 
       if more_indexes_to_add.is_a?(Array) && !more_indexes_to_add.empty?

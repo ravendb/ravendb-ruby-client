@@ -1,4 +1,4 @@
-import 'constants/documents'
+require 'constants/documents'
 
 module RavenDB
   class IndexDefinition
@@ -12,7 +12,7 @@ module RavenDB
     @fields = {}
     @_name = nil
 
-    constructor(name, index_map, configuration = nil, init_options = {})
+    def initialize(name, index_map, configuration = nil, init_options = {})
       @_name = name
       @configuration = configuration || {}
       @reduce = initOptions["reduce"] || 0
@@ -65,7 +65,7 @@ module RavenDB
     def to_json
       return {
         "Configuration" => @configuration,
-        "Fields" => @fields.map({ |field| field.to_json }),
+        "Fields" => @fields.map { |field| field.to_json },
         "IndexId" => @index_id,
         "IsTestIndex" => @is_test_index,
         "LockMode" => @lock_mode || nil,
