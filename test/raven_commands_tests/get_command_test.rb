@@ -18,14 +18,14 @@ class DeleteCommandTest < TestBase
   def setup
     super 
 
-    @_put_command = PutDocumentCommand.new('products/101', {"Name" => "test", "@metadata" => {}});
-    @_other_put_command = PutDocumentCommand.new('products/10', {"Name" => "test", "@metadata" => {}});
+    @_put_command = RavenDB::PutDocumentCommand.new('products/101', {"Name" => "test", "@metadata" => {}});
+    @_other_put_command = RavenDB::PutDocumentCommand.new('products/10', {"Name" => "test", "@metadata" => {}});
 
     @_request_executor.execute(@_put_command)
-    @_response = @_request_executor.execute(GetDocumentCommand.new('products/101'))
+    @_response = @_request_executor.execute(RavenDB::GetDocumentCommand.new('products/101'))
 
     @_request_executor.execute(@_put_command)
-    @_other_response = @_request_executor.execute(GetDocumentCommand.new('products/10'))    
+    @_other_response = @_request_executor.execute(RavenDB::GetDocumentCommand.new('products/10'))    
   end
 
   def document_id_should_be_equal_after_load
@@ -37,7 +37,7 @@ class DeleteCommandTest < TestBase
   end
 
   def unexisting_document_loading_attempt_should_return_empty_response
-    result = @_request_executor.execute(GetDocumentCommand.new('product'))
+    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new('product'))
     assert_empty(result)
   end
 end  
