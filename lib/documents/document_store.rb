@@ -100,6 +100,8 @@ module RavenDB
     end   
 
       @_initialized = true
+
+      return self
     end  
 
     protected 

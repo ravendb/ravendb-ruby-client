@@ -1,13 +1,16 @@
-Gem::Specification.new do |s|
-  s.name        = 'ravendb'
-  s.version     = '4.0.0-beta'
-  s.date        = '2017-08-04'
-  s.summary     = "RavenDB"
-  s.description = "RavenDB client for Ruby"
-  s.authors     = ["Hibernating Rhinos"]
-  s.email       = 'support@ravendb.net'
-  s.files       = ["lib/ravendb.rb"]
-  s.homepage    =
-    'http://ravendb.net'
-  s.license       = 'MIT'
+Gem::Specification.new do |spec|
+  spec.name        = 'ravendb'
+  spec.version     = '4.0.0-beta'
+  spec.date        = '2017-08-04'
+  spec.summary     = "RavenDB"
+  spec.description = "RavenDB client for Ruby"
+  spec.authors     = ["Hibernating Rhinos"]
+  spec.email       = 'support@ravendb.net'
+  
+  spec.files         = `git ls-files -z`.split("\x0")
+  spec.test_files    = spec.filespec.grep(%r{^(test)/})
+  spec.require_paths = ['lib']
+
+  spec.homepage = 'http://ravendb.net'
+  spec.license  = 'MIT'
 end

@@ -291,9 +291,9 @@ class RequestExecutor
         
     begin
       response = Net::HTTP.request(prepare_command(command, server_node))
-      is_still_failed = response.is_a?(Net::HTTPOK)
+      is_still_failed = !response.is_a?(Net::HTTPOK)
 
-      if is_still_failed == true
+      if !is_still_failed
         emit(NODE_STATUS_UPDATED, server_node)
 
         if @_failed_nodes_statuses.key?(server_node)
@@ -302,10 +302,10 @@ class RequestExecutor
         end  
       end  
     rescue
-      is_still_failed = false
+      is_still_failed = true
     end    
 
-    if isStillFailed && @_failed_nodes_statuses.key?(server_node)
+    if (is_still_failed === false) && @_failed_nodes_statuses.key?(server_node)
       @_failed_nodes_statuses[server_node].retry_update()      
     end
   end
