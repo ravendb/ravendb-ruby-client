@@ -11,27 +11,27 @@ require 'database/exceptions'
 require 'spec_helper'
 
 class PatchCommandTest < TestBase
-  id = "products/10"
+  ID = "products/10"
   @_change_vector = nil
   
   def setup
     super 
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new(id, {"Name" => "test", "@metadata" => {}}))
-    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(id))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"Name" => "test", "@metadata" => {}}))
+    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
     @_change_vector = result.Results.first["@metadata"]["@change-vector"]
   end
 
-  def should_patch_success_ignoring_missing
-    result = store.operations.send(RavenDB::PatchOperation.new(id, RavenDB::PatchRequest.new("this.Name = 'testing'")))
+  def test_should_patch_success_ignoring_missing
+    result = store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'")))
     
     assert(result.key?("Document"))
     assert(result["Document"].is_a?(Hash))    
   end
 
-  def should_patch_success_not_ignoring_missing
+  def test_should_patch_success_not_ignoring_missing
     result = store.operations.send(
-      RavenDB::PatchOperation.new(id, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
+      RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
       "change_vector" => @_change_vector + 1, 
       "skip_patch_if_change_vector_mismatch" => true
     }))
@@ -39,10 +39,10 @@ class PatchCommandTest < TestBase
     refute(result.key?("Document"))
   end
 
-  def should_patch_fail_not_ignoring_missing
+  def test_should_patch_fail_not_ignoring_missing
     assert_raises(RavenDB::RavenException) do
-      result = store.operations.send(
-        RavenDB::PatchOperation.new(id, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
+      store.operations.send(
+        RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
         "change_vector" => @_change_vector + 1, 
         "skip_patch_if_change_vector_mismatch" => false
       }))

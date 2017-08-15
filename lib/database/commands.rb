@@ -238,7 +238,7 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      end_point = "#{server_node.url}/databases/#{server_node.database}"
+      @end_point = "#{server_node.url}/databases/#{server_node.database}"
       super(serverNode)
     end
 
@@ -533,7 +533,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @params = {"id" => @id}
-      end_point = "#{server_node.url}/databases/#{server_node.database}/operations/state"
+      @end_point = "#{server_node.url}/databases/#{server_node.database}/operations/state"
     end
 
     def set_response(response)

@@ -10,7 +10,7 @@ require 'database/commands'
 require 'database/exceptions'
 require 'spec_helper'
 
-class DeleteCommandTest < TestBase
+class GetCommandTest < TestBase
   @_put_command = nil
   @_other_put_command = nil
   @_response = nil
@@ -29,15 +29,15 @@ class DeleteCommandTest < TestBase
     @_other_response = @_request_executor.execute(RavenDB::GetDocumentCommand.new('products/10'))    
   end
 
-  def document_id_should_be_equal_after_load
+  def test_document_id_should_be_equal_after_load
     assert_equals('products/101', @_response.Results.first['@metadata']['@id'])
   end
 
-  def different_document_ids_shouldnt_be_equals_after_load
+  def test_different_document_ids_shouldnt_be_equals_after_load
     refute_equals(@_other_response.Results.first['@metadata']['@id'], @_response.Results.first['@metadata']['@id'])
   end
 
-  def unexisting_document_loading_attempt_should_return_empty_response
+  def test_unexisting_document_loading_attempt_should_return_empty_response
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new('product'))
     assert_empty(result)
   end

@@ -26,7 +26,7 @@ class DeleteCommandTest < TestBase
     @_other_change_vector = response.Results.first['@metadata']['@change-vector']
   end
 
-  def should_delete_with_no_change_vector
+  def test_should_delete_with_no_change_vector
     command = RavenDB::DeleteDocumentCommand.new('products/101')
 
     refute_raises(RavenDB::RavenException) do 
@@ -34,7 +34,7 @@ class DeleteCommandTest < TestBase
     end  
   end
 
-  def should_delete_with_change_vector
+  def test_should_delete_with_change_vector
     command = RavenDB::DeleteDocumentCommand.new('products/102', @_other_change_vector)
     
     refute_raises(RavenDB::RavenException) do 
@@ -42,7 +42,7 @@ class DeleteCommandTest < TestBase
     end  
   end
 
-  def should_fail_delete_if_change_vector_mismatches
+  def test_should_fail_delete_if_change_vector_mismatches
     refute_raises(RavenDB::RavenException) do 
       @_request_executor.execute(RavenDB::DeleteDocumentCommand.new('products/101', "#{@_change_vector}:BROKEN:VECTOR"))
     end

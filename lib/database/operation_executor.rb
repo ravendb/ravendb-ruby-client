@@ -142,7 +142,7 @@ module RavenDB
     end
 
     def for_database(database)
-      if database === @database
+      if database == @database
         return self
       end
 
@@ -216,7 +216,7 @@ module RavenDB
     end
   end
 
-  export class AdminOperationExecutor extends AbstractDatabaseOperationExecutor
+  class AdminOperationExecutor < AbstractDatabaseOperationExecutor
     @_server = nil
 
     def server

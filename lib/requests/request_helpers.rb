@@ -1,6 +1,6 @@
 require 'thread'
 require 'database/exceptions'
-require 'contsants/documents'
+require 'constants/documents'
 
 module RavenDB
   class ServerNode
@@ -264,7 +264,7 @@ module RavenDB
     protected 
     def on_topology_updated(topology_data)
       should_update = false
-      force_update = (true === topology_data["force_update"])
+      force_update = (true == topology_data["force_update"])
 
       if topology_data["topology_json"]
         topology = Topology.fromJson(topology_data["topology_json"])
@@ -294,8 +294,8 @@ module RavenDB
       if nodes.include?(failed_node)
         failed_node_index = nodes.index(failed_node)
         
-        if @_currentNodeIndex > failedNodeIndex
-          @_currentNodeIndex = failedNodeIndex
+        if @_currentNodeIndex > failed_node_index
+          @_currentNodeIndex = failed_node_index
         end
       end
     end

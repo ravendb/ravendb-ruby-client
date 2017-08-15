@@ -5,7 +5,7 @@ require 'constants/documents'
 require 'database/exceptions'
 require 'database/commands'
 require 'documents/conventions'
-require 'request/request_helpers'
+require 'requests/request_helpers'
 require 'utilities/observable'
 
 module RavenDB
@@ -90,6 +90,11 @@ module RavenDB
     end  
 
     protected
+    def is_first_topology_update_tries_expired
+      return @_first_topology_updates_tries >= MaxFirstTopologyUpdatesTries
+    end
+
+    protected
     def await_first_topology_update()
       is_fulfilled = false
       first_topology_update = @_first_topology_update
@@ -100,16 +105,16 @@ module RavenDB
 
       @_await_first_topology_lock.syncronize do
         if first_topology_update.equal?(@_first_topology_update)
-          is_fulfilled = true === first_topology_update;
+          is_fulfilled = true == first_topology_update;
 
-          if false === first_topology_update
+          if false == first_topology_update
             start_first_topology_update(@_last_known_urls)
           end  
         end
       end  
 
       if !is_fulfilled
-        if is_first_topology_update_tries_expired
+        if self.is_first_topology_update_tries_expired
           raise DatabaseLoadFailureException, 'Max topology update tries reached'
         elsif
           sleep 0.1
@@ -185,32 +190,29 @@ module RavenDB
 
     protected
     def start_first_topology_update(urls = [])
-      if is_first_topology_update_tries_expired
-        return
+      if self.is_first_topology_update_tries_expired
+        return;
       end  
 
       @_last_known_urls = urls  
       @_first_topology_updates_tries++
       @_first_topology_update = Thread.new do
-        for url in urls do
-          begin
-            update_topology(ServerNode.new(url, @_initial_database))
-            @_first_topology_update = true
-            break
-          rescue
-            next
-          end  
-        end  
+         for url in urls do
+           begin
+             update_topology(ServerNode.new(url, @_initial_database))
+             @_first_topology_update = true
+             break
+           rescue
+             next
+           end  
+         end  
 
         @_first_topology_update = false 
       end    
 
-      @_first_topology_update.join
-    end
-
-    protected
-    def is_first_topology_update_tries_expired
-      return @_first_topology_updates_tries >= MaxFirstTopologyUpdatesTries
+      if !@_first_topology_update.nil?
+        @_first_topology_update.join
+      end  
     end
 
     protected 
@@ -254,9 +256,9 @@ module RavenDB
       command.add_failed_node(failed_node)
 
       @_update_failed_node_timer_lock.syncronize do
-        status = NodeStatus.new(failed_node_index, failed_node) {
-          |status| check_node_status(status)
-        }
+        status = NodeStatus.new(failed_node_index, failed_node) do |node_status|
+          check_node_status(node_status)
+        end
 
         @_failed_nodes_statuses[failed_node] = status
         status.start_update
@@ -279,14 +281,13 @@ module RavenDB
       index = node_status.node_index
       node = node_status.node
 
-      if (index < nodes.size) && (node === nodes[index])
+      if (index < nodes.size) && (node == nodes[index])
         perform_health_check(node)
       end
     end
 
     protected 
     def perform_health_check(server_node)
-      status = nil
       is_still_failed = nil
       command = GetStatisticsCommand.new(true)
           
@@ -306,7 +307,7 @@ module RavenDB
         is_still_failed = true
       end    
 
-      if (is_still_failed === false) && @_failed_nodes_statuses.key?(server_node)
+      if (is_still_failed == false) && @_failed_nodes_statuses.key?(server_node)
         @_failed_nodes_statuses[server_node].retry_update()      
       end
     end

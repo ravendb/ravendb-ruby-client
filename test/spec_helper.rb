@@ -9,7 +9,7 @@ require 'database/operations'
 module MiniTest
   module Assertions
     def refute_raises *exp
-      msg = "#{exp.pop}.\n" if String === exp.last
+      msg = exp.last.is_a?(String) ? exp.pop : "unexpected exception raised"
 
       begin
         yield
@@ -18,7 +18,7 @@ module MiniTest
         raise e
       rescue Exception => e
         exp = exp.first if exp.size == 1
-        flunk "unexpected exception raised: #{e}"
+        flunk "#{msg}: #{e}"
       end
 
     end
@@ -28,8 +28,8 @@ module MiniTest
   end
 end
 
-class TestBase < MiniTest::Unit::TestCase  
-  @_default_url = "http://localhost:8080"
+class TestBase < Minitest::Test  
+  @_default_url = "http://192.168.0.151:8080"
   @_default_database = "NorthWindTest"
   
   @_index_map = nil
@@ -43,11 +43,11 @@ class TestBase < MiniTest::Unit::TestCase
     db_doc = RavenDB::DatabaseDocument.new(@_current_database, {"Raven/DataDir" => "test"})
     
     @_store = RavenDB.store.configure do |config|
-      config.urls = [@_default_url]
-      config.default_database = @_current_database
+      config["urls"] = [@_default_url]
+      config["default_database"] = @_current_database
     end
   
-    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(dbDoc))
+    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
   
     @_index_map = 
       "from doc in docs "\

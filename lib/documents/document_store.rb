@@ -78,19 +78,19 @@ module RavenDB
       return self.new(url_or_urls, default_database)
     end
 
-    def configure(configure_callback)
+    def configure(&configure_callback)
       config = {}
 
       if configure_callback
         configure_callback.call(configure_callback)
       end  
 
-      if config.default_database
-        @_database = config.default_database
+      if config["default_database"]
+        @_database = config["default_database"]
       end
 
-      if config.urls
-        set_urls(config.urls)
+      if config["urls"]
+        set_urls(config["urls"])
       end
 
       if !@_initialized
@@ -123,7 +123,7 @@ module RavenDB
     protected 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database;
-      executor = (true === for_single_node) ? 
+      executor = (true == for_single_node) ? 
         RequestExecutor.create_for_single_node(singleNodeUrl, db_name) :
         RequestExecutor.create(urls, db_name);
       
