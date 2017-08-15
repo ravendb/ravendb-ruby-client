@@ -187,13 +187,11 @@ module RavenDB
   end
 
   class IndexQueryBasedCommand < RavenCommand
-    @index_name = nil
     @query = nil
     @options = nil
 
-    def initialize(method, index_name, query, options = nil)
+    def initialize(method, query, options = nil)
       super("", method)
-      @index_name = index_name
       @query = query
       @options = options || QueryOperationOptions.new
     end
@@ -202,10 +200,6 @@ module RavenDB
       assert_node(server_node)
       query = @query
       options = @options
-
-      if @index_name.nil?
-        raise InvalidOperationException, "Empty index_name is not valid"
-      end
 
       if !query.is_a?(IndexQuery)
         raise InvalidOperationException, "Query must be instance of IndexQuery class"
@@ -221,7 +215,7 @@ module RavenDB
         "details" => options.retrieve_details
       }
 
-      @end_point = @end_point + "/queries/#{@index_name}"
+      @end_point = @end_point + "/queries"
       
       if query.query
         add_params("Query", query.query)
@@ -238,8 +232,8 @@ module RavenDB
   end
 
   class DeleteByIndexCommand < IndexQueryBasedCommand
-    def initialize(index_name, query, options = nil)
-      super(Net::HTTP::Delete::METHOD, index_name, query, options)
+    def initialize(query, options = nil)
+      super(Net::HTTP::Delete::METHOD, query, options)
     end
 
     def create_request(server_node)
@@ -252,7 +246,7 @@ module RavenDB
       result = super(response)
 
       if !response.body
-        raise IndexDoesNotExistException, "Could not find index #{@index_name}"
+        raise IndexDoesNotExistException, "Could not find index"
       end
 
       return result
@@ -580,10 +574,10 @@ module RavenDB
   end
 
   class PatchByIndexCommand < IndexQueryBasedCommand
-    patch = nil
+    @patch = nil
 
-    def initialize(index_name, query_to_update, patch = nil, options = nil)
-      super(Net::HTTP::Patch::METHOD, index_name, query_to_update, options)
+    def initialize(query_to_update, patch = nil, options = nil)
+      super(Net::HTTP::Patch::METHOD, query_to_update, options)
       @patch = patch
     end
 
@@ -603,7 +597,7 @@ module RavenDB
       result = super(response)
 
       if !response.body
-        raise IndexDoesNotExistException, "Could not find index #{@index_name}"
+        raise IndexDoesNotExistException, "Could not find index"
       end
 
       if !response.is_a?(Net::HTTPOK) && !response.is_a?(Net::HTTPAccepted)

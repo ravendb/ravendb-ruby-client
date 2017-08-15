@@ -7,10 +7,11 @@ require 'documents/conventions'
 require 'documents/document_query'
 require 'database/operations'
 require 'database/commands'
+require 'database/exceptions'
 require 'spec_helper'
 
 class QueryCommandTest < TestBase
-  query = "FROM Testing WHERE Tag = 'Products'"
+  query = "from index 'Testing' where Tag = 'Products'"
   @_index_query = nil
   @_conventions = nil
 
@@ -49,8 +50,8 @@ class QueryCommandTest < TestBase
   end
 
   def should_fail_with_no_existing_index
-    assert_raises do
-      @_index_query = RavenDB::IndexQuery.new("FROM IndexIsNotExists WHERE Tag = 'Products", 128, 0 , nil, {"wait_for_non_stale_results" => true})
+    assert_raises(RavenDB::RavenException) do
+      @_index_query = RavenDB::IndexQuery.new("from index 'IndexIsNotExists' WHERE Tag = 'Products'", 128, 0 , nil, {"wait_for_non_stale_results" => true})
       @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions))
     end
   end

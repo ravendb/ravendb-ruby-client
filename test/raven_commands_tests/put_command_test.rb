@@ -7,6 +7,7 @@ require 'documents/conventions'
 require 'documents/document_query'
 require 'database/operations'
 require 'database/commands'
+require 'database/exceptions'
 require 'spec_helper'
 
 class PutCommandTest < TestBase  
@@ -17,7 +18,7 @@ class PutCommandTest < TestBase
   end
 
   def should_fail_with_invalid_json
-    assert_raises do
+    assert_raises(RavenDB::RavenException) do
       @_request_executor.execute(RavenDB::PutDocumentCommand.new('testing/2', 'invalid json'))
     end
   end

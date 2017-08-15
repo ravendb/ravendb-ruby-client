@@ -7,6 +7,7 @@ require 'documents/conventions'
 require 'documents/document_query'
 require 'database/operations'
 require 'database/commands'
+require 'database/exceptions'
 require 'spec_helper'
 
 class DeleteCommandTest < TestBase

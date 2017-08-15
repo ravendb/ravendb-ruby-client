@@ -6,6 +6,7 @@ require 'requests/request_helpers'
 require 'documents/document_query'
 require 'database/operations'
 require 'database/commands'
+require 'database/exceptions'
 require 'spec_helper'
 
 class BatchCommandTest < TestBase
@@ -41,7 +42,7 @@ class BatchCommandTest < TestBase
   end
 
   def should_fail_the_test_with_invalid_command_data
-    assert_raises do 
+    assert_raises(RavenDB::RavenException) do 
       @_request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_put_command2, nil]))
     end  
   end

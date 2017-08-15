@@ -7,6 +7,7 @@ require 'documents/conventions'
 require 'documents/document_query'
 require 'database/operations'
 require 'database/commands'
+require 'database/exceptions'
 require 'spec_helper'
 
 class PatchCommandTest < TestBase
@@ -18,7 +19,7 @@ class PatchCommandTest < TestBase
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new(id, {"Name" => "test", "@metadata" => {}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(id))
-    @_change_vector = result.Results.first["@metadata"]["@change-vector"])
+    @_change_vector = result.Results.first["@metadata"]["@change-vector"]
   end
 
   def should_patch_success_ignoring_missing
@@ -39,7 +40,7 @@ class PatchCommandTest < TestBase
   end
 
   def should_patch_fail_not_ignoring_missing
-    assert_raises do
+    assert_raises(RavenDB::RavenException) do
       result = store.operations.send(
         RavenDB::PatchOperation.new(id, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
         "change_vector" => @_change_vector + 1, 

@@ -39,7 +39,7 @@ class TestBase < MiniTest::Unit::TestCase
   @_current_database = nil
 
   def setup
-    @_current_database = "#{@_default_url}__#{SecureRandom.uuid}"    
+    @_current_database = "#{@_default_database}__#{SecureRandom.uuid}"    
     db_doc = RavenDB::DatabaseDocument.new(@_current_database, {"Raven/DataDir" => "test"})
     
     @_store = RavenDB.store.configure do |config|
