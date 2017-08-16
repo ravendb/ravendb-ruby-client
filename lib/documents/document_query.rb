@@ -2,25 +2,15 @@ require 'constants/documents'
 
 module RavenDB
   class IndexDefinition
-    @maps = []
-    @index_id = 0
-    @is_test_index = false
-    @reduce = nil
-    @lock_mode = nil
-    @priority = nil
-    @configuration = {}
-    @fields = {}
-    @_name = nil
-
     def initialize(name, index_map, configuration = nil, init_options = {})
       @_name = name
       @configuration = configuration || {}
-      @reduce = initOptions["reduce"] || 0
-      @index_id = initOptions["index_id"] || nil
-      @lock_mode = initOptions["lock_mod"] || nil
-      @priority = initOptions["priority"] || nil
-      @is_test_index = initOptions["is_test_index"] || false
-      @fields = initOptions["fields"] || {}
+      @reduce = init_options["reduce"] || 0
+      @index_id = init_options["index_id"] || nil
+      @lock_mode = init_options["lock_mode"] || nil
+      @priority = init_options["priority"] || nil
+      @is_test_index = init_options["is_test_index"] || false
+      @fields = init_options["fields"] || {}
       @maps = index_map.is_a?(Array) ? index_map : [index_map]
     end
 
@@ -47,11 +37,7 @@ module RavenDB
     end
 
     def map
-      if @maps.length
-        return @maps.first
-      end
-
-      return nil
+      @maps.length ? @maps.first : nil
     end
 
     def map=(value)
@@ -80,13 +66,6 @@ module RavenDB
   end
 
   class IndexFieldOptions
-    @sort_options = nil
-    @indexing = nil
-    @storage = nil
-    @term_vector = nil
-    @suggestions = nil
-    @analyzer = nil
-
     def initialize(sort_options = nil, indexing = nil, storage = nil, suggestions = nil, term_vector = nil, analyzer = nil) 
       @sort_options = sort_options
       @indexing = indexing
@@ -110,16 +89,6 @@ module RavenDB
   end
 
   class IndexQuery
-    @start = 0
-    @page_size = 128
-    @fetch = []
-    @sort_hints = []
-    @sort_fields = []
-    @query = ''
-    @default_operator = nil
-    @wait_for_non_stale_results = false
-    @wait_for_non_stale_results_timeout = nil
-
     attr_accessor :start, :page_size
     attr_reader :default_operator, :query, :fetch, :sort_hints, :sort_fields, :wait_for_non_stale_results, :wait_for_non_stale_results_timeout
 
@@ -127,10 +96,9 @@ module RavenDB
       @query = query;
       @page_size = page_size || 128
       @start = skipped_results || 0
-      @fetch = options["fetch"] || []
       @sort_hints = options["sort_hints"] || []
       @sort_fields = options["sort_fields"] || []
-      @defaultOperator = options["default_operator"] || RQLJoinOperator::OR
+      @default_operator = options["default_operator"] || RQLJoinOperator::OR
       @wait_for_non_stale_results = options["wait_for_non_stale_results"] || false
       @wait_for_non_stale_results_timeout = options["wait_for_non_stale_results_timeout"] || nil
 

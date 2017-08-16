@@ -17,7 +17,7 @@ class GetCommandTest < TestBase
   @_other_response = nil
   
   def setup
-    super 
+    super() 
 
     @_put_command = RavenDB::PutDocumentCommand.new('products/101', {"Name" => "test", "@metadata" => {}});
     @_other_put_command = RavenDB::PutDocumentCommand.new('products/10', {"Name" => "test", "@metadata" => {}});

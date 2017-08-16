@@ -14,7 +14,7 @@ class ByIndexCommandsTest < TestBase
   @_patch = nil
   
   def setup
-    super
+    super()
 
     index_map = 
       "from doc in docs.Testings "\

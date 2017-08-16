@@ -15,7 +15,7 @@ class QueryCommandTest < TestBase
   @_conventions = nil
 
   def setup
-    super 
+    super() 
 
     query = "from index 'Testing' where Tag = 'Products'"
 

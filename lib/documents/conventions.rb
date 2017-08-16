@@ -6,17 +6,19 @@ module RavenDB
     MaxLengthOfQueryUsingGetUrl = 1024 + 512
     IdentityPartsSeparator = "/"
     
-    @SetIdOnlyIfPropertyIsDefined = false
-    @DisableTopologyUpdates = false
-
     attr_accessor :SetIdOnlyIfPropertyIsDefined, :DisableTopologyUpdates
 
+    def initialize
+      @SetIdOnlyIfPropertyIsDefined = false
+      @DisableTopologyUpdates = false
+    end  
+
     def empty_change_vector
-      return nil
+      nil
     end
 
     def convert_to_document(json)
-      return json
+      json
     end  
   end  
 end  

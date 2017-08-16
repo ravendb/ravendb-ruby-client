@@ -29,22 +29,16 @@ module MiniTest
 end
 
 class TestBase < Minitest::Test  
-  @_default_url = "http://192.168.0.151:8080"
-  @_default_database = "NorthWindTest"
-  
-  @_index_map = nil
-  @_index = nil
-  @_request_executor = nil
-  @_store = nil
-  @_current_database = nil
+  DEFAULT_URL = "http://192.168.0.151:8080"
+  DEFAULT_DATABASE = "NorthWindTest"    
 
-  def setup
-    @_current_database = "#{@_default_database}__#{SecureRandom.uuid}"    
+  def setup    
+    @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"    
     db_doc = RavenDB::DatabaseDocument.new(@_current_database, {"Raven/DataDir" => "test"})
     
     @_store = RavenDB.store.configure do |config|
-      config["urls"] = [@_default_url]
-      config["default_database"] = @_current_database
+      config.urls = [DEFAULT_URL]
+      config.default_database = @_current_database
     end
   
     @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))

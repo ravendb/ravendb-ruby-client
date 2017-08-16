@@ -9,20 +9,16 @@ require 'requests/request_executor'
 
 module RavenDB
   class OperationAwaiter
-    @request_executor = nil
-    @operation_id = nil
-    @timeout = nil
-
     def initialize(request_executor, operation_id, timeout = nil)
-      @request_executor = request_executor
-      @operation_id = operationId
+      @request_executor = request_executor || nil
+      @operation_id = operation_id || nil
       @timeout = timeout
     end
 
     def wait_for_completion
       status_result = fetch_operation_status
 
-      return on_next(status_result)
+      on_next(status_result)
     end
 
     protected
@@ -56,6 +52,7 @@ module RavenDB
             "status" => OperationStatus::Running
           }  
         end
+
       rescue => exception
         return {
           "status" => OperationStatus::Faulted,
@@ -64,7 +61,6 @@ module RavenDB
       end  
     end  
 
-    protected 
     def on_next(result)
       case result["status"]
       when OperationStatus::Completed
@@ -79,27 +75,11 @@ module RavenDB
   end
 
   class AbstractOperationExecutor
-    @store = nil
-    @_request_executor = nil
-    
-    protected 
-    def request_executor_factory
-      raise NotImplementedError, 'You should implement request_executor_factory method'
-    end  
-
-    protected 
-    def request_executor
-      if !@_request_executor
-        @_request_executor = request_executor_factory
-      end
-
-      return @_request_executor
-    end
-
     def initialize(store)
       @store = store
+      @_request_executor = nil
     end
-
+    
     def send(operation)
       command = nil
       store = @store
@@ -110,8 +90,8 @@ module RavenDB
       if operation.is_a?(AbstractOperation)
         begin
           command = operation.is_a?(Operation) ? 
-            operation.getCommand(conventions, store) : 
-            operation.getCommand(conventions);   
+            operation.get_command(conventions, store) : 
+            operation.get_command(conventions);   
         rescue => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}";
         end      
@@ -123,22 +103,28 @@ module RavenDB
 
       result = executor.execute(command)
 
-      return set_response(operation, command, result)
+      set_response(operation, command, result)
     end
 
     protected
     def set_response(operation, command, response)    
-      return response
+      response
+    end
+
+    def request_executor_factory
+      raise NotImplementedError, 'You should implement request_executor_factory method'
+    end  
+
+    def request_executor
+      @_request_executor ||= request_executor_factory
     end
   end
 
   class AbstractDatabaseOperationExecutor < AbstractOperationExecutor
-    @database = nil
-    @executors_by_database = {}
-    
     def initialize(store, database = nil)
       super(store)
       @database = database
+      @executors_by_database = {}
     end
 
     def for_database(database)
@@ -150,12 +136,12 @@ module RavenDB
         @executors_by_database[database] = self.class.new(@store, database)
       end
 
-      return @executors_by_database[database]
+      @executors_by_database[database]
     end
 
     protected
     def request_executor_factory
-      return @store.get_request_executor(@database)
+      @store.get_request_executor(@database)
     end
   end
 
@@ -194,43 +180,42 @@ module RavenDB
         response = patch_result
       end
 
-      return super(operation, command, response)
+      super(operation, command, response)
     end    
   end
 
   class ServerOperationExecutor < AbstractOperationExecutor
+    def send(operation)
+      raise InvalidOperationException, 'Invalid operation passed. It should be derived from ServerOperation' unless operation.is_a?(ServerOperation)
+
+      super(operation)
+    end
+
     protected
     def request_executor_factory
       store = @store;
       conventions = store.conventions
 
-      return conventions.DisableTopologyUpdates ?
+      conventions.DisableTopologyUpdates ?
        ClusterRequestExecutor.create_for_single_node(store.single_node_url) : 
        ClusterRequestExecutor.create(store.urls)
-    end
-
-    def send(operation)
-      raise InvalidOperationException, 'Invalid operation passed. It should be derived from ServerOperation' unless operation.is_a?(ServerOperation)
-
-      return super(operation)
-    end
+    end    
   end
 
   class AdminOperationExecutor < AbstractDatabaseOperationExecutor
-    @_server = nil
+    def initialize(store, database = nil)
+      super(store, database)
+      @_server = nil
+    end  
 
     def server
-      if !@_server
-        @_server = ServerOperationExecutor.new(@store)
-      end
-
-      return @_server
+      @_server ||= ServerOperationExecutor.new(@store)
     end
 
     def send(operation)
       raise InvalidOperationException, 'Invalid operation passed. It should be derived from AdminOperation' unless operation.is_a?(AdminOperation)
       
-      return super(operation)
+      super(operation)
     end
   end
 end  

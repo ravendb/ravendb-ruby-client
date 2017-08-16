@@ -17,7 +17,7 @@ class BatchCommandTest < TestBase
   
   def setup    
     metadata = {"Raven-Ruby-Type" => "Product", "@collection" => "products"}
-    super
+    super()
 
     @_put_command1 = RavenDB::PutCommandData.new('products/999', {"Name" => "tests", "Category" => "testing", "@metadata": metadata})
     @_put_command2 = RavenDB::PutCommandData.new('products/1000', {"Name" => "tests", "Category" => "testing", "@metadata": metadata})

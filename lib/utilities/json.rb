@@ -15,6 +15,6 @@ class Net::HTTPResponse
       end  
     end  
 
-    return json
+    json
   end  
 end  

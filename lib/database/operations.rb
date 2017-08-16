@@ -30,84 +30,67 @@ module RavenDB
   end  
 
   class IndexQueryBasedOperation < AwaitableOperation
-    @query = nil
-    @options = nil
-
     def initialize(query, options = nil)
       super()
-      @query = query
+      @query = query || nil
       @options = options || QueryOperationOptions.new
     end
   end
 
   class CreateDatabaseOperation < ServerOperation
-    @replication_factor = nil
-    @database_document = nil
-
     def initialize(database_document, replication_factor = 1)
       super()
-      @database_document = database_document
+      @database_document = database_document || nil
       @replication_factor = replication_factor || 1
     end
 
     def get_command(conventions)
-      return CreateDatabaseCommand.new(@database_document, @replication_factor)
+      CreateDatabaseCommand.new(@database_document, @replication_factor)
     end
   end
 
   class DeleteByIndexOperation < IndexQueryBasedOperation
     def get_command(conventions, store = nil)
-      return DeleteByIndexCommand.new(@query, @options)
+      DeleteByIndexCommand.new(@query, @options)
     end 
   end
 
   class DeleteDatabaseOperation < ServerOperation
-    @database_id = nil
-    @hard_delete = false
-    @from_node = nil
-
     def initialize(database_id, hard_delete = false, from_node = nil)
       super()
       @from_node = from_node
-      @database_id = database_id
+      @database_id = database_id || nil
       @hard_delete = hard_delete
     end
 
     def get_command(conventions)
-      return  DeleteDatabaseCommand.new(database_id, hard_delete, from_node)
+      DeleteDatabaseCommand.new(@database_id, @hard_delete, @from_node)
     end
   end
 
   class DeleteIndexOperation < AdminOperation
-    @index_name = nil
-
     def initialize(index_name)
       super()
-      @index_name = index_name
+      @index_name = index_name || nil
     end
     
     def get_command(conventions)
-      return DeleteIndexCommand.new(@index_name)
+      DeleteIndexCommand.new(@index_name)
     end
   end
 
   class GetApiKeyOperation < ServerOperation
-    @name = nil
-
     def initialize(name)
       super()
-      @name = name
+      @name = name || nil
     end
     
     def get_command(conventions)
-      return GetApiKeyCommand.new(@name)
+      GetApiKeyCommand.new(@name)
     end
   end
 
   class GetIndexesOperation < AdminOperation
-    @start = nil
-    @page_size = nil
-
     def initialize(start = 0, page_size = 10)
       super()
       @start = start
@@ -115,39 +98,35 @@ module RavenDB
     end
     
     def get_command(conventions)
-      return GetIndexesCommand.new(@start, @page_size)
+      GetIndexesCommand.new(@start, @page_size)
     end 
   end
 
   class GetIndexOperation < AdminOperation
-    @index_name = nil
-
     def initialize(index_name)
       super()
-      @index_name = index_name
+      @index_name = index_name || nil
     end
     
     def get_command(conventions)
-      return GetIndexCommand.new(@index_name)
+      GetIndexCommand.new(@index_name)
     end 
   end
 
   class GetStatisticsOperation < AdminOperation
     def get_command(conventions)
-      return GetStatisticsCommand.new
+      GetStatisticsCommand.new
     end
   end
 
   class PatchByIndexOperation < IndexQueryBasedOperation
-    @patch = nil
-
     def initialize(query_to_update, patch = nil, options = nil)
       super(query_to_update, options)
       @patch = patch
     end
 
     def get_command(conventions, store = nil)
-      return PatchByIndexCommand.new(@query, @patch, @options)
+      PatchByIndexCommand.new(@query, @patch, @options)
     end 
   end
 
@@ -169,23 +148,18 @@ module RavenDB
   end
 
   class PutApiKeyOperation < ServerOperation
-    @name = nil
-    @api_key = nil
-
     def initialize(name, api_key)
       super()
-      @name = name
-      @api_key = api_key
+      @name = name || nil
+      @api_key = api_key || nil
     end
     
     def get_command(conventions)
-      return PutApiKeyCommand.new(@name, api_key)
+      PutApiKeyCommand.new(@name, @api_key)
     end
   end
 
   class PutIndexesOperation < AdminOperation
-    @indexes = []
-
     def initialize(indexes_to_add, *more_indexes_to_add)
       indexes = indexes_to_add.is_a?(Array) ? indexes_to_add : [indexes_to_add]
 
@@ -198,37 +172,18 @@ module RavenDB
     end
     
     def get_command(conventions)
-      return PutIndexesCommand.new(@indexes)
+      PutIndexesCommand.new(@indexes)
     end
   end
 
   class QueryOperationOptions
-    @_allow_stale = true
-    @_stale_timeout = nil
-    @_max_ops_per_sec = nil
-    @_retrieve_details = false
+    attr_reader :allow_stale, :stale_timeout, :max_ops_per_sec, :retrieve_details
 
     def initialize(allow_stale = true, stale_timeout = nil, max_ops_per_sec = nil, retrieve_details = false)
       @allow_stale = allow_stale
       @stale_timeout = stale_timeout
       @max_ops_per_sec = max_ops_per_sec
       @retrieve_details = retrieve_details
-    end
-
-    def allow_stale
-      @_allow_stale
-    end
-
-    def stale_timeout
-      @_stale_timeout
-    end
-
-    def max_ops_per_sec
-      @_max_ops_per_sec
-    end
-
-    def retrieve_details
-      @_retrieve_details
     end
   end
 end  

@@ -15,7 +15,7 @@ class DeleteCommandTest < TestBase
   @_other_change_vector = nil  
   
   def setup
-    super 
+    super() 
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new('products/101', {"Name" => "test", "@metadata" => {}}))
     response = @_request_executor.execute(RavenDB::GetDocumentCommand.new('products/101'))

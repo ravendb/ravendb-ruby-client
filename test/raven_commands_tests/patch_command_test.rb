@@ -15,7 +15,7 @@ class PatchCommandTest < TestBase
   @_change_vector = nil
   
   def setup
-    super 
+    super() 
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"Name" => "test", "@metadata" => {}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))

@@ -10,28 +10,21 @@ require "requests/request_helpers"
 
 module RavenDB
   class RavenCommand
-    @method = Net::HTTP::Get::METHOD
-    @end_point = ""
-    @params = {}
-    @payload = nil
-    @headers = {}
-    @failed_nodes = nil
-    @_last_response = {}
-
-    def initialize(end_point, method=Net::HTTP::Get::METHOD, params={}, payload=nil, headers={})
-      @end_point = end_point
+    def initialize(end_point, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
+      @end_point = end_point || ""
       @method = method
       @params = params
       @payload = payload
       @headers = headers
       @failed_nodes = Set.new([])  
+      @_last_response = {}      
     end
 
     def server_response
-      return @_last_response
+      @_last_response
     end  
 
-    def was_failed()
+    def was_failed?()
       !@failed_nodes.empty?
     end
 
@@ -40,9 +33,9 @@ module RavenDB
       @failed_nodes.add(node)
     end
 
-    def was_failed_with_node(node)
+    def was_failed_with_node?(node)
       assert_node(node)
-      return @failed_nodes.include?(node)
+      @failed_nodes.include?(node)
     end
 
     def create_request(server_node)
@@ -68,7 +61,7 @@ module RavenDB
         request.add_field(header, value)
       end
 
-      return request
+      request
     end  
 
     def set_response(response)
@@ -85,7 +78,6 @@ module RavenDB
       raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless json.is_a? ServerNode
     end
 
-    protected
     def add_params(param_or_params, value)      
       new_params = param_or_params
 
@@ -97,7 +89,6 @@ module RavenDB
       @params = @params.merge(new_params)
     end
 
-    protected
     def remove_params(param_or_params, *other_params)
       remove = param_or_params
 
@@ -114,9 +105,7 @@ module RavenDB
   end  
 
   class BatchCommand < RavenCommand
-    @commands_array = []
-
-    def initialize(commands_array)
+    def initialize(commands_array = [])
       super("", Net::HTTP::Post::METHOD)
       @commands_array = commands_array
     end
@@ -140,17 +129,14 @@ module RavenDB
         raise InvalidOperationException, "Invalid response body received"
       end
 
-      return result["Results"]
+      result["Results"]
     end
   end
 
   class CreateDatabaseCommand < RavenCommand
-    @replication_factor = 1
-    @database_document = nil
-
     def initialize(database_document, replication_factor = 1)
       super("", Net::HTTP::Put::METHOD)
-      @database_document = database_document
+      @database_document = database_document || nil
       @replication_factor = replication_factor || 1
     end
 
@@ -176,23 +162,20 @@ module RavenDB
     end
 
     def set_response(response)
-      result = super.set_response(response)
+      result = super().set_response(response)
 
       if !response.body
         raise ErrorResponseException, "Response is invalid."
       end
 
-      return result
+      result
     end
   end
 
   class IndexQueryBasedCommand < RavenCommand
-    @query = nil
-    @options = nil
-
     def initialize(method, query, options = nil)
       super("", method)
-      @query = query
+      @query = query || nil
       @options = options || QueryOperationOptions.new
     end
 
@@ -239,7 +222,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @end_point = "#{server_node.url}/databases/#{server_node.database}"
-      super(serverNode)
+      super(server_node)
     end
 
     def set_response(response)
@@ -249,19 +232,15 @@ module RavenDB
         raise IndexDoesNotExistException, "Could not find index"
       end
 
-      return result
+      result
     end
   end
 
   class DeleteDatabaseCommand < RavenCommand
-    @database_id = nil
-    @hard_delete = false
-    @from_node = nil
-
     def initialize(database_id, hard_delete = false, from_node = nil)
       super("", Net::HTTP::Delete::METHOD)
       @from_node = from_node
-      @database_id = database_id
+      @database_id = database_id || nil
       @hard_delete = hard_delete
     end
 
@@ -281,13 +260,10 @@ module RavenDB
   end
 
   class DeleteDocumentCommand < RavenCommand
-    @id = nil
-    @change_vector = nil
-
     def initialize(id, change_vector = nil)
       super("", Net::HTTP::Delete::METHOD)
 
-      @id = id;
+      @id = id || nil;
       @change_vector = change_vector
     end
 
@@ -295,7 +271,7 @@ module RavenDB
       assert_node(server_node)
 
       if !@id
-        raise InvalidOperationException, "Null Id is not valid"
+        raise InvalidOperationException, "Nil Id is not valid"
       end
 
       if !@id.is_a(String)
@@ -324,11 +300,9 @@ module RavenDB
   end  
 
   class DeleteIndexCommand < RavenCommand
-    @index_name = nil
-
     def initialize(index_name)
       super("", Net::HTTP::Delete::METHOD)
-      @index_name = index_name
+      @index_name = index_name || nil
     end
 
     def create_request(server_node)
@@ -344,8 +318,6 @@ module RavenDB
   end
 
   class GetApiKeyCommand < RavenCommand
-    @name = nil
-
     def initialize(name)
       super("", Net::HTTP::Get::METHOD)
 
@@ -353,7 +325,7 @@ module RavenDB
         raise InvalidOperationException, "Api key name isn't set"
       end
 
-      @name = name
+      @name = name || nil
     end
 
     def create_request(server_node)
@@ -374,8 +346,6 @@ module RavenDB
   end
 
   class GetTopologyCommand < RavenCommand
-    @force_url = nil
-
     def initialize(force_url = nil)
       super("", Net::HTTP::Get::METHOD)
       @force_url = force_url
@@ -409,14 +379,10 @@ module RavenDB
   end
 
   class GetDocumentCommand < RavenCommand
-    @id_or_ids = []
-    @includes = nil
-    @metadata_only = false
-
     def initialize(id_or_ids, includes = nil, metadata_only = false)
       super("", Net::HTTP::Get::METHOD, nil, nil, {});
 
-      @id_or_ids = id_or_ids
+      @id_or_ids = id_or_ids || []
       @includes = includes
       @metadata_only = metadata_only
     end
@@ -465,14 +431,11 @@ module RavenDB
   "please check the connection to the server"
       end
 
-      return result
+      result
     end
   end
 
   class GetIndexesCommand < RavenCommand
-    @start = nil
-    @page_size = nil
-
     def initialize(start = 0, page_size = 10)
       super("", Net::HTTP::Get::METHOD, null, null, {})
       @start = start
@@ -496,16 +459,14 @@ module RavenDB
         return;
       end
 
-      return result["Results"]
+      result["Results"]
     end
   end
 
   class GetIndexCommand < GetIndexesCommand
-    @index_name = nil
-
     def initialize(index_name)
-      super
-      @index_name = index_name
+      super()
+      @index_name = index_name || nil
     end
 
     def create_request(server_node)
@@ -523,11 +484,9 @@ module RavenDB
   end
 
   class GetOperationStateCommand < RavenCommand
-    @id = nil
-
     def initialize(id)
       super("", Net::HTTP::Get::METHOD)
-      @id = id
+      @id = id || nil
     end
 
     def create_request(server_node)
@@ -548,8 +507,6 @@ module RavenDB
   end
 
   class GetStatisticsCommand < RavenCommand
-    @check_for_failures = nil
-
     def initialize(check_for_failures = false)
       super("", Net::HTTP::Get::METHOD)
       @check_for_failures = check_for_failures
@@ -574,8 +531,6 @@ module RavenDB
   end
 
   class PatchByIndexCommand < IndexQueryBasedCommand
-    @patch = nil
-
     def initialize(query_to_update, patch = nil, options = nil)
       super(Net::HTTP::Patch::METHOD, query_to_update, options)
       @patch = patch
@@ -604,26 +559,19 @@ module RavenDB
         raise ErrorResponseException, "Invalid response from server"
       end
 
-      return result
+      result
     end
   end
 
   class PatchCommand < RavenCommand
-    @id = nil
-    @patch = nil
-    @change_vector = nil
-    @patch_if_missing = nil
-    @skip_patch_if_change_vector_mismatch = nil
-    @return_debug_information = nil
-
     def initialize(id, patch, options = nil)
       super('', Net::HTTP::Patch::METHOD)
       opts = options || {}
 
-      @id = id
-      @patch = patch
-      @change_vector = opts["change_vector"]
-      @patch_if_missing = opts["patch_if_missing"]
+      @id = id || nil
+      @patch = patch || nil
+      @change_vector = opts["change_vector"] || nil
+      @patch_if_missing = opts["patch_if_missing"] || nil
       @skip_patch_if_change_vector_mismatch = opts["skip_patch_if_change_vector_mismatch"] || false
       @return_debug_information = opts["return_debug_information"] || false
     end
@@ -678,9 +626,6 @@ module RavenDB
   end
 
   class PutApiKeyCommand < RavenCommand
-    @name = nil
-    @api_key = nil
-
     def initialize(name, api_key)
       super('', Net::HTTP::Put::METHOD)
 
@@ -710,12 +655,10 @@ module RavenDB
   end
 
   class PutDocumentCommand < DeleteDocumentCommand
-    @document = nil
-
     def initialize(id, document, change_vector = nil)
       super(id, change_vector)
 
-      @document = document
+      @document = document || nil
       @method = Net::HTTP::Put::METHOD
     end
 
@@ -743,9 +686,8 @@ module RavenDB
   end
 
   class PutIndexesCommand < RavenCommand
-    @indexes = []
-
     def initialize(indexes_to_add, *more_indexes_to_add)
+      @indexes = []
       indexes = indexes_to_add.is_a?(Array) ? indexes_to_add : [indexes_to_add]
 
       if more_indexes_to_add.is_a?(Array) && !more_indexes_to_add.empty?
@@ -785,18 +727,11 @@ module RavenDB
   "please check the connection to the server"
       end
       
-      return result
+      result
     end
   end
 
   class QueryCommand < RavenCommand
-    @index_name = nil
-    @index_query = nil
-    @conventions = nil
-    @includes = []
-    @metadata_only = false
-    @index_entries_only = false
-
     def initialize(index_query, conventions, includes = nil, metadata_only = false, index_entries_only = false)
       super('', RequestMethods.Post, null, null, {})
 
@@ -812,8 +747,8 @@ module RavenDB
         raise InvalidOperationException, 'Document conventions cannot be empty'
       end
 
-      @index_query = index_query
-      @conventions = conventions
+      @index_query = index_query || nil
+      @conventions = conventions || nil
       @includes = includes
       @metadata_only = metadata_only
       @index_entries_only = index_entries_only
@@ -830,10 +765,6 @@ module RavenDB
         @payload["Query"] = query.query
       end
 
-      if query.fetch
-        add_params('fetch', query.fetch)
-      end  
-
       if @includes
         add_params('include', @includes)
       end
@@ -846,22 +777,14 @@ module RavenDB
         add_params('debug', 'entries')
       end
       
-      if query.sort_fields
-        add_params('sort', query.sort_fields)
-      end
-      
-      if query.sort_hints
-        query.sort_hints.each{ |hint| add_params(hint, null) }
-      end
-
       if RQLJoinOperator.isAnd(query.default_operator)
         add_params('operator', query.default_operator)
       end  
 
       if query.wait_for_non_stale_results
         @payload = @payload.merge({
-          waitForNonStaleResultsAsOfNow: 'true',
-          waitForNonStaleResultsTimeout: query.wait_for_non_stale_results_timeout
+          "WaitForNonStaleResultsAsOfNow" => true,
+          "WaitForNonStaleResultsTimeout": query.wait_for_non_stale_results_timeout
         })
       end
     end
@@ -873,18 +796,15 @@ module RavenDB
         raise IndexDoesNotExistException, "Could not find index"
       end
 
-      return result
+      result
     end
   end
 
   class RavenCommandData
-    @type = nil
-    @id = nil
-    @change_vector = nil;
-
     def initialize(id, change_vector)
       @id = id
-      @change_vector = change_vector;
+      @change_vector = change_vector || nil;
+      @type = nil
     end
 
     def document_id
@@ -908,18 +828,14 @@ module RavenDB
   end
 
   class PatchCommandData < RavenCommandData
-    @scripted_patch = nil
-    @patch_if_missing = nil
-    @additional_data = nil
-    @debug_mode = false
-
     def initialize(id, scripted_patch, change_vector, patch_if_missing = nil, debug_mode = nil)
-      super(id, changeVector)
+      super(id, change_vector)
 
       @type = Net::HTTP::Patch::METHOD
-      @scripted_patch = scripted_patch
+      @scripted_patch = scripted_patch || nil
       @patch_if_missing = patch_if_missing
       @debug_mode = debug_mode
+      @additional_data = nil
     end
 
     def to_json
@@ -937,14 +853,11 @@ module RavenDB
   end
 
   class PutCommandData < RavenCommandData
-    @document = nil
-    @metadata = nil
-
     def initialize(id, document, change_vector = nil, metadata = nil)
       super(id, change_vector)
 
       @type = Net::HTTP::Put::METHOD
-      @document = document
+      @document = document || nil
       @metadata = metadata
     end
 
@@ -962,16 +875,12 @@ module RavenDB
   end
 
   class SaveChangesData
-    @commands = []
-    @deferred_command_count = 0
-    @documents = []
-
     def deferred_commands_count
       @deferred_command_count
     end
 
     def commands_count
-      return @commands.size
+      @commands.size
     end
 
     def initialize(commands = nil, deferred_command_count = 0, documents = nil)
@@ -989,11 +898,11 @@ module RavenDB
     end
 
     def get_document(index)
-      return @documents.at(index)
+      @documents.at(index)
     end
 
     def create_batch_command
-      return BatchCommand.new(@commands)
+      BatchCommand.new(@commands)
     end
   end
 end

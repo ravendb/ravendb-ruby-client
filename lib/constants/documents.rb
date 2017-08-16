@@ -12,6 +12,7 @@ module RavenDB
   class RQLJoinOperator
     OR = "OR"
     AND = "AND"
+    NOT = "NOT"
 
     def self.isAnd(operator)
       return self::AND == operator
@@ -19,6 +20,10 @@ module RavenDB
 
     def self.isOr(operator)
       return self::OR == operator
+    end
+
+    def self.isNot(operator)
+      return self::NOT == operator
     end
   end
 
