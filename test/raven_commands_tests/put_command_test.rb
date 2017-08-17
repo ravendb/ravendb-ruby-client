@@ -14,7 +14,7 @@ class PutCommandTest < TestBase
   def test_should_put_successfully
     @_request_executor.execute(RavenDB::PutDocumentCommand.new('testing/1', {"name" => 'test', "@metadata" => {"@id" => 'testing/1', "@collection" => 'testings'}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new('testing/1'))
-    assert_equals('testing/1', result.Results.first['@metadata']['@id'])
+    assert_equal('testing/1', result["Results"].first["@metadata"]["@id"])
   end
 
   def test_should_fail_with_invalid_json

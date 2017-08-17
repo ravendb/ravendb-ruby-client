@@ -19,7 +19,7 @@ class PatchCommandTest < TestBase
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"Name" => "test", "@metadata" => {}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
-    @_change_vector = result.Results.first["@metadata"]["@change-vector"]
+    @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
 
   def test_should_patch_success_ignoring_missing

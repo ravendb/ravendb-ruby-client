@@ -23,11 +23,11 @@ module RavenDB
     end   
 
     def self.try_raise_from(json_or_response)
-      if json_or_response.is_a? Net::HTTPResponse
+      if json_or_response.is_a? Net::HTTPResponse        
         response = json_or_response
         json = response.json
-
-        if json && (response.code >= 400)
+        
+        if json && (response.code.to_i >= 400)          
           try_raise_from(json)
         end  
       else

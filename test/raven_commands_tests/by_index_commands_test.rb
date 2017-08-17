@@ -60,7 +60,7 @@ class ByIndexCommandsTest < TestBase
     @_request_executor.execute(query_command)
     response = @_store.operations.send(delete_by_index_operation)
 
-    assert_equals('Completed', response["Status"])
+    assert_equal('Completed', response["Status"])
   end 
 
   def test_update_by_index_fail_on_unexisting_index

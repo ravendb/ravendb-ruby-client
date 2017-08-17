@@ -30,7 +30,7 @@ class GetCommandTest < TestBase
   end
 
   def test_document_id_should_be_equal_after_load
-    assert_equals('products/101', @_response.Results.first['@metadata']['@id'])
+    assert_equal('products/101', @_response.Results.first['@metadata']['@id'])
   end
 
   def test_different_document_ids_shouldnt_be_equals_after_load

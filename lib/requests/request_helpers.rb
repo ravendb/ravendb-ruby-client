@@ -70,21 +70,21 @@ module RavenDB
       @etag = 0
       nodes = []
 
-      if json.Etag
-        @etag = json.Etag
+      if json["Etag"]
+        @etag = json["Etag"]
       end  
 
-      if json.Topology && json.Topology.AllNodes
-        json.Topology.AllNodes.each do |tag,url| 
-          nodes.insert({"Url" => url, "ClusterTag" => tag})
+      if json["Topology"] && json["Topology"]["AllNodes"]
+        json["Topology"]["AllNodes"].each do |tag,url| 
+          nodes.push({"Url" => url, "ClusterTag" => tag})
         end
-      elsif json.Nodes
-        nodes = json.Nodes;
+      elsif json["Nodes"]
+        nodes = json["Nodes"]
       end
 
       nodes.each do |node|
-         @nodes.insert(ServerNode.from_json(node))
-      end   
+         @nodes.push(ServerNode.from_json(node))
+      end         
     end
   end
 
@@ -161,15 +161,15 @@ module RavenDB
       @topology = topology
       @_lock = Mutex.new
 
-      request_executor.on(RavenServerEvent.TOPOLOGY_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) { |data|
         on_topology_updated(data)
       }
 
-      request_executor.on(RavenServerEvent.REQUEST_FAILED) { |data|
+      request_executor.on(RavenServerEvent::REQUEST_FAILED) { |data|
         on_request_failed(data)
       }
 
-      request_executor.on(RavenServerEvent.NODE_STATUS_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::NODE_STATUS_UPDATED) { |data|
         on_node_restored(data)
       }
     end
@@ -184,7 +184,7 @@ module RavenDB
     end
 
     def current_node
-      @nodes.at(@current_node_index)
+      nodes.at(@current_node_index)
     end
 
     protected 

@@ -50,16 +50,19 @@ module RavenDB
         end_point = "#{end_point}?#{encoded_params}"
       end
 
-      requestCtor = Object.const_get("Net::HTTP::#{@method}")
+      requestCtor = Object.const_get("Net::HTTP::#{@method.capitalize}")
       request = requestCtor.new(end_point)
 
       if !@payload.nil? && !@payload.empty?
-        request.body(JSON.generate(@payload))
-      end      
-
-      headers.each do |header, value|
-        request.add_field(header, value)
-      end
+        request.body = JSON.generate(@payload)
+        @headers['Content-Type'] = 'application/json'
+      end 
+      
+      if !@headers.empty?      
+        @headers.each do |header, value|
+          request.add_field(header, value)
+        end
+      end  
 
       request
     end  
@@ -75,7 +78,7 @@ module RavenDB
 
     protected
     def assert_node(node)
-      raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless json.is_a? ServerNode
+      raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless node.is_a? ServerNode
     end
 
     def add_params(param_or_params, value)      
@@ -83,7 +86,7 @@ module RavenDB
 
       if !new_params.is_a?(Hash)
         new_params = Hash.new
-        new_params[paramOrParams] = value
+        new_params[param_or_params] = value
       end    
 
       @params = @params.merge(new_params)
@@ -118,7 +121,7 @@ module RavenDB
         raise InvalidOperationException, "Not a valid command"
       end
 
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/bulk_docs"
+      @end_point = "/databases/#{server_node.database}/bulk_docs"
       @payload = {"Commands" => commands.map { |data| data.to_json }}
     end
 
@@ -141,7 +144,7 @@ module RavenDB
     end
 
     def create_request(server_node)
-      db_name = @database_document.database_id.sub! "Raven/Databases/", ""
+      db_name = @database_document.database_id.gsub("Raven/Databases/", "")
       assert_node(server_node)
 
       if db_name.nil? || !db_name
@@ -157,12 +160,12 @@ module RavenDB
       end
 
       @params = {"name" => db_name, "replication-factor" => @replication_factor}
-      @end_point = "#{server_node.url}/admin/databases"
+      @end_point = "/admin/databases"
       @payload = @database_document.to_json
     end
 
     def set_response(response)
-      result = super().set_response(response)
+      result = super(response)
 
       if !response.body
         raise ErrorResponseException, "Response is invalid."
@@ -188,7 +191,7 @@ module RavenDB
         raise InvalidOperationException, "Query must be instance of IndexQuery class"
       end
 
-      if !options.is_a(QueryOperationOptions)
+      if !options.is_a?(QueryOperationOptions)
         raise InvalidOperationException, "Options must be instance of QueryOperationOptions class"
       end
 
@@ -221,7 +224,7 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "#{server_node.url}/databases/#{server_node.database}"
+      @end_point = "/databases/#{server_node.database}"
       super(server_node)
     end
 
@@ -240,21 +243,21 @@ module RavenDB
     def initialize(database_id, hard_delete = false, from_node = nil)
       super("", Net::HTTP::Delete::METHOD)
       @from_node = from_node
-      @database_id = database_id || nil
+      @database_id = database_id
       @hard_delete = hard_delete
     end
 
     def create_request(server_node)
-      db_name = @database_document.database_id.sub! "Raven/Databases/", ""
+      db_name = @database_id.gsub("Raven/Databases/", "")
       @params = {"name" => db_name}
-      @end_point = "#{server_node.url}/admin/databases"
+      @end_point = "/admin/databases"
 
       if @hard_delete
         add_params("hard-delete", "true")
       end
 
-      if from_node
-        add_params("from-node",  from_node.cluster_tag)
+      if @from_node
+        add_params("from-node",  @from_node.cluster_tag)
       end      
     end
   end
@@ -274,7 +277,7 @@ module RavenDB
         raise InvalidOperationException, "Nil Id is not valid"
       end
 
-      if !@id.is_a(String)
+      if !@id.is_a?(String)
         raise InvalidOperationException, "Id must be a string"
       end
 
@@ -283,7 +286,7 @@ module RavenDB
       end
 
       @params = {"id" => @id}
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/docs"
+      @end_point = "/databases/#{server_node.database}/docs"
     end
 
     def set_response(response)
@@ -293,7 +296,7 @@ module RavenDB
 
     protected 
     def check_response(response)
-      if !response.is_a(Net::HTTPNoConent)
+      if !response.is_a?(Net::HTTPNoConent)
         raise InvalidOperationException, "Could not delete document #{@id}"
       end
     end
@@ -313,7 +316,7 @@ module RavenDB
       end
 
       @params = {"name" => index_name}
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/indexes"
+      @end_point = "/databases/#{server_node.database}/indexes"
     end
   end
 
@@ -331,7 +334,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @params = {"name" => @name}
-      @end_point = "#{server_node.url}/admin/api-keys"
+      @end_point = "/admin/api-keys"
     end
 
     def set_response(response)
@@ -354,7 +357,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @params = {"name" => server_node.database}
-      @end_point = "#{server_node.url}/topology"
+      @end_point = "/topology"
 
       if @force_url
         add_params("url", @force_url)
@@ -374,7 +377,7 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
       remove_params("name")
-      @end_point = "#{server_node.url}/cluster/topology"
+      @end_point = "/cluster/topology"
     end
   end
 
@@ -394,18 +397,18 @@ module RavenDB
         raise InvalidOperationException, "Null ID is not valid"
       end
       
-      ids = @id_or_ids.is_a(Array) ? @id_or_ids : [@id_or_ids]
+      ids = @id_or_ids.is_a?(Array) ? @id_or_ids : [@id_or_ids]
       first_id = ids.first
       multi_load = ids.size > 1 
 
       @params = {}
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/docs"
+      @end_point = "/databases/#{server_node.database}/docs"
       
       if @includes
         add_params("include", @includes)
       end        
       
-      if multiLoad
+      if multi_load
         if @metadata_only
           add_params("metadata-only", "True")
         end  
@@ -444,7 +447,7 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/indexes"
+      @end_point = "/databases/#{server_node.database}/indexes"
       @params = { "start" => @start, "page_size" => @page_size }
     end
 
@@ -492,7 +495,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @params = {"id" => @id}
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/operations/state"
+      @end_point = "/databases/#{server_node.database}/operations/state"
     end
 
     def set_response(response)
@@ -514,7 +517,7 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/stats"
+      @end_point = "/databases/#{server_node.database}/stats"
       
       if @check_for_failures
         add_params("failure", "check")
@@ -650,7 +653,7 @@ module RavenDB
 
       @params = {"name" => @name}
       @payload = @api_key.to_json
-      @end_point = "#{server_node.url}/admin/api-keys"
+      @end_point = "/admin/api-keys"
     end
   end
 
@@ -701,7 +704,7 @@ module RavenDB
       end
 
       indexes.each do |index|
-        if !index.is_a(IndexDefinition)
+        if !index.is_a?(IndexDefinition)
           raise InvalidOperationException, 'All indexes should be instances of IndexDefinition'
         end
 
@@ -715,8 +718,8 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "#{server_node.url}/databases/#{server_node.database}/indexes"
-      @payload = {"Indexes": @indexes.map { |index| index.to_json }}
+      @end_point = "/databases/#{server_node.database}/indexes"
+      @payload = {"Indexes" => @indexes.map { |index| index.to_json }}
     end
 
     def set_response(response)
@@ -759,7 +762,7 @@ module RavenDB
 
       query = @index_query
       @payload = { "PageSize" => query.page_size, "Start" => query.start }
-      @endPoint = "#{server_node.url}/databases/#{server_node.database}/queries"
+      @endPoint = "/databases/#{server_node.database}/queries"
 
       if query.query
         @payload["Query"] = query.query

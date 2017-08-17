@@ -49,9 +49,15 @@ module RavenDB
     end
 
     def to_json
+      fields_json = {}
+      
+      @fields.each do |field, definition| 
+        fields_json[field] = definition.to_json
+      end  
+
       return {
         "Configuration" => @configuration,
-        "Fields" => @fields.map { |field| field.to_json },
+        "Fields" => fields_json,
         "IndexId" => @index_id,
         "IsTestIndex" => @is_test_index,
         "LockMode" => @lock_mode || nil,
@@ -60,7 +66,7 @@ module RavenDB
         "Reduce" => @reduce,
         "OutputReduceToCollection" => nil,
         "Priority" => @priority || nil,
-        "Type" => @type
+        "Type" => type
       }
     end
   end

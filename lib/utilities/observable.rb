@@ -6,7 +6,7 @@ module Observable
   end
   
   def on(event, &listener)
-    add_observer(RavenDB::EventListener.new(event, listener))
+    add_observer(RavenDB::EventListener.new(event, &listener))
   end  
 end 
 

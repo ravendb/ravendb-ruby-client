@@ -52,7 +52,7 @@ class TestBase < Minitest::Test
   
     @_index = RavenDB::IndexDefinition.new("Testing", @_index_map)
     @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    @_request_executor = store.get_request_executor
+    @_request_executor = @_store.get_request_executor
   end  
 
   def teardown

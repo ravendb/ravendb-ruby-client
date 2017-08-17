@@ -1,5 +1,7 @@
+require 'uri'
 require 'time'
 require 'thread'
+require 'net/http'
 require 'constants/database'
 require 'constants/documents'
 require 'database/exceptions'
@@ -10,10 +12,10 @@ require 'utilities/observable'
 
 module RavenDB
   class RequestExecutor
-    MaxFirstTopologyUpdatesTries = 5
-    
-    attr_reader :initial_database
     include Observable
+
+    MaxFirstTopologyUpdatesTries = 5    
+    attr_reader :initial_database    
 
     def initialize(database, options = {})
       urls = options["first_topology_update_urls"] || []
@@ -24,6 +26,7 @@ module RavenDB
       }
       
       @initial_database = database
+      @_http_clients = {}
       @_first_topology_updates_tries = 0      
       @_last_known_urls = nil
       @_failed_nodes_statuses = {}
@@ -64,7 +67,7 @@ module RavenDB
       chosen_node_index = -1
 
       await_first_topology_update
-      selector = @_nodeSelector;
+      selector = @_node_selector
       chosen_node = selector.current_node
       chosen_node_index = selector.current_node_index
 
@@ -125,25 +128,25 @@ module RavenDB
       request
     end
 
-    def execute_command(command, server_node)
+    def execute_command(command, server_node)      
       if !command.is_a?(RavenCommand)
         raise InvalidOperationException, 'Not a valid command'
       end
 
-      if !command.is_a?(ServerNode)
+      if !server_node.is_a?(ServerNode)
         raise InvalidOperationException, 'Not a valid server node'
       end
 
-      request = prepare_command(command, node)
+      request = prepare_command(command, server_node)
       
       begin
-        response = Net::HTTP.request(request)
+        response = http_client(server_node).request(request)
       rescue
         raise TopologyNodeDownException, "Node #{server_node.url} is down"
       end    
 
-      is_server_error = [Net::HTTPRequestTimeout, Net::HTTPBadGateway,
-        Net::HTTPGatewayTimeout, Net::HTTPServiceUnavailable].any? { 
+      is_server_error = [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
+        Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable].any? { 
         |response_type| response.is_a?(response_type)
       }
 
@@ -181,17 +184,19 @@ module RavenDB
       @_last_known_urls = urls  
       @_first_topology_updates_tries = @_first_topology_updates_tries + 1
       @_first_topology_update = Thread.new do
+        updated = false
+
          for url in urls do
            begin
              update_topology(ServerNode.new(url, @initial_database))
-             @_first_topology_update = true
+             updated = true
              break
            rescue
              next
            end  
          end  
 
-        @_first_topology_update = false 
+        @_first_topology_update = updated 
       end    
     end
 
@@ -200,7 +205,7 @@ module RavenDB
 
       @_update_topology_lock.synchronize do
         response = execute_command(topology_command_class.new, server_node)
-
+        
         if @_node_selector
           event_data = {
             "topology_json" => response,
@@ -214,8 +219,8 @@ module RavenDB
           if event_data["was_updated"]
             cancel_failing_nodes_timers
           end
-        elsif
-          @_node_selector = NodeSelector.new(self, Topology.from_json(response))
+        else
+          @_node_selector = NodeSelector.new(self, Topology.from_json(response))          
         end    
 
         @_topology_etag = @_node_selector.topology_etag
@@ -223,7 +228,7 @@ module RavenDB
     end
 
     def get_update_topology_command_class
-      GetTopologyCommand.class
+      GetTopologyCommand
     end  
 
     def handle_server_down(command, failed_node, failed_node_index)
@@ -267,7 +272,8 @@ module RavenDB
       command = GetStatisticsCommand.new(true)
           
       begin
-        response = Net::HTTP.request(prepare_command(command, server_node))
+        request = prepare_command(command, server_node)
+        response = http_client(server_node).request(request)
         is_still_failed = !response.is_a?(Net::HTTPOK)
 
         if !is_still_failed
@@ -291,12 +297,23 @@ module RavenDB
       @_failed_nodes_statuses.each_value {|status| status.dispose} 
       @_failed_nodes_statuses.clear
     end  
+
+    def http_client(server_node)
+      url = server_node.url
+
+      if !@_http_clients.key?(url)
+        uri = URI.parse(url)
+        @_http_clients[url] = Net::HTTP.new(uri.host, uri.port) 
+      end  
+
+      @_http_clients[url]
+    end  
   end  
 
   class ClusterRequestExecutor < RequestExecutor
     protected
     def get_update_topology_command_class
-      GetClusterTopologyCommand.class
+      GetClusterTopologyCommand
     end  
   end
 end  

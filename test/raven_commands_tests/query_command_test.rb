@@ -34,20 +34,20 @@ class QueryCommandTest < TestBase
   def test_should_do_query
     result = @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions))
 
-    assert(result.Results.first.key?('Name'))
-    assert_equals('test', result.Results.first["Name"])
+    assert(result["Results"].first.key?('Name'))
+    assert_equal('test', result["Results"].first["Name"])
   end
 
   def test_test_should_query_only_metadata
     result = @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions, nil, true))
 
-    refute(result.Results.first.key?('Name'))
+    refute(result["Results"].first.key?('Name'))
   end
 
   def test_should_query_only_documents
     result = @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions, nil, nil, true))
     
-    refute(result.Results.first.key?('@metadata'))
+    refute(result["Results"].first.key?('@metadata'))
   end
 
   def test_should_fail_with_no_existing_index
