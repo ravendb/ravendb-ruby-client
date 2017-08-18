@@ -29,7 +29,7 @@ module MiniTest
 end
 
 class TestBase < Minitest::Test  
-  DEFAULT_URL = "http://192.168.0.151:8080"
+  DEFAULT_URL = "http://localhost:8080"
   DEFAULT_DATABASE = "NorthWindTest"    
 
   def setup    
