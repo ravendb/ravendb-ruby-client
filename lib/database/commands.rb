@@ -747,7 +747,8 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      @endPoint = "/databases/#{server_node.database}/queries"
+      @end_point = "/databases/#{server_node.database}/queries"
+      @params = {"query-hash" => @index_query.query_hash}
 
       if @metadata_only 
         add_params('metadata-only', 'true')
