@@ -1,3 +1,4 @@
+require 'digest'
 require 'constants/documents'
 
 module RavenDB
@@ -96,15 +97,12 @@ module RavenDB
 
   class IndexQuery
     attr_accessor :start, :page_size
-    attr_reader :default_operator, :query, :fetch, :sort_hints, :sort_fields, :wait_for_non_stale_results, :wait_for_non_stale_results_timeout
+    attr_reader :default_operator, :query, :wait_for_non_stale_results, :wait_for_non_stale_results_timeout
 
-    def initialize(query = '', page_size = 128, skipped_results = 0, default_operator = nil, options = {})
+    def initialize(query = '', page_size = 128, skipped_results = 0, options = {})
       @query = query;
       @page_size = page_size || 128
       @start = skipped_results || 0
-      @sort_hints = options["sort_hints"] || []
-      @sort_fields = options["sort_fields"] || []
-      @default_operator = options["default_operator"] || RQLJoinOperator::OR
       @wait_for_non_stale_results = options["wait_for_non_stale_results"] || false
       @wait_for_non_stale_results_timeout = options["wait_for_non_stale_results_timeout"] || nil
 
@@ -112,5 +110,31 @@ module RavenDB
         @wait_for_non_stale_results_timeout = 15 * 60
       end
     end
+
+    def query_hash
+      buffer = "#{@query}#{@page_size}#{@start}"
+      buffer = buffer + (@wait_for_non_stale_results ? "1" : "0")
+
+      if @wait_for_non_stale_results
+        buffer = buffer + "#{@wait_for_non_stale_results_timeout}"
+      end  
+
+      Digest::SHA256.hexdigest(buffer)
+    end  
+
+    def to_json
+      json = {
+        "PageSize" => @page_size,
+        "Query" => @query,
+        "Start" => @start,
+        "WaitForNonStaleResultsAsOfNow" => @wait_for_non_stale_results
+      }
+
+      if @wait_for_non_stale_results
+        json["WaitForNonStaleResultsTimeout"] = @wait_for_non_stale_results_timeout
+      end
+
+      json
+    end  
   end
 end

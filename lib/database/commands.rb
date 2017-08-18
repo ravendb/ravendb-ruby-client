@@ -175,7 +175,7 @@ module RavenDB
     end
   end
 
-  class IndexQueryBasedCommand < RavenCommand
+  class QueryBasedCommand < RavenCommand
     def initialize(method, query, options = nil)
       super("", method)
       @query = query || nil
@@ -196,36 +196,27 @@ module RavenDB
       end
 
       @params = {
-        "pageSize" => query.page_size,
         "allowStale" => options.allow_stale,
-        "details" => options.retrieve_details
+        "details" => options.retrieve_detailsб
+        "maxOpsPerSec" => options["max_ops_per_sec"]
       }
 
-      @end_point = @end_point + "/queries"
+      @end_point = "/databases/#{server_node.database}/queries"
       
-      if query.query
-        add_params("Query", query.query)
-      end
-
-      if options.max_ops_per_sec
-        add_params("maxOpsPerSec", options["max_ops_per_sec"])
-      end  
-
       if options.stale_timeout
         add_params("staleTimeout", options["stale_timeout"])
       end  
     end
   end
 
-  class DeleteByIndexCommand < IndexQueryBasedCommand
+  class DeleteByQueryCommand < QueryBasedCommand
     def initialize(query, options = nil)
       super(Net::HTTP::Delete::METHOD, query, options)
     end
 
     def create_request(server_node)
-      assert_node(server_node)
-      @end_point = "/databases/#{server_node.database}"
       super(server_node)
+      @payload = @query.to_json
     end
 
     def set_response(response)
@@ -533,22 +524,23 @@ module RavenDB
     end
   end
 
-  class PatchByIndexCommand < IndexQueryBasedCommand
+  class PatchByQueryCommand < QueryBasedCommand
     def initialize(query_to_update, patch = nil, options = nil)
       super(Net::HTTP::Patch::METHOD, query_to_update, options)
       @patch = patch
     end
 
     def create_request(server_node)
-      assert_node(server_node)
+      super(server_node)
 
       if !@patch.is_a?(PatchRequest)
         raise InvalidOperationException, "Patch must be instanceof PatchRequest class"
       end
 
-      @payload = @patch.to_json
-      @end_point = "{url}/databases/{database}"
-      super(server_node)
+      @payload = {
+        "Patch" => @patch.to_json,
+        "Query" => @query.to_json,
+      }            
     end
 
     def set_response(response)
@@ -735,14 +727,10 @@ module RavenDB
   end
 
   class QueryCommand < RavenCommand
-    def initialize(index_query, conventions, includes = nil, metadata_only = false, index_entries_only = false)
+    def initialize(index_query, conventions, metadata_only = false, index_entries_only = false)
       super('', RequestMethods.Post, null, null, {})
 
-      if !indexName
-        raise InvalidOperationException, 'Index name cannot be empty'
-      end
-
-      if !indexQuery.is_a?(IndexQuery)
+      if !index_query.is_a?(IndexQuery)
         raise InvalidOperationException, 'Query must be an instance of IndexQuery class'
       end
 
@@ -752,7 +740,6 @@ module RavenDB
 
       @index_query = index_query || nil
       @conventions = conventions || nil
-      @includes = includes
       @metadata_only = metadata_only
       @index_entries_only = index_entries_only
     end
@@ -760,18 +747,8 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      query = @index_query
-      @payload = { "PageSize" => query.page_size, "Start" => query.start }
       @endPoint = "/databases/#{server_node.database}/queries"
 
-      if query.query
-        @payload["Query"] = query.query
-      end
-
-      if @includes
-        add_params('include', @includes)
-      end
-      
       if @metadata_only 
         add_params('metadata-only', 'true')
       end
@@ -780,16 +757,7 @@ module RavenDB
         add_params('debug', 'entries')
       end
       
-      if RQLJoinOperator.isAnd(query.default_operator)
-        add_params('operator', query.default_operator)
-      end  
-
-      if query.wait_for_non_stale_results
-        @payload = @payload.merge({
-          "WaitForNonStaleResultsAsOfNow" => true,
-          "WaitForNonStaleResultsTimeout": query.wait_for_non_stale_results_timeout
-        })
-      end
+      @payload = @index_query.to_json
     end
 
     def set_response(response)

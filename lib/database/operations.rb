@@ -29,7 +29,7 @@ module RavenDB
   class AwaitableOperation < Operation
   end  
 
-  class IndexQueryBasedOperation < AwaitableOperation
+  class QueryBasedOperation < AwaitableOperation
     def initialize(query, options = nil)
       super()
       @query = query || nil
@@ -49,9 +49,9 @@ module RavenDB
     end
   end
 
-  class DeleteByIndexOperation < IndexQueryBasedOperation
+  class DeleteByQueryOperation < QueryBasedOperation
     def get_command(conventions, store = nil)
-      DeleteByIndexCommand.new(@query, @options)
+      DeleteByQueryCommand.new(@query, @options)
     end 
   end
 
@@ -119,14 +119,14 @@ module RavenDB
     end
   end
 
-  class PatchByIndexOperation < IndexQueryBasedOperation
+  class PatchByQueryOperation < QueryBasedOperation
     def initialize(query_to_update, patch = nil, options = nil)
       super(query_to_update, options)
       @patch = patch
     end
 
     def get_command(conventions, store = nil)
-      PatchByIndexCommand.new(@query, @patch, @options)
+      PatchByQueryCommand.new(@query, @patch, @options)
     end 
   end
 

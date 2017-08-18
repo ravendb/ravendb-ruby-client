@@ -10,7 +10,7 @@ require 'database/commands'
 require 'database/exceptions'
 require 'spec_helper'
 
-class ByIndexCommandsTest < TestBase
+class ByQueryCommandsTest < TestBase
   @_patch = nil
   
   def setup
@@ -41,9 +41,9 @@ class ByIndexCommandsTest < TestBase
 
   def test_update_by_index_success
     query = "from index 'Testing_Sort' where exists(Name)"
-    index_query = RavenDB::IndexQuery.new(query, 0, 0, null, {"wait_for_non_stale_results" => true})
+    index_query = RavenDB::IndexQuery.new(query, 0, 0, {"wait_for_non_stale_results" => true})
     query_command = RavenDB::QueryCommand.new(index_query, @_store.conventions)
-    patch_by_index_operation = RavenDB::PatchByIndexOperation.new(RavenDB::IndexQuery.new(query), @_patch, RavenDB::QueryOperationOptions.new(false))
+    patch_by_index_operation = RavenDB::PatchByQueryOperation.new(RavenDB::IndexQuery.new(query), @_patch, RavenDB::QueryOperationOptions.new(false))
     
     @_request_executor.execute(query_command)
     response = @_store.operations.send(patch_by_index_operation)
@@ -54,9 +54,9 @@ class ByIndexCommandsTest < TestBase
 
   def test_delete_by_index_success
     query = "from index 'Testing_Sort' where DocNumber between 0 AND 49"
-    index_query = RavenDB::IndexQuery.new(query, 0, 0, null, {"wait_for_non_stale_results" => true})
+    index_query = RavenDB::IndexQuery.new(query, 0, 0, {"wait_for_non_stale_results" => true})
     query_command = RavenDB::QueryCommand.new(index_query, @_store.conventions)
-    delete_by_index_operation = RavenDB::DeleteByIndexOperation.new(RavenDB::IndexQuery.new(query), RavenDB::QueryOperationOptions.new(false))
+    delete_by_index_operation = RavenDB::DeleteByQueryOperation.new(RavenDB::IndexQuery.new(query), RavenDB::QueryOperationOptions.new(false))
     @_request_executor.execute(query_command)
     response = @_store.operations.send(delete_by_index_operation)
 
@@ -67,7 +67,7 @@ class ByIndexCommandsTest < TestBase
     index_query = RavenDB::IndexQuery.new("from index 'unexisting_index_1' where Name = 'test1'")
 
     assert_raises(RavenDB::RavenException) do
-      @_store.operations.send(RavenDB::PatchByIndexOperation.new(index_query, @_patch))
+      @_store.operations.send(RavenDB::PatchByQueryOperation.new(index_query, @_patch))
     end  
   end
 
@@ -75,7 +75,7 @@ class ByIndexCommandsTest < TestBase
     index_query = RavenDB::IndexQuery.new("from index 'unexisting_index_2' where Name = 'test2'")
 
     assert_raises(RavenDB::RavenException) do
-      @_store.operations.send(RavenDB::DeleteByIndexOperation.new(index_query))
+      @_store.operations.send(RavenDB::DeleteByQueryOperation.new(index_query))
     end  
   end   
 end  
