@@ -8,10 +8,14 @@ class Net::HTTPResponse
 
     if !json.is_a? Hash
       begin
-        json = JSON.parse(json)
+        if json.is_a?(String) && !json.empty?
+          json = JSON.parse(json)
+        elsif
+          json = nil
+        end    
       rescue
         if raise_when_invalid
-          raise ErrorResponseException, 'Not a valid JSON'  
+          raise RavenDB::ErrorResponseException, 'Not a valid JSON'  
         end  
       end  
     end  

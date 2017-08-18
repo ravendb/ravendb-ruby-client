@@ -19,8 +19,8 @@ class BatchCommandTest < TestBase
     metadata = {"Raven-Ruby-Type" => "Product", "@collection" => "products"}
     super()
 
-    @_put_command1 = RavenDB::PutCommandData.new('products/999', {"Name" => "tests", "Category" => "testing", "@metadata": metadata})
-    @_put_command2 = RavenDB::PutCommandData.new('products/1000', {"Name" => "tests", "Category" => "testing", "@metadata": metadata})
+    @_put_command1 = RavenDB::PutCommandData.new('products/999', {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
+    @_put_command2 = RavenDB::PutCommandData.new('products/1000', {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
     @_delete_command = RavenDB::DeleteCommandData.new('products/1000')
     @_scripted_patch_command = RavenDB::PatchCommandData.new('products/999', RavenDB::PatchRequest.new("this.Name = 'testing';"))
   end

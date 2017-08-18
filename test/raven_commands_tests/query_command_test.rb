@@ -29,6 +29,7 @@ class QueryCommandTest < TestBase
 
     @_conventions = @_store.conventions
     @_index_query = RavenDB::IndexQuery.new(query, 128, 0, {"wait_for_non_stale_results" => true})
+    @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions))
   end
 
   def test_should_do_query
@@ -46,7 +47,7 @@ class QueryCommandTest < TestBase
 
   def test_should_query_only_documents
     result = @_request_executor.execute(RavenDB::QueryCommand.new(@_index_query, @_conventions, false, true))
-    
+
     refute(result["Results"].first.key?('@metadata'))
   end
 

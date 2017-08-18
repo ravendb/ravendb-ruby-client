@@ -24,7 +24,7 @@ class ByQueryCommandsTest < TestBase
 
     index_sort = RavenDB::IndexDefinition.new('Testing_Sort', index_map, nil, {
       "fields" => {
-        "DocNumber" => RavenDB::IndexFieldOptions.new(SortOptions.Numeric)
+        "DocNumber" => RavenDB::IndexFieldOptions.new(RavenDB::SortOptions::Numeric)
       }
     })
 
@@ -49,7 +49,7 @@ class ByQueryCommandsTest < TestBase
     response = @_store.operations.send(patch_by_index_operation)
     
     refute_nil(response)
-    assert(response["Result"]["total"] >= 50)    
+    assert(response["Result"]["Total"] >= 50)    
   end
 
   def test_delete_by_index_success

@@ -27,7 +27,7 @@ class IndexCommandsTest < TestBase
     end  
 
     result = @_store.operations.send(RavenDB::GetIndexOperation.new('get_index'))
-    refute_empty(result)    
+    refute_nil(result)    
   end
 
   def test_should_get_index_with_fail
@@ -39,9 +39,9 @@ class IndexCommandsTest < TestBase
   def test_should_delete_index_with_success
     @_index = RavenDB::IndexDefinition.new('delete', @_index_map)
 
-    @_store.operations.send(RavenDB::PutIndexesOperation.new(index))
+    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
     result = @_store.operations.send(RavenDB::DeleteIndexOperation.new('delete'))
-    assert_empty(result)
+    assert_nil(result)
   end
 
   def test_should_delete_index_with_fail

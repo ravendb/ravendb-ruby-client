@@ -1,5 +1,6 @@
 require 'digest'
 require 'constants/documents'
+require 'constants/database'
 
 module RavenDB
   class IndexDefinition
@@ -26,7 +27,7 @@ module RavenDB
         result = 'Auto' + result
       end
 
-      if @reduce
+      if @reduce > 0
         result += 'Reduce';
       end
 
@@ -34,7 +35,7 @@ module RavenDB
     end
 
     def is_map_reduce
-      return @reduce || false
+      return @reduce > 0
     end
 
     def map
@@ -57,17 +58,17 @@ module RavenDB
       end  
 
       return {
+        "Name" => @_name,
+        "Maps" => @maps,
+        "Type" => type,
+        "LockMode" => @lock_mode || IndexLockMode::Unlock,
+        "Priority" => @priority || IndexPriority::Normal,
         "Configuration" => @configuration,
         "Fields" => fields_json,
         "IndexId" => @index_id,
         "IsTestIndex" => @is_test_index,
-        "LockMode" => @lock_mode || nil,
-        "Maps" => @maps,
-        "Name" => @_name,
         "Reduce" => @reduce,
-        "OutputReduceToCollection" => nil,
-        "Priority" => @priority || nil,
-        "Type" => type
+        "OutputReduceToCollection" => nil        
       }
     end
   end
@@ -127,11 +128,12 @@ module RavenDB
         "PageSize" => @page_size,
         "Query" => @query,
         "Start" => @start,
-        "WaitForNonStaleResultsAsOfNow" => @wait_for_non_stale_results
+        "WaitForNonStaleResultsAsOfNow" => @wait_for_non_stale_results,
+        "WaitForNonStaleResultsTimeout" => nil
       }
 
       if @wait_for_non_stale_results
-        json["WaitForNonStaleResultsTimeout"] = @wait_for_non_stale_results_timeout
+        json["WaitForNonStaleResultsTimeout"] = "#{@wait_for_non_stale_results_timeout}"
       end
 
       json

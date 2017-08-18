@@ -12,7 +12,7 @@ require 'spec_helper'
 
 class PutCommandTest < TestBase  
   def test_should_put_successfully
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new('testing/1', {"name" => 'test', "@metadata" => {"@id" => 'testing/1', "@collection" => 'testings'}}))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new('testing/1', {"name" => 'test', "@metadata" => {"@collection" => 'testings'}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new('testing/1'))
     assert_equal('testing/1', result["Results"].first["@metadata"]["@id"])
   end

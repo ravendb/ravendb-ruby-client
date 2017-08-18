@@ -24,7 +24,7 @@ module RavenDB
     protected
     def fetch_operation_status
       start_time = Time.now.to_f
-      status_command = GetOperationStateCommand.new(@operationId)
+      status_command = GetOperationStateCommand.new(@operation_id)
 
       begin
         response = @request_executor.execute(status_command)
@@ -66,7 +66,7 @@ module RavenDB
       when OperationStatus::Completed
         return result["response"]
       when OperationStatus::Faulted
-        raise result.exception        
+        raise result["exception"]        
       else
         sleep 0.5
         return on_next(fetch_operation_status)
@@ -153,7 +153,7 @@ module RavenDB
       conventions = store.conventions
 
       if operation.is_a?(AwaitableOperation)
-        awaiter = OperationAwaiter.new(@request_executor, json["OperationId"])
+        awaiter = OperationAwaiter.new(request_executor, json["OperationId"])
 
         return awaiter.wait_for_completion
       end
@@ -162,13 +162,13 @@ module RavenDB
         patch_result = nil
 
         case command.server_response
-        when Net::HttpNotModified
+        when Net::HTTPNotModified
           patch_result = {
-            "Status" => PatchStatuses.NotModified
+            "Status" => PatchStatus::NotModified
           }
-        when Net::HttpNotFound
+        when Net::HTTPNotFound
           patch_result = {
-            "Status" => PatchStatuses.DocumentDoesNotExist
+            "Status" => PatchStatus::DocumentDoesNotExist
           }
         else
           patch_result = {

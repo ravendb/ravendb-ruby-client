@@ -17,7 +17,7 @@ module RavenDB
       @payload = payload
       @headers = headers
       @failed_nodes = Set.new([])  
-      @_last_response = {}      
+      @_last_response = nil      
     end
 
     def server_response
@@ -68,11 +68,11 @@ module RavenDB
     end  
 
     def set_response(response)
-      @_last_response = response.json
+      @_last_response = response
 
       if @_last_response
         ExceptionsRaiser.try_raise_from(response)
-        return @_last_response
+        return response.json
       end   
     end  
 
@@ -198,13 +198,13 @@ module RavenDB
       @params = {
         "allowStale" => options.allow_stale,
         "details" => options.retrieve_details,
-        "maxOpsPerSec" => options["max_ops_per_sec"]
+        "maxOpsPerSec" => options.max_ops_per_sec
       }
 
       @end_point = "/databases/#{server_node.database}/queries"
       
       if options.stale_timeout
-        add_params("staleTimeout", options["stale_timeout"])
+        add_params("staleTimeout", options.stale_timeout)
       end  
     end
   end
@@ -287,7 +287,7 @@ module RavenDB
 
     protected 
     def check_response(response)
-      if !response.is_a?(Net::HTTPNoConent)
+      if !response.is_a?(Net::HTTPNoContent)
         raise InvalidOperationException, "Could not delete document #{@id}"
       end
     end
@@ -303,10 +303,10 @@ module RavenDB
       assert_node(server_node)
 
       if !@index_name
-        raise InvalidOperationException, "Null or empty index_name is invalid"
+        raise InvalidOperationException, "nil or empty index_name is invalid"
       end
 
-      @params = {"name" => index_name}
+      @params = {"name" => @index_name}
       @end_point = "/databases/#{server_node.database}/indexes"
     end
   end
@@ -385,7 +385,7 @@ module RavenDB
       assert_node(server_node)
 
       if !@id_or_ids
-        raise InvalidOperationException, "Null ID is not valid"
+        raise InvalidOperationException, "nil ID is not valid"
       end
       
       ids = @id_or_ids.is_a?(Array) ? @id_or_ids : [@id_or_ids]
@@ -431,7 +431,7 @@ module RavenDB
 
   class GetIndexesCommand < RavenCommand
     def initialize(start = 0, page_size = 10)
-      super("", Net::HTTP::Get::METHOD, null, null, {})
+      super("", Net::HTTP::Get::METHOD, nil, nil, {})
       @start = start
       @page_size = page_size
     end
@@ -587,7 +587,7 @@ module RavenDB
       end
 
       @params = {"id" => @id}
-      @end_point = StringUtil.format('{url}/databases/{database}/docs', serverNode);
+      @end_point = "/databases/#{server_node.database}/docs"
 
       if @skip_patch_if_change_vector_mismatch
         add_params('skipPatchIfChangeVectorMismatch', 'true')
@@ -728,7 +728,7 @@ module RavenDB
 
   class QueryCommand < RavenCommand
     def initialize(index_query, conventions, metadata_only = false, index_entries_only = false)
-      super('', RequestMethods.Post, null, null, {})
+      super('', Net::HTTP::Post::METHOD, nil, nil, {})
 
       if !index_query.is_a?(IndexQuery)
         raise InvalidOperationException, 'Query must be an instance of IndexQuery class'
@@ -800,7 +800,7 @@ module RavenDB
   end
 
   class PatchCommandData < RavenCommandData
-    def initialize(id, scripted_patch, change_vector, patch_if_missing = nil, debug_mode = nil)
+    def initialize(id, scripted_patch, change_vector = nil, patch_if_missing = nil, debug_mode = nil)
       super(id, change_vector)
 
       @type = Net::HTTP::Patch::METHOD

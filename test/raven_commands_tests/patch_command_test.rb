@@ -23,16 +23,16 @@ class PatchCommandTest < TestBase
   end
 
   def test_should_patch_success_ignoring_missing
-    result = store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'")))
+    result = @_store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'")))
     
     assert(result.key?("Document"))
     assert(result["Document"].is_a?(Hash))    
   end
 
   def test_should_patch_success_not_ignoring_missing
-    result = store.operations.send(
+    result = @_store.operations.send(
       RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
-      "change_vector" => @_change_vector + 1, 
+      "change_vector" => "#{@_change_vector}_BROKEN_VECTOR", 
       "skip_patch_if_change_vector_mismatch" => true
     }))
     
@@ -41,9 +41,9 @@ class PatchCommandTest < TestBase
 
   def test_should_patch_fail_not_ignoring_missing
     assert_raises(RavenDB::RavenException) do
-      store.operations.send(
+      @_store.operations.send(
         RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
-        "change_vector" => @_change_vector + 1, 
+        "change_vector" => "#{@_change_vector}_BROKEN_VECTOR", 
         "skip_patch_if_change_vector_mismatch" => false
       }))
     end
