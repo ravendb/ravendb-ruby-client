@@ -197,7 +197,7 @@ module RavenDB
 
       @params = {
         "allowStale" => options.allow_stale,
-        "details" => options.retrieve_detailsб
+        "details" => options.retrieve_details,
         "maxOpsPerSec" => options["max_ops_per_sec"]
       }
 
