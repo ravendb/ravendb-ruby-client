@@ -40,12 +40,6 @@ module RavenDB
     High = "High"
   end
 
-  class SortOptions
-    None = "None"
-    Str = "String"
-    Numeric = "Numeric"
-  end  
-
   class OperationStatus
     Completed = "Completed"
     Faulted = "Faulted"

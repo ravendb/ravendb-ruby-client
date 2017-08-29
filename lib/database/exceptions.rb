@@ -104,9 +104,7 @@ module RavenDB
   end
   class VersioningDisabledException < RavenException 
   end
-  class TopologyNodeDownException < RavenException 
-  end
-  class AllTopologyNodesDownException < RavenException 
+  class AllTopologyNodesDownException < RavenException
   end
   class BadResponseException < RavenException 
   end

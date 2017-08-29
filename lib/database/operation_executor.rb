@@ -91,9 +91,9 @@ module RavenDB
         begin
           command = operation.is_a?(Operation) ? 
             operation.get_command(conventions, store) : 
-            operation.get_command(conventions);   
+            operation.get_command(conventions)
         rescue => exception
-          error_message = "Can't instantiate command required for run operation: #{exception.message}";
+          error_message = "Can't instantiate command required for run operation: #{exception.message}"
         end      
       end  
       
@@ -193,7 +193,7 @@ module RavenDB
 
     protected
     def request_executor_factory
-      store = @store;
+      store = @store
       conventions = store.conventions
 
       conventions.DisableTopologyUpdates ?

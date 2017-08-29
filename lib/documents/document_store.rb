@@ -25,24 +25,24 @@ module RavenDB
     end
 
     def configure
-      config = Configuration.new
-
-      yield(config)
-
-      if config.default_database
-        @_database = config.default_database
-      end
-
-      if config.urls
-        set_urls(config.urls)
-      end
-
       if !@_initialized
+        config = Configuration.new
+
+        yield(config)
+
+        if config.default_database
+          @_database = config.default_database
+        end
+
+        if config.urls
+          set_urls(config.urls)
+        end
+
         if !@_database
           raise InvalidOperationException, "Default database isn't set."
-        end    
-      end  
-      
+        end
+      end
+
       @_initialized = true
       self
     end  
@@ -106,7 +106,7 @@ module RavenDB
     end
 
     def create_request_executor(database = nil, for_single_node = nil)
-      db_name = database || @_database;
+      db_name = database || @_database
       
       (true == for_single_node) ? 
         RequestExecutor.create_for_single_node(singleNodeUrl, db_name) :
