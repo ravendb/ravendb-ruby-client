@@ -89,8 +89,8 @@ module RavenDB
   end
 
   class NodeStatus
-    MaxTimerPeriod = 60 * 5 * 1000;
-    TimerPeriodStep = 0.1 * 1000;
+    MaxTimerPeriod = 60 * 5 * 1000
+    TimerPeriodStep = 0.1 * 1000
 
     attr_reader :node_index, :node
 
@@ -103,10 +103,10 @@ module RavenDB
     end
 
     def next_timer_period
-      max_period = MaxTimerPeriod;
+      max_period = MaxTimerPeriod
 
       if @_timer_period < max_period
-        @_timer_period += TimerPeriodStep;
+        @_timer_period += TimerPeriodStep
       end
 
       [max_period, @_timer_period].min
@@ -197,7 +197,7 @@ module RavenDB
         end  
 
         if old_topology == topology
-          @topology = topology;
+          @topology = topology
         elsif 
           assign_topology(topology, force_update)  
         end  
@@ -216,7 +216,7 @@ module RavenDB
         end
 
         if should_update
-          assign_topology(topology, force_update);
+          assign_topology(topology, force_update)
         end
       end
 

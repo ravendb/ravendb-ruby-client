@@ -21,21 +21,21 @@ module RavenDB
     end
 
     def type
-      result = 'Map';
+      result = 'Map'
 
       if @_name && @_name.start_with?('Auto/')
         result = 'Auto' + result
       end
 
       if @reduce > 0
-        result += 'Reduce';
+        result += 'Reduce'
       end
 
-      return result
+      result
     end
 
     def is_map_reduce
-      return @reduce > 0
+      @reduce > 0
     end
 
     def map
@@ -44,7 +44,7 @@ module RavenDB
 
     def map=(value)
       if @maps.size
-        @maps.pop()
+        @maps.pop
       end
 
       @maps.push(value)
@@ -101,7 +101,7 @@ module RavenDB
     attr_reader :default_operator, :query, :wait_for_non_stale_results, :wait_for_non_stale_results_timeout
 
     def initialize(query = '', page_size = 128, skipped_results = 0, options = {})
-      @query = query;
+      @query = query
       @page_size = page_size || 128
       @start = skipped_results || 0
       @wait_for_non_stale_results = options["wait_for_non_stale_results"] || false
@@ -138,5 +138,16 @@ module RavenDB
 
       json
     end  
+  end
+
+  class QueryOperationOptions
+    attr_reader :allow_stale, :stale_timeout, :max_ops_per_sec, :retrieve_details
+
+    def initialize(allow_stale = true, stale_timeout = nil, max_ops_per_sec = nil, retrieve_details = false)
+      @allow_stale = allow_stale
+      @stale_timeout = stale_timeout
+      @max_ops_per_sec = max_ops_per_sec
+      @retrieve_details = retrieve_details
+    end
   end
 end

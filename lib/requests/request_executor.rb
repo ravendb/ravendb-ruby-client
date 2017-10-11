@@ -71,9 +71,9 @@ module RavenDB
       chosen_node = selector.current_node
       chosen_node_index = selector.current_node_index
 
-      begin
-        response = execute_command(command, chosen_node)
-      rescue TopologyNodeDownException
+      response, should_retry = execute_command(command, chosen_node)
+
+      if should_retry
         response = handle_server_down(command, chosen_node, chosen_node_index)
       end
 
@@ -90,12 +90,12 @@ module RavenDB
       first_topology_update = @_first_topology_update
 
       if @_without_topology
-        return;
+        return
       end
 
       @_await_first_topology_lock.synchronize do
         if first_topology_update.equal?(@_first_topology_update)
-          is_fulfilled = true == first_topology_update;
+          is_fulfilled = true == first_topology_update
 
           if false == first_topology_update
             start_first_topology_update(@_last_known_urls)
@@ -137,48 +137,48 @@ module RavenDB
         raise InvalidOperationException, 'Not a valid server node'
       end
 
+      response = nil
+      command_response = nil
+      request_exception = nil
       request = prepare_command(command, server_node)
       
       begin
         response = http_client(server_node).request(request)
-      rescue
-        raise TopologyNodeDownException, "Node #{server_node.url} is down"
-      end    
+      rescue Net::OpenTimeout => timeout_exception
+        request_exception = timeout_exception
+      end
 
-      is_server_error = [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
-        Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable].any? { 
-        |response_type| response.is_a?(response_type)
-      }
-
-      if response.is_a?(Net::HTTPNotFound)
-        response.body = nil
-      end  
-
-      if is_server_error
-        if command.was_failed?
-          message = 'Unsuccessfull request'
-          json = response.json
-
-          if json && json.Error
-              message += ": #{json.Error}";
+      if !response.nil?
+        if [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
+            Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable
+        ].any? { |response_type| response.is_a?(response_type) }
+          message = "HTTP #{response.code}: #{response.message}"
+          request_exception = UnsuccessfulRequestException.new(message)
+        else
+          if response.is_a?(Net::HTTPNotFound)
+            response.body = nil
           end
 
-          raise UnsuccessfulRequestException, message
-        end
+          if !@_without_topology && response.key?("Refresh-Topology")
+            update_topology(server_node)
+          end
 
-        raise TopologyNodeDownException, "Node #{server_node.url} is down"
+          command_response = command.set_response(response)
+        end
+      end
+
+      should_retry = !request_exception.nil?
+
+      if should_retry && command.was_failed?
+        raise request_exception
       end
       
-      if !@_without_topology && response.key?("Refresh-Topology")
-        update_topology(server_node)
-      end
-      
-      command.set_response(response)
+      return command_response, should_retry
     end
 
     def start_first_topology_update(urls = [])
       if is_first_topology_update_tries_expired?
-        return;
+        return
       end  
 
       @_last_known_urls = urls  
@@ -204,7 +204,11 @@ module RavenDB
       topology_command_class = get_update_topology_command_class
 
       @_update_topology_lock.synchronize do
-        response = execute_command(topology_command_class.new, server_node)
+        response, was_failed = execute_command(topology_command_class.new, server_node)
+
+        if was_failed || response.nil?
+          raise UnsuccessfulRequestException, "Unable to obtain topology from node #{server_node.url}"
+        end
         
         if @_node_selector
           event_data = {
@@ -214,7 +218,7 @@ module RavenDB
             "force_update" => false
           }
 
-          emit(RavenServerEvent::TOPOLOGY_UPDATED, event_data);
+          emit(RavenServerEvent::TOPOLOGY_UPDATED, event_data)
 
           if event_data["was_updated"]
             cancel_failing_nodes_timers
@@ -254,7 +258,7 @@ module RavenDB
           "but failed getting a response"
       end  
 
-      execute_command(command, next_node)
+      execute_command(command, next_node).first
     end  
 
     def check_node_status(node_status)

@@ -22,11 +22,7 @@ class ByQueryCommandsTest < TestBase
       "Name = doc.Name,"\
       "DocNumber = doc.DocNumber} "
 
-    index_sort = RavenDB::IndexDefinition.new('Testing_Sort', index_map, nil, {
-      "fields" => {
-        "DocNumber" => RavenDB::IndexFieldOptions.new(RavenDB::SortOptions::Numeric)
-      }
-    })
+    index_sort = RavenDB::IndexDefinition.new('Testing_Sort', index_map)
 
     @_patch = RavenDB::PatchRequest.new("Name = 'Patched';")
     @_store.operations.send(RavenDB::PutIndexesOperation.new(index_sort))

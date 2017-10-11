@@ -8,7 +8,7 @@ Gem::Specification.new do |spec|
   spec.email       = 'support@ravendb.net'
   
   spec.files         = `git ls-files -z`.split("\x0")
-  spec.test_files    = spec.filespec.grep(%r{^(test)/})
+  spec.test_files    = spec.files.grep(%r{^(test)/})
   spec.require_paths = ['lib']
 
   spec.homepage = 'http://ravendb.net'

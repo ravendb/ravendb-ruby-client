@@ -29,11 +29,11 @@ module MiniTest
 end
 
 class TestBase < Minitest::Test  
-  DEFAULT_URL = "http://localhost:8080"
-  DEFAULT_DATABASE = "NorthWindTest"    
+  DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
+  DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
 
-  def setup    
-    @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"    
+  def setup
+    @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"
     db_doc  = RavenDB::DatabaseDocument.new(@_current_database, {"Raven/DataDir" => "test"})    
     @_store = RavenDB::DocumentStore.new([DEFAULT_URL], @_current_database)
     @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))

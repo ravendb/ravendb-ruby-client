@@ -1,7 +1,7 @@
 module RavenDB
   class DocumentConventions
     MaxNumberOfRequestPerSession = 30
-    RequestTimeout = 30;
+    RequestTimeout = 30
     DefaultUseOptimisticConcurrency = true
     MaxLengthOfQueryUsingGetUrl = 1024 + 512
     IdentityPartsSeparator = "/"
