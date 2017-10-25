@@ -5,6 +5,7 @@ require "net/http"
 require "utilities/json"
 require "database/exceptions"
 require "documents/document_query"
+require "documents/indexes"
 require "requests/request_helpers"
 
 module RavenDB
@@ -75,7 +76,7 @@ module RavenDB
 
       if @_last_response
         ExceptionsRaiser.try_raise_from(response)
-        return response.json
+        response.json
       end   
     end  
 
@@ -156,7 +157,7 @@ module RavenDB
     end
 
     def to_json
-      return {
+      {
         "Type" => @type,
         "Id" => @id,
         "ChangeVector" => @change_vector

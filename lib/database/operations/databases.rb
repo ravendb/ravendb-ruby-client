@@ -14,9 +14,14 @@ module RavenDB
   class DeleteDatabaseOperation < ServerOperation
     def initialize(database_id, hard_delete = false, from_node = nil)
       super()
-      @from_node = from_node
+
+      @from_node = from_node || nil
       @database_id = database_id || nil
-      @hard_delete = hard_delete
+      @hard_delete = hard_delete || false
+
+      if from_node.is_a?(ServerNode)
+        @from_node = from_node.cluster_tag
+      end
     end
 
     def get_command(conventions)

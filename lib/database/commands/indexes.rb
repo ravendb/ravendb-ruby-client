@@ -60,7 +60,7 @@ module RavenDB
       results = super(response)
 
       if results.is_a?(Array)
-        return results.first
+        results.first
       end
     end
   end

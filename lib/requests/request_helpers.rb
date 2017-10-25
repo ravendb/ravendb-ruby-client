@@ -28,29 +28,7 @@ module RavenDB
     end
   end
 
-  class DatabaseDocument
-    attr_reader :database_id, :settings
-
-    def initialize(database_id, settings = {}, secured_settings = {}, disabled = false, encrypted = false) 
-      @database_id = database_id || nil
-      @settings = settings
-      @secured_settings = secured_settings
-      @disabled = disabled
-      @encrypted = encrypted
-    end
-
-    def to_json
-      return {
-        "DatabaseName" => @database_id,
-        "Disabled" => @disabled,
-        "Encrypted" => @encrypted,
-        "SecuredSettings" => @secured_settings,
-        "Settings" => @settings
-      }
-    end
-  end
-
-  class Topology    
+  class Topology
     attr_reader :etag, :nodes
 
     def initialize(etag = 0, nodes = [])
@@ -146,7 +124,7 @@ module RavenDB
     end
 
     def to_json
-      return {
+      {
         "Script" => @script,
         "Values" => @values
       }
@@ -206,10 +184,10 @@ module RavenDB
 
     def on_topology_updated(topology_data)
       should_update = false
-      force_update = (true == topology_data["force_update"])
+      force_update = (true == topology_data[:force_update])
 
-      if topology_data["topology_json"]
-        topology = Topology.from_json(topology_data["topology_json"])
+      if topology_data[:topology_json]
+        topology = Topology.from_json(topology_data[:topology_json])
 
         if !topology.nodes.empty?
           should_update = force_update || (@topology.etag < topology.etag)
@@ -220,7 +198,7 @@ module RavenDB
         end
       end
 
-      topology_data["was_updated"] = should_update
+      topology_data[:was_updated] = should_update
     end
 
     def on_request_failed(failed_node)

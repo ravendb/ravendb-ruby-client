@@ -34,8 +34,8 @@ module RavenDB
       end
 
       @payload = {
-          "Patch" => @patch.to_json,
-          "Query" => @query.to_json,
+        "Patch" => @patch.to_json,
+        "Query" => @query.to_json,
       }
     end
 

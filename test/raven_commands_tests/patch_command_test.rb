@@ -5,6 +5,7 @@ require 'requests/request_executor'
 require 'requests/request_helpers'
 require 'documents/conventions'
 require 'documents/document_query'
+require "documents/indexes"
 require 'database/operations'
 require 'database/commands'
 require 'database/exceptions'
@@ -32,8 +33,8 @@ class PatchCommandTest < TestBase
   def test_should_patch_success_not_ignoring_missing
     result = @_store.operations.send(
       RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
-      "change_vector" => "#{@_change_vector}_BROKEN_VECTOR", 
-      "skip_patch_if_change_vector_mismatch" => true
+        :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
+        :skip_patch_if_change_vector_mismatch => true
     }))
     
     refute(result.key?("Document"))
@@ -43,8 +44,8 @@ class PatchCommandTest < TestBase
     assert_raises(RavenDB::RavenException) do
       @_store.operations.send(
         RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
-        "change_vector" => "#{@_change_vector}_BROKEN_VECTOR", 
-        "skip_patch_if_change_vector_mismatch" => false
+          :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
+          :skip_patch_if_change_vector_mismatch => false
       }))
     end
   end

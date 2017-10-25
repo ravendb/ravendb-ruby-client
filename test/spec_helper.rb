@@ -4,7 +4,9 @@ require 'minitest/autorun'
 require 'requests/request_executor'
 require 'requests/request_helpers'
 require 'documents/document_query'
+require "documents/indexes"
 require 'database/operations'
+require 'database/commands'
 
 module MiniTest
   module Assertions

@@ -103,10 +103,10 @@ module RavenDB
 
       @id = id || nil
       @patch = patch || nil
-      @change_vector = opts["change_vector"] || nil
-      @patch_if_missing = opts["patch_if_missing"] || nil
-      @skip_patch_if_change_vector_mismatch = opts["skip_patch_if_change_vector_mismatch"] || false
-      @return_debug_information = opts["return_debug_information"] || false
+      @change_vector = opts[:change_vector] || nil
+      @patch_if_missing = opts[:patch_if_missing] || nil
+      @skip_patch_if_change_vector_mismatch = opts[:skip_patch_if_change_vector_mismatch] || false
+      @return_debug_information = opts[:return_debug_information] || false
     end
 
     def create_request(server_node)
@@ -140,8 +140,8 @@ module RavenDB
       end
 
       @payload = {
-          "Patch" => @patch.to_json,
-          "PatchIfMissing" => @patch_if_missing ? @patch_if_missing.to_json : nil
+        "Patch" => @patch.to_json,
+        "PatchIfMissing" => @patch_if_missing ? @patch_if_missing.to_json : nil
       }
     end
 
@@ -153,7 +153,7 @@ module RavenDB
       end
 
       if response.body
-        return result
+        result
       end
     end
   end
@@ -177,7 +177,7 @@ module RavenDB
 
     def set_response(response)
       super(response)
-      return response.body
+      response.body
     end
 
     protected
