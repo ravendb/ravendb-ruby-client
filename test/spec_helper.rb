@@ -36,7 +36,7 @@ class TestBase < Minitest::Test
 
   def setup
     @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"
-    db_doc  = RavenDB::DatabaseDocument.new(@_current_database, {"Raven/DataDir" => "test"})    
+    db_doc  = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
     @_store = RavenDB::DocumentStore.new([DEFAULT_URL], @_current_database)
     @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
   

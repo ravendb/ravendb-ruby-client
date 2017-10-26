@@ -12,13 +12,13 @@ module RavenDB
 
     def initialize(query = '', query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
       @query = query
-      @query_parameters = @query_parameters || {}
+      @query_parameters = query_parameters || {}
       @page_size = page_size || DefaultPageSize
       @start = skipped_results || 0
-      @cut_off_etag = options[:cut_off_etag] || null
+      @cut_off_etag = options[:cut_off_etag] || nil
       @wait_for_non_stale_results = options[:wait_for_non_stale_results] || false
       @wait_for_non_stale_results_as_of_now = options[:wait_for_non_stale_results_as_of_now] || false
-      @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || null
+      @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
 
       if !@page_size.is_a?(Numeric)
         @page_size = DefaultPageSize

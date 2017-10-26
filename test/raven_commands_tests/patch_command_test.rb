@@ -30,7 +30,7 @@ class PatchCommandTest < TestBase
 
     assert(result.key?(:Status))
     assert(result.key?(:Document))
-    assert_equal(result[:Status], PatchStatus::Patched)
+    assert_equal(result[:Status], RavenDB::PatchStatus::Patched)
     assert(result[:Document].is_a?(Hash))
     assert_equal('testing', documents["Results"].first["Name"])
   end
@@ -44,7 +44,7 @@ class PatchCommandTest < TestBase
 
     assert(result.key?(:Status))
     refute(result.key?(:Document))
-    assert_equal(result[:Status], PatchStatus::Skipped)
+    assert_equal(result[:Status], RavenDB::PatchStatus::NotModified)
   end
 
   def test_should_patch_fail_not_ignoring_missing

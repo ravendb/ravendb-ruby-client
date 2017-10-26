@@ -11,7 +11,7 @@ require 'database/commands'
 require 'database/exceptions'
 require 'spec_helper'
 
-class ByQueryCommandsTest < TestBase
+class QueryOperationsTest < TestBase
   def setup
     super()
 
@@ -31,7 +31,7 @@ class ByQueryCommandsTest < TestBase
       }))
     end
 
-    @_request_executor.execute(QueryCommand.new(@_store.conventions, IndexQuery.new("from index 'Testing_Sort'", {}, null, 0, {:wait_for_non_stale_results => true})))
+    @_request_executor.execute(RavenDB::QueryCommand.new(@_store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, {:wait_for_non_stale_results => true})))
   end
 
   def test_update_by_index_success
@@ -47,7 +47,7 @@ class ByQueryCommandsTest < TestBase
     query = "from index 'Testing_Sort' where Name = $name"
     index_query = RavenDB::IndexQuery.new(query, {:name => 'Patched'}, nil, nil, {:wait_for_non_stale_results => true})
 
-    response = @_request_executor.send(RavenDB::QueryCommand.new(@_store.conventions, index_query))
+    response = @_request_executor.execute(RavenDB::QueryCommand.new(@_store.conventions, index_query))
     assert(response.key?("Results"))
     assert(response["Results"].is_a?(Array))
     refute(response["Results"].length < 100)
@@ -71,7 +71,7 @@ class ByQueryCommandsTest < TestBase
     response = @_store.operations.send(delete_by_index_operation)
     assert_equal('Completed', response["Status"])
 
-    query_command = RavenDB::QueryCommand.new(index_query, @_store.conventions)
+    query_command = RavenDB::QueryCommand.new(@_store.conventions, index_query)
     response = @_request_executor.execute(query_command)
     assert(response.key?("Results"))
     assert(response["Results"].is_a?(Array))

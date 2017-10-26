@@ -13,7 +13,7 @@ module RavenDB
         exception_message = message
 
         begin
-          exception_ctor = Object.const_get("RavenDB::#{typeOrMessage}")
+          exception_ctor = Object.const_get("RavenDB::#{type_or_message}")
         rescue
           exception_ctor = RavenException
         end
@@ -28,15 +28,16 @@ module RavenDB
         json = response.json
 
         if json && (response.code.to_i >= 400)
-          return self.create(json)
+          return create_from(json)
         end
       else
         json = json_or_response
 
         if json && json.key?("Type") && json.key?("Error")
           type = json["Type"]
+
           if type && json["Error"]
-            return self.create(type.split(".").last, json["Error"])
+            return create(type.split(".").last, json["Error"])
           end
         end
       end
@@ -44,7 +45,7 @@ module RavenDB
       return nil
     end
 
-    def self.raise(type_or_message, message = "")
+    def self.raise_exception(type_or_message, message = "")
       exception = create(type_or_message, message)
 
       if !exception.nil?
