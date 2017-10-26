@@ -5,6 +5,7 @@ require 'requests/request_executor'
 require 'requests/request_helpers'
 require 'documents/conventions'
 require 'documents/document_query'
+require "documents/indexes"
 require 'database/operations'
 require 'database/commands'
 require 'database/exceptions'
@@ -21,10 +22,7 @@ class IndexCommandsTest < TestBase
 
   def test_should_get_index_with_success
     @_index = RavenDB::IndexDefinition.new('get_index', @_index_map)
-    
-    refute_raises(RavenDB::RavenException) do
-      @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    end  
+    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
 
     result = @_store.operations.send(RavenDB::GetIndexOperation.new('get_index'))
     refute_nil(result)    
@@ -38,10 +36,15 @@ class IndexCommandsTest < TestBase
 
   def test_should_delete_index_with_success
     @_index = RavenDB::IndexDefinition.new('delete', @_index_map)
-
     @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    result = @_store.operations.send(RavenDB::DeleteIndexOperation.new('delete'))
-    assert_nil(result)
+
+    refute_raises(RavenDB::RavenException) do
+      @_store.operations.send(RavenDB::DeleteIndexOperation.new('delete'))
+    end
+
+    assert_raises(RavenDB::RavenException) do
+      @_store.operations.send(RavenDB::GetIndexOperation.new('delete'))
+    end
   end
 
   def test_should_delete_index_with_fail

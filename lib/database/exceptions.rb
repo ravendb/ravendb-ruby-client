@@ -4,8 +4,8 @@ module RavenDB
   class RavenException < StandardError
   end
 
-  class ExceptionsRaiser
-    def self.raise_exception(type_or_message, message = "")
+  class ExceptionsFactory
+    def self.create(type_or_message, message = "")
       exception_ctor = RavenException
       exception_message = type_or_message
 
@@ -13,32 +13,52 @@ module RavenDB
         exception_message = message
 
         begin
-          exception_ctor = Object.const_get("RavenDB::#{typeOrMessage}")
+          exception_ctor = Object.const_get("RavenDB::#{type_or_message}")
         rescue
           exception_ctor = RavenException
-        end  
-      end  
+        end
+      end
 
-      raise exception_ctor, message
-    end   
+      exception_ctor.new(message)
+    end
 
-    def self.try_raise_from(json_or_response)
-      if json_or_response.is_a? Net::HTTPResponse        
+    def self.create_from(json_or_response)
+      if json_or_response.is_a? Net::HTTPResponse
         response = json_or_response
         json = response.json
-        
-        if json && (response.code.to_i >= 400)          
-          try_raise_from(json)
-        end  
+
+        if json && (response.code.to_i >= 400)
+          return create_from(json)
+        end
       else
         json = json_or_response
 
         if json && json.key?("Type") && json.key?("Error")
-          if json["Type"] && json["Error"]
-            self.raise_exception(json["Type"], json["Error"]) 
-          end  
-        end  
-      end        
+          type = json["Type"]
+
+          if type && json["Error"]
+            return create(type.split(".").last, json["Error"])
+          end
+        end
+      end
+
+      return nil
+    end
+
+    def self.raise_exception(type_or_message, message = "")
+      exception = create(type_or_message, message)
+
+      if !exception.nil?
+        raise exception
+      end
+    end   
+
+    def self.raise_from(json_or_response)
+      exception = create_from(json_or_response)
+
+      if !exception.nil?
+        raise exception
+      end
     end
   end  
 

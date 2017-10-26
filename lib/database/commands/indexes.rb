@@ -60,7 +60,7 @@ module RavenDB
       results = super(response)
 
       if results.is_a?(Array)
-        return results.first
+        results.first
       end
     end
   end
@@ -95,7 +95,7 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "/databases/#{server_node.database}/indexes"
+      @end_point = "/databases/#{server_node.database}/admin/indexes"
       @payload = {"Indexes" => @indexes.map { |index| index.to_json }}
     end
 

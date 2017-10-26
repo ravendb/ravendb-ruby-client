@@ -1,120 +1,41 @@
 require 'digest'
-require 'constants/documents'
-require 'constants/database'
 
 module RavenDB
-  class IndexDefinition
-    def initialize(name, index_map, configuration = nil, init_options = {})
-      @_name = name
-      @configuration = configuration || {}
-      @reduce = init_options["reduce"] || 0
-      @index_id = init_options["index_id"] || nil
-      @lock_mode = init_options["lock_mode"] || nil
-      @priority = init_options["priority"] || nil
-      @is_test_index = init_options["is_test_index"] || false
-      @fields = init_options["fields"] || {}
-      @maps = index_map.is_a?(Array) ? index_map : [index_map]
-    end
-
-    def name
-      @_name
-    end
-
-    def type
-      result = 'Map'
-
-      if @_name && @_name.start_with?('Auto/')
-        result = 'Auto' + result
-      end
-
-      if @reduce > 0
-        result += 'Reduce'
-      end
-
-      result
-    end
-
-    def is_map_reduce
-      @reduce > 0
-    end
-
-    def map
-      @maps.length ? @maps.first : nil
-    end
-
-    def map=(value)
-      if @maps.size
-        @maps.pop
-      end
-
-      @maps.push(value)
-    end
-
-    def to_json
-      fields_json = {}
-      
-      @fields.each do |field, definition| 
-        fields_json[field] = definition.to_json
-      end  
-
-      return {
-        "Name" => @_name,
-        "Maps" => @maps,
-        "Type" => type,
-        "LockMode" => @lock_mode || IndexLockMode::Unlock,
-        "Priority" => @priority || IndexPriority::Normal,
-        "Configuration" => @configuration,
-        "Fields" => fields_json,
-        "IndexId" => @index_id,
-        "IsTestIndex" => @is_test_index,
-        "Reduce" => @reduce,
-        "OutputReduceToCollection" => nil        
-      }
-    end
-  end
-
-  class IndexFieldOptions
-    def initialize(sort_options = nil, indexing = nil, storage = nil, suggestions = nil, term_vector = nil, analyzer = nil) 
-      @sort_options = sort_options
-      @indexing = indexing
-      @storage = storage
-      @suggestions = suggestions
-      @term_vector = term_vector
-      @analyzer = analyzer
-    end
-
-    def to_json
-      return {
-        "Analyzer" => @analyzer,
-        "Indexing" => @indexing || nil,
-        "Sort" => @sort_options || nil,
-        "Spatial" => nil,
-        "Storage" => @storage.nil? ? nil : (@storage ? "Yes" : "No"),
-        "Suggestions" => @suggestions,
-        "TermVector" => @term_vector || nil
-      }
-    end
-  end
 
   class IndexQuery
+    DefaultTimeout = 15 * 1000
+    DefaultPageSize = 2 ** 31 - 1
+
     attr_accessor :start, :page_size
-    attr_reader :default_operator, :query, :wait_for_non_stale_results, :wait_for_non_stale_results_timeout
+    attr_reader :query, :query_parameters, :wait_for_non_stale_results,
+                :wait_for_non_stale_results_as_of_now, :wait_for_non_stale_results_timeout
 
-    def initialize(query = '', page_size = 128, skipped_results = 0, options = {})
+    def initialize(query = '', query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
       @query = query
-      @page_size = page_size || 128
+      @query_parameters = query_parameters || {}
+      @page_size = page_size || DefaultPageSize
       @start = skipped_results || 0
-      @wait_for_non_stale_results = options["wait_for_non_stale_results"] || false
-      @wait_for_non_stale_results_timeout = options["wait_for_non_stale_results_timeout"] || nil
+      @cut_off_etag = options[:cut_off_etag] || nil
+      @wait_for_non_stale_results = options[:wait_for_non_stale_results] || false
+      @wait_for_non_stale_results_as_of_now = options[:wait_for_non_stale_results_as_of_now] || false
+      @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
 
-      if @wait_for_non_stale_results && !@wait_for_non_stale_results_timeout
-        @wait_for_non_stale_results_timeout = 15 * 60
+      if !@page_size.is_a?(Numeric)
+        @page_size = DefaultPageSize
+      end
+
+      if (@wait_for_non_stale_results ||
+          @wait_for_non_stale_results_as_of_now) &&
+         !@wait_for_non_stale_results_timeout
+
+        @wait_for_non_stale_results_timeout = DefaultTimeout
       end
     end
 
     def query_hash
       buffer = "#{@query}#{@page_size}#{@start}"
       buffer = buffer + (@wait_for_non_stale_results ? "1" : "0")
+      buffer = buffer + (@wait_for_non_stale_results_as_of_now ? "1" : "0")
 
       if @wait_for_non_stale_results
         buffer = buffer + "#{@wait_for_non_stale_results_timeout}"
@@ -125,15 +46,35 @@ module RavenDB
 
     def to_json
       json = {
-        "PageSize" => @page_size,
         "Query" => @query,
-        "Start" => @start,
-        "WaitForNonStaleResultsAsOfNow" => @wait_for_non_stale_results,
-        "WaitForNonStaleResultsTimeout" => nil
+        "QueryParameters" => @query_parameters,
       }
 
-      if @wait_for_non_stale_results
-        json["WaitForNonStaleResultsTimeout"] = "#{@wait_for_non_stale_results_timeout}"
+      if !@start.nil?
+          json["Start"] = @start
+      end
+
+      if !@page_size.nil?
+        json["PageSize"] = @page_size
+      end
+
+      if !@cut_off_etag.nil?
+        json["CutoffEtag"] = @cut_off_etag
+      end
+
+      if !@wait_for_non_stale_results.nil?
+        json["WaitForNonStaleResults"] = true
+      end
+
+      if !@wait_for_non_stale_results_as_of_now.nil?
+        json["WaitForNonStaleResultsAsOfNow"] = true
+      end
+
+      if (@wait_for_non_stale_results ||
+          @wait_for_non_stale_results_as_of_now) &&
+         !@wait_for_non_stale_results_timeout.nil?
+         json["WaitForNonStaleResultsTimeout"] = @wait_for_non_stale_results_timeout.to_s
+
       end
 
       json

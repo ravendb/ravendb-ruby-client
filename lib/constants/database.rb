@@ -14,8 +14,8 @@ module RavenDB
 
   class FieldIndexingOption
     No = "No"
-    Analyzed = "Analyzed"
-    NotAnalyzed = "NotAnalyzed"
+    Search = "Search"
+    Exact = "Exact"
     Default = "Default"
   end
 

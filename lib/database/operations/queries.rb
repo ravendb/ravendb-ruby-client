@@ -6,13 +6,12 @@ module RavenDB
   end
 
   class PatchByQueryOperation < QueryBasedOperation
-    def initialize(query_to_update, patch = nil, options = nil)
+    def initialize(query_to_update, options = nil)
       super(query_to_update, options)
-      @patch = patch
     end
 
     def get_command(conventions, store = nil)
-      PatchByQueryCommand.new(@query, @patch, @options)
+      PatchByQueryCommand.new(@query, @options)
     end
   end
 end

@@ -18,7 +18,7 @@ module RavenDB
     attr_reader :initial_database    
 
     def initialize(database, options = {})
-      urls = options["first_topology_update_urls"] || []
+      urls = options[:first_topology_update_urls] || []
 
       @headers = {
         "Accept" => "application/json",
@@ -32,23 +32,23 @@ module RavenDB
       @_failed_nodes_statuses = {}
       @_first_topology_update = nil
       @_node_selector = nil
-      @_without_topology = options["without_topology"] || false
-      @_topology_etag = options["topology_etag"] || 0    
+      @_without_topology = options[:without_topology] || false
+      @_topology_etag = options[:topology_etag] || 0
       @_await_first_topology_lock = Mutex.new
       @_update_topology_lock = Mutex.new
       @_update_failed_node_timer_lock = Mutex.new
 
       if !@_without_topology && !urls.empty?
         start_first_topology_update(urls)
-      elsif (@_without_topology && options["single_node_topology"])
-        @_node_selector = NodeSelector.new(self, options["single_node_topology"])
+      elsif (@_without_topology && options[:single_node_topology])
+        @_node_selector = NodeSelector.new(self, options[:single_node_topology])
       end
     end
 
     def self.create(urls, database = nil)
       return self.new(database, {
-        "without_topology" => false,
-        "first_topology_update_urls" => urls.clone
+        :without_topology => false,
+        :first_topology_update_urls => urls.clone
       })
     end
 
@@ -56,9 +56,9 @@ module RavenDB
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       return self.new(database, {
-        "without_topology" => true,
-        "single_node_topology" => topology,
-        "topology_etag" => -2
+        :without_topology => true,
+        :single_node_topology => topology,
+        :topology_etag => -2
       })
     end
 
@@ -212,15 +212,15 @@ module RavenDB
         
         if @_node_selector
           event_data = {
-            "topology_json" => response,
-            "server_node_url" => server_node.url,
-            "requested_database" => server_node.database,
-            "force_update" => false
+            :topology_json => response,
+            :server_node_url => server_node.url,
+            :requested_database => server_node.database,
+            :force_update => false
           }
 
           emit(RavenServerEvent::TOPOLOGY_UPDATED, event_data)
 
-          if event_data["was_updated"]
+          if event_data[:was_updated]
             cancel_failing_nodes_timers
           end
         else

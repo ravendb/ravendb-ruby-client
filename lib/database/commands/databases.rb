@@ -1,4 +1,26 @@
 module RavenDB
+  class DatabaseDocument
+    attr_reader :database_id, :settings
+
+    def initialize(database_id, settings = {}, secured_settings = {}, disabled = false, encrypted = false)
+      @database_id = database_id || nil
+      @settings = settings
+      @secured_settings = secured_settings
+      @disabled = disabled
+      @encrypted = encrypted
+    end
+
+    def to_json
+      {
+        "DatabaseName" => @database_id,
+        "Disabled" => @disabled,
+        "Encrypted" => @encrypted,
+        "SecuredSettings" => @secured_settings,
+        "Settings" => @settings
+      }
+    end
+  end
+
   class CreateDatabaseCommand < RavenCommand
     def initialize(database_document, replication_factor = 1)
       super("", Net::HTTP::Put::METHOD)
@@ -18,7 +40,7 @@ module RavenDB
         raise InvalidOperationException, "Database name can only contain only A-Z, a-z, \"_\", \".\" or \"-\""
       end
 
-      if !@database_document.settings.key?("Raven/DataDir")
+      if !@database_document.settings.key?(:'Raven/DataDir')
         raise InvalidOperationException, "The Raven/DataDir setting is mandatory"
       end
 
@@ -39,24 +61,31 @@ module RavenDB
   end
 
   class DeleteDatabaseCommand < RavenCommand
-    def initialize(database_id, hard_delete = false, from_node = nil)
+    def initialize(database_id, hard_delete = false, from_node = nil, time_to_wait_for_confirmation = nil)
       super("", Net::HTTP::Delete::METHOD)
-      @from_node = from_node
+
       @database_id = database_id
-      @hard_delete = hard_delete
+      @from_node = from_node || nil
+      @hard_delete = hard_delete || false
+      @time_to_wait_for_confirmation = time_to_wait_for_confirmation || nil
+
+      if @from_node.is_a?(ServerNode)
+        @from_node = from_node.cluster_tag
+      end
     end
 
     def create_request(server_node)
       db_name = @database_id.gsub("Raven/Databases/", "")
-      @params = {"name" => db_name}
       @end_point = "/admin/databases"
 
-      if @hard_delete
-        add_params("hard-delete", "true")
-      end
+      @payload = {
+        "DatabaseNames" => [db_name],
+        "HardDelete" => @hard_delete,
+        "TimeToWaitForConfirmation" => @time_to_wait_for_confirmation
+      }
 
       if @from_node
-        add_params("from-node",  @from_node.cluster_tag)
+        @payload["FromNodes"] = [@from_node]
       end
     end
   end
@@ -81,7 +110,7 @@ module RavenDB
       result = super(response)
 
       if response.body && response.is_a?(Net::HTTPOK)
-        return result
+        result
       end
     end
   end
@@ -136,7 +165,7 @@ module RavenDB
       result = super(response)
 
       if response.is_a?(Net::HTTPOK) && response.body
-        return result
+        result
       end
     end
   end
