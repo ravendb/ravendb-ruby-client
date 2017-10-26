@@ -75,7 +75,7 @@ module RavenDB
       @_last_response = response
 
       if @_last_response
-        ExceptionsRaiser.try_raise_from(response)
+        ExceptionsFactory.raise_from(response)
         response.json
       end   
     end  
@@ -139,7 +139,7 @@ module RavenDB
 
       @end_point = "/databases/#{server_node.database}/queries"
       
-      if options.stale_timeout
+      if options.allow_stale && options.stale_timeout
         add_params("staleTimeout", options.stale_timeout)
       end  
     end

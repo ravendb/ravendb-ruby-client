@@ -12,7 +12,7 @@ module RavenDB
 
     def initialize(query = '', query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
       @query = query
-      @query_parameters = query_parameters
+      @query_parameters = @query_parameters || {}
       @page_size = page_size || DefaultPageSize
       @start = skipped_results || 0
       @cut_off_etag = options[:cut_off_etag] || null

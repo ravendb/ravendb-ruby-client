@@ -42,10 +42,16 @@ module RavenDB
             :status => response["Status"],
             :response => response
           }
-        when OperationStatus::Faulted
+          when OperationStatus::Faulted
+          exception = ExceptionsFactory.create_from(response["Result"])
+
+          if exception.nil?
+            exception = InvalidOperationException.new(response["Result"]["Error"])
+          end
+
           return {
             :status => response["Status"],
-            :exception => InvalidOperationException.new(response["Result"]["Error"])
+            :exception => exception
           }  
         else
           return {
@@ -62,11 +68,11 @@ module RavenDB
     end  
 
     def on_next(result)
-      case result["status"]
+      case result[:status]
       when OperationStatus::Completed
-        return result["response"]
+        return result[:response]
       when OperationStatus::Faulted
-        raise result["exception"]        
+        raise result[:exception]
       else
         sleep 0.5
         return on_next(fetch_operation_status)
