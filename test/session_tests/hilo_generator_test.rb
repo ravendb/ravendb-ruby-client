@@ -7,13 +7,13 @@ class HiloGeneratorTest < TestBase
 
   def setup
     super
-    @generator = HiloIdGenerator.new(@_store, @_current_database, COLLECTION)
+    @generator = RavenDB::HiloIdGenerator.new(@_store, @_current_database, COLLECTION)
   end
 
   def test_should_starts_from_1
     id = @generator.generate_document_id
 
-    assert_equal(id, "Products/1-A")
+    assert_equal("Products/1-A", id)
   end
 
   def test_should_increment_by_1
@@ -57,6 +57,6 @@ class HiloGeneratorTest < TestBase
 
   protected
   def range(document_id)
-    document_id.gsub("#{COLLECTION}/", "").gsub("-A", "")
+    document_id.gsub("#{COLLECTION}/", "").gsub("-A", "").to_i
   end
 end

@@ -15,7 +15,7 @@ module RavenDB
     end
 
     def increment
-      ++@current
+      @current = @current + 1
     end
 
     def needs_new_range?
@@ -98,7 +98,7 @@ module RavenDB
 
     def assemble_document_id(current_range_value)
       prefix = @prefix || ''
-      document_id = "#{prefix}/#{current_range_value}"
+      document_id = "#{prefix}#{current_range_value}"
 
       if !@server_tag.nil? && !(@server_tag == '')
         document_id = "#{document_id}-#{@server_tag}"
