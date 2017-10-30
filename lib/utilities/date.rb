@@ -10,7 +10,8 @@ module RavenDB
       invalid_date_message = 'Invalid parameter passed to RavenDB'\
         '::DateUtil::stringify. It should be instance of DateTime'
 
-      raise InvalidOperationException, invalid_date_message unless datetime.is_a?(DateTime)
+      raise InvalidOperationException, invalid_date_message unless
+          (datetime.is_a?(DateTime) || datetime.is_a?(Date))
 
       datetime.strftime(STRINGIFY_FORMAT)
     end

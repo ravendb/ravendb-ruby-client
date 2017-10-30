@@ -1,4 +1,12 @@
 module RavenDB
+  class RavenDocument
+    attr_accessor :metadata
+
+    def initialize
+      @metadata = {}
+    end
+  end
+
   class DocumentConventions
     MaxNumberOfRequestPerSession = 30
     RequestTimeout = 30
