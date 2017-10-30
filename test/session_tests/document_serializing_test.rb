@@ -1,6 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 require 'utilities/json'
+require 'utilities/type_utilities'
 
 class DocumentSerializingTest < TestBase
   def setup
@@ -75,6 +76,7 @@ class DocumentSerializingTest < TestBase
     assert_equal(@document.number_prop, 2)
     assert(@document.number_float_prop.is_a?(Numeric))
     assert_equal(@document.number_float_prop, 2.5)
+    assert(!!@document.boolean_prop == @document.boolean_prop)
     assert_equal(@document.boolean_prop, true)
     assert(@document.nil_prop.nil?)
   end
@@ -112,6 +114,7 @@ class DocumentSerializingTest < TestBase
     assert_equal(@document.hash_prop["number_prop"], 2)
     assert(@document.hash_prop["number_float_prop"].is_a?(Numeric))
     assert_equal(@document.hash_prop["number_float_prop"], 2.5)
+    assert(!!@document.hash_prop["boolean_prop"] == @document.hash_prop["boolean_prop"])
     assert_equal(@document.hash_prop["boolean_prop"], true)
     assert(@document.hash_prop["nil_prop"].nil?)
 
@@ -154,5 +157,33 @@ class DocumentSerializingTest < TestBase
     assert(deep_hash_in_array.is_a?(Hash))
     assert(deep_hash_in_array.key?('some_prop'))
     assert_equal(deep_hash_in_array['some_prop'], 'someValue')
+  end
+
+  def test_should_parse_dates
+    assert(@document.date_prop.is_a?(DateTime))
+    assert(RavenDB::TypeUtilities::stringify_date(@document.date_prop), @json['date_prop'])
+  end
+
+  def test_should_parse_deep_objects_and_arrays_according_to_specified_nested_objects_types
+    assert(@document.deep_array_foo_prop.is_a?(Array))
+
+    target = [@document.deep_foo_prop].concat(@document.deep_array_foo_prop)
+    source = [@json["deep_foo_prop"]].concat(@json["deep_array_foo_prop"])
+
+    target.each_index do |index|
+      item = target[index]
+      source_item = source[index]
+
+      assert(item.is_a?(Foo))
+      assert_equal(item.id, source_item["id"])
+      assert_equal(item.name, source_item["name"])
+      assert_equal(item.order, source_item["order"])
+    end
+  end
+
+  def test_should_serialize_back_to_source_json
+    serialized = RavenDB::JsonSerializer::to_json(@document)
+
+    assert_equal(serialized, @json)
   end
 end

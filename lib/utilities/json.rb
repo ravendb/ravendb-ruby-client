@@ -73,10 +73,10 @@ module RavenDB
         raise InvalidOperationException, 'Invalid source passed. Should be a user-defined class instance'
       end
 
-      source.instance_variables do |variable|
+      source.instance_variables.each do |variable|
         variable_name = variable.to_s
         json_property = variable_name
-        variable_value = instance_variable_get(variable)
+        variable_value = source.instance_variable_get(variable)
 
         if '@metadata' != variable_name
           json_property = json_property.gsub('@', '')
@@ -98,18 +98,27 @@ module RavenDB
         end
 
         if json_value.is_a?(Hash)
-          nested_object_metadata = {}
+          document = json_to_document(json_value, nested_object_type)
 
-          if json_value.key?('@metadata') && json_value['@metadata'].is_a?(Hash)
-            nested_object_metadata = json_value['@metadata']
+          if !document.nil?
+            return document
           end
+        end
 
-          if nested_object_type.is_a?(Class) || nested_object_type.is_a?(String)
-            if nested_object_type.is_a?(String)
-              nested_object_type = Object.const_get(nested_object_type)
+        if json_value.is_a?(Array)
+          documents = []
+
+          if json_value.all? {|json_value_item|
+            document = json_to_document(json_value_item, nested_object_type)
+            was_converted = !document.nil?
+
+            if !document.nil?
+              documents.push(document)
             end
 
-            return from_json(nested_object_type.new, json_value, nested_object_metadata)
+            was_converted
+          }
+            return documents
           end
         end
       end
@@ -137,37 +146,53 @@ module RavenDB
       json_value
     end
 
+    def self.json_to_document(json_value, nested_object_type)
+      nested_object_metadata = {}
+
+      if json_value.key?('@metadata') && json_value['@metadata'].is_a?(Hash)
+        nested_object_metadata = json_value['@metadata']
+      end
+
+      if nested_object_type.is_a?(Class) || nested_object_type.is_a?(String)
+        if nested_object_type.is_a?(String)
+          nested_object_type = Object.const_get(nested_object_type)
+        end
+
+        return from_json(nested_object_type.new, json_value, nested_object_metadata)
+      end
+
+      nil
+    end
+
     def self.variable_to_json(variable_value, variable = nil)
-      if '@metadata' == variable
-        return variable_value
-      end
-
-      if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
-        return TypeUtilities::stringify_date(variable_value)
-      end
-
-      if variable_value.is_a?(RavenDocument)
-        return variable_to_json(variable_value)
-      end
-
-      if variable_value.is_a?(Hash)
-        json = {}
-
-        variable_value.each do |key, value|
-          json[key.to_s] = variable_to_json(value, key.to_s)
+      if '@metadata' != variable && !!variable_value != variable_value
+        if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
+          return TypeUtilities::stringify_date(variable_value)
         end
 
-        return json
-      end
-
-      if variable_value.is_a?(Array)
-        json = []
-
-        variable_value.each do |value|
-          json.push(variable_to_json(value, variable))
+        if TypeUtilities.is_document?(variable_value)
+          return to_json(variable_value)
         end
 
-        return json
+        if variable_value.is_a?(Hash)
+          json = {}
+
+          variable_value.each do |key, value|
+            json[key.to_s] = variable_to_json(value, key.to_s)
+          end
+
+          return json
+        end
+
+        if variable_value.is_a?(Array)
+          json = []
+
+          variable_value.each do |value|
+            json.push(variable_to_json(value, variable))
+          end
+
+          return json
+        end
       end
 
       variable_value
