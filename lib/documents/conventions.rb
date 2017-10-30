@@ -11,7 +11,11 @@ module RavenDB
     def initialize
       @SetIdOnlyIfPropertyIsDefined = false
       @DisableTopologyUpdates = false
-    end  
+    end
+
+    def empty_collection
+      '@empty'
+    end
 
     def empty_change_vector
       nil

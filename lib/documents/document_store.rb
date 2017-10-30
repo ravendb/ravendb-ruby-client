@@ -1,7 +1,9 @@
+require 'securerandom'
 require 'database/operation_executor'
 require 'documents/conventions'
 require 'requests/request_executor'
 require 'database/exceptions'
+require 'documents/hilo'
 
 module RavenDB
   class Configuration
@@ -41,9 +43,11 @@ module RavenDB
         if !@_database
           raise InvalidOperationException, "Default database isn't set."
         end
+
+        @_generator = HiloMultiDatabaseIdGenerator.new(self)
+        @_initialized = true
       end
 
-      @_initialized = true
       self
     end  
 
@@ -85,6 +89,14 @@ module RavenDB
 
     def conventions
       @_conventions ||= DocumentConventions.new
+    end
+
+    def generate_id(tag = nil, database = nil)
+      if tag.nil?
+        return SecureRandom.uuid
+      end
+
+      @_generator.generate_document_id(tag, database)
     end
 
     protected 

@@ -1,12 +1,14 @@
 require "set"
 require "uri"
 require "json"
+require 'date'
 require "net/http"
 require "utilities/json"
 require "database/exceptions"
 require "documents/document_query"
 require "documents/indexes"
 require "requests/request_helpers"
+require "utilities/date"
 
 module RavenDB
   class RavenCommand
@@ -171,3 +173,4 @@ require_relative './commands/databases'
 require_relative './commands/documents'
 require_relative './commands/indexes'
 require_relative './commands/queries'
+require_relative './commands/hilo'
