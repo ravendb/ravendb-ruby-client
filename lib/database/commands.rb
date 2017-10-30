@@ -8,7 +8,7 @@ require "database/exceptions"
 require "documents/document_query"
 require "documents/indexes"
 require "requests/request_helpers"
-require "utilities/date"
+require "utilities/type_utilities"
 
 module RavenDB
   class RavenCommand

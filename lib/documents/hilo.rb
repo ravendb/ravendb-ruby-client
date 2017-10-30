@@ -1,6 +1,6 @@
 require 'thread'
 require 'documents/conventions'
-require 'utilities/date'
+require 'utilities/type_utilities'
 require 'database/commands'
 require 'database/exceptions'
 
@@ -53,7 +53,7 @@ module RavenDB
       @last_batch_size = 0
       @range = HiloRangeValue.new
       @generate_id_lock = Mutex.new
-      @last_range_at = DateUtil::zero_date
+      @last_range_at = TypeUtilities::zero_date
       @identity_parts_separator = DocumentConventions::IdentityPartsSeparator
     end
 
@@ -91,7 +91,7 @@ module RavenDB
       @prefix = response['prefix']
       @last_batch_size = response['last_size']
       @server_tag = response['server_tag'] || nil
-      @last_range_at = DateUtil::parse(response['last_range_at'])
+      @last_range_at = TypeUtilities::parse_date(response['last_range_at'])
 
       HiloRangeValue.new(response['low'], response['high'])
     end

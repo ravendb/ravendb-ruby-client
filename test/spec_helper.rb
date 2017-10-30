@@ -7,6 +7,7 @@ require 'documents/document_query'
 require "documents/indexes"
 require 'database/operations'
 require 'database/commands'
+require 'documents/conventions'
 
 module MiniTest
   module Assertions
@@ -61,4 +62,27 @@ class TestBase < Minitest::Test
     @_store = nil
     @_current_database = nil    
   end  
-end  
+end
+
+class SerializingTest
+  attr_accessor :string_prop, :number_prop, :number_float_prop,
+                :boolean_prop, :nil_prop, :hash_prop, :array_prop,
+                :deep_hash_prop, :deep_array_prop, :deep_array_hash_prop,
+                :date_prop, :deep_foo_prop, :deep_array_foo_prop
+
+end
+
+class Foo
+  attr_accessor :id, :name, :order
+
+  def initialize(
+    id = nil,
+    name = "",
+    order = 0
+  )
+    super()
+    @id = id
+    @name = name
+    @order = order
+  end
+end
