@@ -63,9 +63,6 @@ module RavenDB
     end
 
     def execute(command)
-      chosen_node = nil
-      chosen_node_index = -1
-
       await_first_topology_update
       selector = @_node_selector
       chosen_node = selector.current_node

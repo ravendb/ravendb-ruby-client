@@ -74,7 +74,7 @@ module RavenDB
     def get_request_executor(database = nil)
       @_request_executors ||= {}
       db_name = database || @_database
-      for_single_node = conventions.DisableTopologyUpdates
+      for_single_node = conventions.disable_topology_updates
 
       if !@_request_executors.key?(for_single_node)
         @_request_executors[for_single_node] = {}
