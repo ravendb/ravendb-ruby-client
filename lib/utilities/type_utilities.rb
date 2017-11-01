@@ -1,4 +1,5 @@
 require 'date'
+require 'deep_clone'
 require "database/exceptions"
 
 module RavenDB
@@ -13,7 +14,7 @@ module RavenDB
     ]
 
     def self.is_document?(object)
-      object.is_a?(Object) &&
+      object.is_a?(Object) && (!!object != object)
           BASIC_TYPES.all? {|basic_type|
             !object.is_a?(basic_type)
           }
@@ -39,6 +40,21 @@ module RavenDB
 
     def self.zero_date
       DateTime.new(1, 1, 1, 0, 0, 0)
+    end
+
+    def self.omit_keys(hash, keys = [])
+      raise InvalidOperationException,
+        'Invalid hash argument passed. Should be an Hash' unless
+        hash.is_a?(Hash)
+
+      raise InvalidOperationException,
+        'Invalid keys argument passed. Should be an Array' unless
+        keys.is_a?(Array)
+
+      copy = DeepClone.clone(hash)
+      copy.delete_if {|key| keys.include?(key)}
+
+      copy
     end
   end
 end

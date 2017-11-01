@@ -177,9 +177,16 @@ module RavenDB
             :Status => PatchStatus::DocumentDoesNotExist
           }
         else
+          document = nil
+          conversion_result = conventions.convert_to_document(json["ModifiedDocument"])
+
+          if conversion_result
+            document = conversion_result[:document]
+          end
+
           patch_result = {
             :Status => json["Status"],
-            :Document => conventions.convert_to_document(json["ModifiedDocument"])
+            :Document => document
           }          
         end
 
@@ -202,7 +209,7 @@ module RavenDB
       store = @store
       conventions = store.conventions
 
-      conventions.DisableTopologyUpdates ?
+      conventions.disable_topology_updates ?
        ClusterRequestExecutor.create_for_single_node(store.single_node_url) : 
        ClusterRequestExecutor.create(store.urls)
     end    

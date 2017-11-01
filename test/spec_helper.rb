@@ -1,4 +1,5 @@
 require 'ravendb'
+require 'date'
 require 'securerandom'
 require 'minitest/autorun'
 require 'requests/request_executor'
@@ -80,9 +81,40 @@ class Foo
     name = "",
     order = 0
   )
-    super()
     @id = id
     @name = name
     @order = order
+  end
+end
+
+class TestConversion
+  attr_accessor :id, :date, :foo, :foos
+
+  def initialize(
+    id = nil,
+    date = DateTime.now,
+    foo = nil,
+    foos = []
+  )
+    @id = id
+    @date = date
+    @foo = foo
+    @foos = foos
+  end
+end
+
+class Product
+  attr_accessor :id, :name, :uid, :ordering
+
+  def initialize(
+    id = nil,
+    name = "",
+    uid = nil,
+    ordering = nil
+  )
+    @id = id
+    @name = name
+    @uid = uid
+    @ordering = ordering
   end
 end
