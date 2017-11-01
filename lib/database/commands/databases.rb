@@ -2,10 +2,9 @@ module RavenDB
   class DatabaseDocument
     attr_reader :database_id, :settings
 
-    def initialize(database_id, settings = {}, secured_settings = {}, disabled = false, encrypted = false)
+    def initialize(database_id, settings = {}, disabled = false, encrypted = false)
       @database_id = database_id || nil
       @settings = settings
-      @secured_settings = secured_settings
       @disabled = disabled
       @encrypted = encrypted
     end
@@ -15,7 +14,6 @@ module RavenDB
         "DatabaseName" => @database_id,
         "Disabled" => @disabled,
         "Encrypted" => @encrypted,
-        "SecuredSettings" => @secured_settings,
         "Settings" => @settings
       }
     end
@@ -31,18 +29,6 @@ module RavenDB
     def create_request(server_node)
       db_name = @database_document.database_id.gsub("Raven/Databases/", "")
       assert_node(server_node)
-
-      if db_name.nil? || !db_name
-        raise InvalidOperationException, "Empty name is not valid"
-      end
-
-      if /^[A-Za-z0-9_\-\.]+$/.match(db_name).nil?
-        raise InvalidOperationException, "Database name can only contain only A-Z, a-z, \"_\", \".\" or \"-\""
-      end
-
-      if !@database_document.settings.key?(:'Raven/DataDir')
-        raise InvalidOperationException, "The Raven/DataDir setting is mandatory"
-      end
 
       @params = {"name" => db_name, "replication-factor" => @replication_factor}
       @end_point = "/admin/databases"
