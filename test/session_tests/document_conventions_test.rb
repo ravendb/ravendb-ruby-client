@@ -6,18 +6,20 @@ class DocumentConventionsTest < TestBase
   def setup
     super
     @json = {
-      "id" => "TestConversions/1",
       "date" => '2017-10-31T19:40:00.0000000',
       "foo" => {
+        "@metadata" => {},
         "id" => "Foos/1",
         "name" => "Foo #1",
-        "order" => 1
+        "order" => 1,
       },
       "foos" => [{
+        "@metadata" => {},
         "id" => "Foos/2",
         "name" => "Foo #2",
         "order" => 2
       },{
+        "@metadata" => {},
         "id" => "Foos/3",
         "name" => "Foo #3",
         "order" => 3
@@ -36,12 +38,13 @@ class DocumentConventionsTest < TestBase
   end
 
   def test_should_convert_to_document
-    document = @_store.conventions.convert_to_document(@json)
+    conversion_result = @_store.conventions.convert_to_document(@json)
+    document = conversion_result[:document]
 
     assert(document.is_a?(TestConversion))
     assert_equal(document.id, "TestConversions/1")
     assert(document.date.is_a?(DateTime))
-    assert_equal(document.date, TypeUtilities::parse_date("2017-10-31T19:40:00.0000000"))
+    assert_equal(document.date, RavenDB::TypeUtilities::parse_date("2017-10-31T19:40:00.0000000"))
     assert(document.foo.is_a?(Foo))
     assert_equal(document.foo.id, "Foos/1")
     assert_equal(document.foo.name, "Foo #1")
@@ -57,8 +60,10 @@ class DocumentConventionsTest < TestBase
     assert_equal(document.foos[1].order, 3)
   end
 
+
   def test_should_convert_back_to_raw_entity
-    document = @_store.conventions.convert_to_document(@json)
+    conversion_result = @_store.conventions.convert_to_document(@json)
+    document = conversion_result[:document]
     raw_entity = @_store.conventions.convert_to_raw_entity(document)
 
     assert_equal(raw_entity, @json)

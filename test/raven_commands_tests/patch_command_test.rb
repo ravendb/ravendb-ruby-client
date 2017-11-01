@@ -19,25 +19,24 @@ class PatchCommandTest < TestBase
   def setup
     super() 
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"Name" => "test", "@metadata" => {}}))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"name" => "test", "@metadata" => {'Raven-Ruby-Type' => 'Product', '@collection' => 'Products'}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
 
   def test_should_patch_success_ignoring_missing
-    result = @_store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'")))
-    documents = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
+    result = @_store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'")))
 
     assert(result.key?(:Status))
     assert(result.key?(:Document))
     assert_equal(result[:Status], RavenDB::PatchStatus::Patched)
-    assert(result[:Document].is_a?(Hash))
-    assert_equal('testing', documents["Results"].first["Name"])
+    assert(result[:Document].is_a?(Product))
+    assert_equal('testing', result[:Document].name)
   end
 
   def test_should_patch_success_not_ignoring_missing
     result = @_store.operations.send(
-      RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
+      RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"), {
         :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
         :skip_patch_if_change_vector_mismatch => true
     }))
@@ -50,7 +49,7 @@ class PatchCommandTest < TestBase
   def test_should_patch_fail_not_ignoring_missing
     assert_raises(RavenDB::RavenException) do
       @_store.operations.send(
-        RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.Name = 'testing'"), {
+        RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"), {
           :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
           :skip_patch_if_change_vector_mismatch => false
       }))

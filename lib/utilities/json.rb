@@ -1,7 +1,6 @@
 require "json"
 require 'net/http'
 require 'database/exceptions'
-require 'documents/conventions'
 require 'utilities/type_utilities'
 
 class Net::HTTPResponse
@@ -58,7 +57,11 @@ module RavenDB
       end
 
       if metadata.is_a?(Hash) && metadata.size
-        current_metadata = target.instance_variable_get('@metadata') || {}
+        current_metadata = {}
+
+        if target.instance_variable_defined?('@metadata')
+          current_metadata = target.instance_variable_get('@metadata') || {}
+        end
 
         target.instance_variable_set('@metadata', current_metadata.merge(metadata))
       end

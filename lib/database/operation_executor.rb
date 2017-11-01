@@ -181,7 +181,7 @@ module RavenDB
           conversion_result = conventions.convert_to_document(json["ModifiedDocument"])
 
           if conversion_result
-            document = conversion_result.document
+            document = conversion_result[:document]
           end
 
           patch_result = {

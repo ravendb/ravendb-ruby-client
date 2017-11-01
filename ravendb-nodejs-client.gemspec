@@ -1,7 +1,7 @@
 Gem::Specification.new do |spec|
   spec.name        = 'ravendb'
   spec.version     = '4.0.0-rc1'
-  spec.date        = '2017-10-25'
+  spec.date        = '2017-11-01'
   spec.summary     = "RavenDB"
   spec.description = "RavenDB client for Ruby"
   spec.authors     = ["Hibernating Rhinos"]

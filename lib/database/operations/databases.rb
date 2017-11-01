@@ -36,9 +36,7 @@ module RavenDB
   end
 
   class PatchOperation < PatchResultOperation
-    @id = nil
-    @patch = nil
-    @options = nil
+    attr_reader :id
 
     def initialize(id, patch, options = nil)
       super()

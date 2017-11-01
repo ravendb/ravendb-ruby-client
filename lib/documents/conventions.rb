@@ -73,11 +73,11 @@ module RavenDB
       set_id_on_document(document, metadata['@id'] || nil)
 
       {
-        raw_entity: raw_entity,
-        document: document,
-        metadata: metadata,
-        original_metadata: original_metadata,
-        document_type: doc_type
+        :raw_entity => raw_entity,
+        :document => document,
+        :metadata => metadata,
+        :original_metadata => original_metadata,
+        :document_type => doc_type
       }
     end
 
@@ -219,7 +219,7 @@ module RavenDB
         end
 
         if !((nested_type = (find_nested_type(value_for_check))).nil?)
-          nested_types[value_for_check.gsub('@', '')] = nested_type
+          nested_types[instance_variable.to_s.gsub('@', '')] = nested_type
         end
       end
 
@@ -230,6 +230,7 @@ module RavenDB
       metadata
     end
 
+    protected
     def find_nested_type(instance_variable_value)
       if instance_variable_value.is_a?(Date) || instance_variable_value.is_a?(DateTime)
         return 'date'
