@@ -2,10 +2,16 @@ require 'net/http'
 
 module RavenDB
   class RavenException < StandardError
+    attr_reader :http_status_code
+
+    def initialize(msg = nil, status_code = nil)
+      @http_status_code = status_code
+      super(msg)
+    end
   end
 
   class ExceptionsFactory
-    def self.create(type_or_message, message = "")
+    def self.create(type_or_message, message = "", status_code = nil)
       exception_ctor = RavenException
       exception_message = type_or_message
 
@@ -19,16 +25,17 @@ module RavenDB
         end
       end
 
-      exception_ctor.new(message)
+      exception_ctor.new(message, status_code)
     end
 
-    def self.create_from(json_or_response)
+    def self.create_from(json_or_response, status_code = nil)
       if json_or_response.is_a? Net::HTTPResponse
         response = json_or_response
         json = response.json
+        response_status_code = response.code.to_i
 
-        if json && (response.code.to_i >= 400)
-          return create_from(json)
+        if json && (response_status_code >= 400)
+          return create_from(json, status_code || response_status_code)
         end
       else
         json = json_or_response
@@ -37,7 +44,13 @@ module RavenDB
           type = json["Type"]
 
           if type && json["Error"]
-            return create(type.split(".").last, json["Error"])
+            error_type = type.split(".").last
+
+            if error_type.include?("+")
+              error_type = error_type.split("+").last
+            end
+
+            return create(error_type, json["Error"], status_code)
           end
         end
       end
@@ -45,16 +58,16 @@ module RavenDB
       return nil
     end
 
-    def self.raise_exception(type_or_message, message = "")
-      exception = create(type_or_message, message)
+    def self.raise_exception(type_or_message, message = "", status_code = nil)
+      exception = create(type_or_message, message, status_code)
 
       if !exception.nil?
         raise exception
       end
     end   
 
-    def self.raise_from(json_or_response)
-      exception = create_from(json_or_response)
+    def self.raise_from(json_or_response, status_code = nil)
+      exception = create_from(json_or_response, status_code)
 
       if !exception.nil?
         raise exception
@@ -185,5 +198,7 @@ module RavenDB
   class NonDurableFileSystemException < RavenException 
   end
   class AggregateException < RavenException 
+  end
+  class ParseException < RavenException
   end
 end  
