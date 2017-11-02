@@ -1,7 +1,10 @@
 require 'deep_clone'
+require 'net/http'
 require 'database/exceptions'
 require 'documents/conventions'
 require 'constants/documents'
+require 'database/commands'
+require 'utilities/type_utilities'
 
 module RavenDB
   class DocumentSession
@@ -51,6 +54,61 @@ module RavenDB
 "that you'll look into reducing the number of remote calls first, "\
 "since that will speed up your application significantly and result in a"\
 "more responsive application." unless @number_of_requests_in_session <= max_requests
+    end
+
+    def prepare_delete_commands(changes)
+      @deleted_documents.each do |document|
+        change_vector = nil
+        existing_document = nil
+        document_id = @raw_entities_and_metadata[document]
+
+        if @documents_by_id.key?(document_id)
+          existing_document = @documents_by_id[document_id]
+
+          if @raw_entities_and_metadata.key?(document)
+            info = @raw_entities_and_metadata[document]
+
+            if info.key?(:expected_change_vector)
+              change_vector = info[:expected_change_vector]
+            elsif DocumentConventions::DefaultUseOptimisticConcurrency
+              change_vector = info[:change_vector] || info[:metadata]["@change-vector"]
+            end
+
+            @raw_entities_and_metadata.delete(document)
+
+          end
+
+          @documents_by_id.delete(document_id)
+        end
+
+        changes.add_document(existing_document || document)
+        changes.add_command(DeleteCommandData.new(id, change_vector))
+      end
+    end
+
+    def process_batch_command_results(results, changes)
+      ((changes.deferred_commands_count)..(results.size - 1)).each do |index|
+        command_result = results[index]
+
+        if Net::HTTP::Put::METHOD.capitalize == command_result["Type"]
+          document = changes.get_document(index - changes.deferred_commands_count)
+
+          if @raw_entities_and_metadata.key?(document)
+            metadata = TypeUtilities::omit_keys(command_result, ["Type"])
+            info = @raw_entities_and_metadata[document]
+
+            info = info.merge({
+              :change_vector => command_result['@change-vector'],
+              :metadata => metadata,
+              :original_value => DeepClone.clone(conventions.convert_to_raw_entity(document)),
+              :original_metadata => DeepClone.clone(metadata)
+            })
+
+            @documents_by_id[command_result["@id"]] = document
+            @raw_entities_and_metadata[document] = info
+          end
+        end
+      end
     end
 
     def is_document_changes(document)
@@ -111,7 +169,7 @@ module RavenDB
         :original_value => DeepClone.clone(original_value_source),
         :original_metadata => conversion_result[:original_metadata],
         :metadata => conversion_result[:metadata],
-        :change_vector => conversion_result[:metadata]['change-vector'] || nil,
+        :change_vector => conversion_result[:metadata]['@change-vector'] || nil,
         :id => document_id,
         :concurrency_check_mode => ConcurrencyCheckMode::Auto,
         :document_type => conversion_result[:document_type]
