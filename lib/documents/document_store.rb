@@ -174,7 +174,7 @@ module RavenDB
       db_name = database || @_database
       
       (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(singleNodeUrl, db_name) :
+        RequestExecutor.create_for_single_node(single_node_url, db_name) :
         RequestExecutor.create(urls, db_name)
     end
   end  

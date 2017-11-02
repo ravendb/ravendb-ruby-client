@@ -43,4 +43,10 @@ module RavenDB
     Skipped = "Skipped"
     NotModified = "NotModified"
   end
+
+  class ConcurrencyCheckMode
+    Auto = 'Auto'
+    Forced = 'Forced'
+    Disabled = 'Disabled'
+  end
 end
