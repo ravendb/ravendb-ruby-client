@@ -159,6 +159,8 @@ module RavenDB
   end
   class DatabaseNotFoundException < RavenException 
   end
+  class NotSupportedException < RavenException
+  end
   class NotSupportedOsException < RavenException 
   end
   class SecurityException < RavenException 

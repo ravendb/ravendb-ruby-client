@@ -30,7 +30,9 @@ module RavenDB
       if !@_initialized
         config = Configuration.new
 
-        yield(config)
+        if block_given?
+          yield(config)
+        end
 
         if config.default_database
           @_database = config.default_database
@@ -42,6 +44,10 @@ module RavenDB
 
         if !@_database
           raise InvalidOperationException, "Default database isn't set."
+        end
+
+        if @_urls.any? {|url| url.downcase.start_with?('https') }
+          raise NotSupportedException, "Access to secured servers is not yet supported in Ruby client"
         end
 
         @_generator = HiloMultiDatabaseIdGenerator.new(self)
@@ -64,14 +70,18 @@ module RavenDB
     end
 
     def operations
+      assert_configure
       @_operations ||= OperationExecutor.new(self, @_database)
     end
 
     def admin
+      assert_configure
       @_admin ||= AdminOperationExecutor.new(self, @_database)      
     end
 
     def get_request_executor(database = nil)
+      assert_configure
+
       @_request_executors ||= {}
       db_name = database || @_database
       for_single_node = conventions.disable_topology_updates
@@ -92,11 +102,25 @@ module RavenDB
     end
 
     def generate_id(tag = nil, database = nil)
+      assert_configure
+
       if tag.nil?
         return SecureRandom.uuid
       end
 
       @_generator.generate_document_id(tag, database)
+    end
+
+    def dispose
+      assert_configure
+      @_generator.return_unused_range rescue nil
+      admin.server.dispose
+
+      if @_request_executors.is_a?(Hash)
+        @_request_executors.each_value do |executors|
+          executors.each_value {|executor| executor.dispose}
+        end
+      end
     end
 
     protected 
@@ -106,14 +130,14 @@ module RavenDB
 
         if !url_or_urls.is_a?(Array)
           @_urls = [@_urls]
-        end  
-      end  
+        end
+      end
     end  
 
-    def assert_initialize()
+    def assert_configure
       if !@_initialized
-        raise InvalidOperationException, "You cannot open a session or access the _database commands"\
-  "before initializing the document store. Did you forget calling initialize()?"
+        raise InvalidOperationException, "You cannot open a session or access the database commands"\
+  " before initializing the document store. Did you forget calling configure ?"
       end
     end
 

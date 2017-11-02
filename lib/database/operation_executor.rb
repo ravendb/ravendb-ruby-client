@@ -204,6 +204,10 @@ module RavenDB
       super(operation)
     end
 
+    def dispose
+      request_executor.dispose
+    end
+
     protected
     def request_executor_factory
       store = @store

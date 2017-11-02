@@ -24,7 +24,8 @@ module RavenDB
         "Accept" => "application/json",
         "Raven-Client-Version" => "4.0.0-beta",
       }
-      
+
+      @_disposed = false
       @initial_database = database
       @_http_clients = {}
       @_first_topology_updates_tries = 0      
@@ -75,7 +76,12 @@ module RavenDB
       end
 
       response
-    end  
+    end
+
+    def dispose
+      @_disposed = true
+      cancel_failing_nodes_timers
+    end
 
     protected
     def is_first_topology_update_tries_expired?
@@ -125,7 +131,11 @@ module RavenDB
       request
     end
 
-    def execute_command(command, server_node)      
+    def execute_command(command, server_node)
+      if @_disposed
+        return nil
+      end
+
       if !command.is_a?(RavenCommand)
         raise InvalidOperationException, 'Not a valid command'
       end
@@ -269,6 +279,10 @@ module RavenDB
     end
 
     def perform_health_check(server_node)
+      if @_disposed
+        return nil
+      end
+
       is_still_failed = nil
       command = GetStatisticsCommand.new(true)
           

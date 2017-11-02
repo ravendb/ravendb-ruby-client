@@ -38,8 +38,10 @@ class TestBase < Minitest::Test
 
   def setup
     @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"
-    db_doc  = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
     @_store = RavenDB::DocumentStore.new([DEFAULT_URL], @_current_database)
+    @_store.configure
+
+    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
     @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
   
     @_index_map = 
@@ -56,6 +58,7 @@ class TestBase < Minitest::Test
 
   def teardown
     @_store.admin.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
+    @_store.dispose
     
     @_index_map = nil
     @_index = nil
