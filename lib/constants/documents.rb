@@ -28,6 +28,7 @@ module RavenDB
   end
 
   class RavenServerEvent
+    EVENT_QUERY_INITIALIZED = "query:initialized"
     EVENT_DOCUMENTS_QUERIED = "queried:documents"
     EVENT_DOCUMENT_FETCHED = "fetched:document"
     EVENT_INCLUDES_FETCHED = "fetched:includes"
@@ -42,5 +43,11 @@ module RavenDB
     Patched = "Patched"
     Skipped = "Skipped"
     NotModified = "NotModified"
+  end
+
+  class ConcurrencyCheckMode
+    Auto = 'Auto'
+    Forced = 'Forced'
+    Disabled = 'Disabled'
   end
 end

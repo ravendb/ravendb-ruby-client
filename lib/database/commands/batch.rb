@@ -84,7 +84,7 @@ module RavenDB
 
   class SaveChangesData
     def deferred_commands_count
-      @deferred_command_count
+      @deferred_commands_count
     end
 
     def commands_count

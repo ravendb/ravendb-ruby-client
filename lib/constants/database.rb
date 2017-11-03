@@ -6,12 +6,6 @@ module RavenDB
     Admin = "Admin"
   end
 
-  class ConcurrencyCheckMode
-    Auto = "Auto"
-    Forced = "Forced"
-    Disabled = "Disabled"
-  end
-
   class FieldIndexingOption
     No = "No"
     Search = "Search"

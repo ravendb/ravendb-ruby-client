@@ -4,6 +4,7 @@ require 'documents/conventions'
 require 'requests/request_executor'
 require 'database/exceptions'
 require 'documents/hilo'
+require 'documents/document_session'
 
 module RavenDB
   class Configuration
@@ -79,6 +80,54 @@ module RavenDB
       @_admin ||= AdminOperationExecutor.new(self, @_database)      
     end
 
+    def conventions
+      @_conventions ||= DocumentConventions.new
+    end
+
+    def open_session(database_name = nil, options = nil)
+      assert_configure
+
+      session_database = database_name
+      session_options = options || {}
+
+      if database_name.is_a?(Hash)
+        session_options = database_name
+
+        if session_options.key?(:database)
+          session_database = session_options[:database]
+        end
+      end
+
+      session_database = session_database || database
+      request_executor = nil
+
+      if session_options.key?(:request_executor)
+        request_executor = session_options[:request_executor]
+      end
+
+      if request_executor.nil? || (request_executor.initial_database != session_database)
+        request_executor = get_request_executor(session_database)
+      end
+
+      session = DocumentSession.new(session_database, self, SecureRandom.uuid, request_executor)
+
+      if block_given?
+        yield(session)
+      end
+
+      session
+    end
+
+    def generate_id(tag = nil, database = nil)
+      assert_configure
+
+      if tag.nil?
+        return SecureRandom.uuid
+      end
+
+      @_generator.generate_document_id(tag, database)
+    end
+
     def get_request_executor(database = nil)
       assert_configure
 
@@ -95,20 +144,6 @@ module RavenDB
       end    
 
       @_request_executors[for_single_node][db_name]
-    end
-
-    def conventions
-      @_conventions ||= DocumentConventions.new
-    end
-
-    def generate_id(tag = nil, database = nil)
-      assert_configure
-
-      if tag.nil?
-        return SecureRandom.uuid
-      end
-
-      @_generator.generate_document_id(tag, database)
     end
 
     def dispose
@@ -145,7 +180,7 @@ module RavenDB
       db_name = database || @_database
       
       (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(singleNodeUrl, db_name) :
+        RequestExecutor.create_for_single_node(single_node_url, db_name) :
         RequestExecutor.create(urls, db_name)
     end
   end  
