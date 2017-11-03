@@ -159,7 +159,7 @@ module RavenDB
 
     def get_id_from_document(document)
       id = nil
-      id_property = "#{get_id_property_name(document)}"
+      id_property = "@#{get_id_property_name(document)}"
 
       if document.instance_variable_defined?(id_property)
         id = document.instance_variable_get(id_property)
@@ -204,12 +204,13 @@ module RavenDB
         TypeUtilities::is_document?(document)
 
       if document.instance_variable_defined?('@metadata')
-        metadata = metadata.merge(document.instance_variable_get('@metadata') || {})
-        metadata = metadata.merge({
-          'Raven-Ruby-Type' => get_type_from_document(document),
-          '@collection' => get_collection_name(document.class)
-        })
+        metadata = document.instance_variable_get('@metadata')
       end
+
+      metadata = metadata.merge({
+        'Raven-Ruby-Type' => get_type_from_document(document),
+        '@collection' => get_collection_name(document.class)
+      })
 
       document.instance_variables.each do |instance_variable|
         value_for_check = document.instance_variable_get(instance_variable)

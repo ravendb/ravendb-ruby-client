@@ -12,14 +12,6 @@ module RavenDB
     include Observable
 
     def initialize(db_name, document_store, id, request_executor)
-      raise InvalidOperationException,
-        'Invalid document store provided, Should be an DocumentStore class instance' unless
-        document_store.class.name == 'DocumentStore'
-
-      raise InvalidOperationException,
-        'Invalid request executor provided, Should be an RequestExecutor class instance' unless
-        request_executor.class.name == 'RequestExecutor'
-
       @database = db_name
       @document_store = document_store
       @session_id = id
@@ -95,7 +87,7 @@ module RavenDB
 
       ids_of_non_existing_documents = Set.new(
         ids_of_non_existing_documents.to_a
-        .delete_if{|id| @known_missing_ids.key?(id)}
+        .delete_if{|id| @known_missing_ids.include?(id)}
       )
 
       if !ids_of_non_existing_documents.empty?
@@ -104,7 +96,7 @@ module RavenDB
 
       results = ids
         .map do |id|
-        if !@known_missing_ids.key(id) && @documents_by_id.key?(id)
+        if !@known_missing_ids.include?(id) && @documents_by_id.key?(id)
           return @documents_by_id[id]
         end
 
@@ -144,7 +136,7 @@ module RavenDB
         raise InvalidOperationException,
           "Can't store object, it was already deleted in this "\
           "session. Document id: #{id}" if
-          @deleted_documents.key?(document)
+          @deleted_documents.include?(document)
 
         on_document_fetched({
           :document => document,
@@ -253,7 +245,7 @@ module RavenDB
     end
 
     def check_association_and_change_vectore_before_store(document, id = nil, change_vector = nil)
-      is_new = @raw_entities_and_metadata.key(document)
+      is_new = !@raw_entities_and_metadata.key?(document)
 
       if !is_new
         document_id = id
@@ -328,7 +320,7 @@ module RavenDB
 
         @documents_by_id.delete(id)
         changes.add_document(document)
-        changes.add_command(PutDocumentData.new(id, DeepClone.clone(raw_entity), change_vector))
+        changes.add_command(PutCommandData.new(id, DeepClone.clone(raw_entity), change_vector))
       end
     end
 
@@ -392,6 +384,7 @@ module RavenDB
         return false
       end
 
+      info = @raw_entities_and_metadata[document]
       (info[:original_metadata] != info[:metadata]) ||
           (info[:original_value] != conventions.convert_to_raw_entity(document))
     end
@@ -408,7 +401,7 @@ module RavenDB
         includes.each do |include|
           document_id = include['@metadata']['@id']
 
-          if !@included_raw_entities_by_id.key(document_id)
+          if !@included_raw_entities_by_id.key?(document_id)
             @included_raw_entities_by_id[document_id] = include
           end
         end
