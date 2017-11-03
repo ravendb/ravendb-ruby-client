@@ -53,6 +53,110 @@ module RavenDB
       @advanced
     end
 
+    def load(id_or_ids, options = nil)
+      includes = []
+      ids = id_or_ids
+      nested_object_types = {}
+      loading_one_doc = !id_or_ids.is_a?(Array)
+
+      if loading_one_doc
+        ids = [id_or_ids]
+      end
+
+      if options.is_a?(Hash)
+        includes = options[:includes] || []
+        nested_object_types = options[:nested_object_types] || {}
+      end
+
+      ids_of_non_existing_documents  = Set.new(ids)
+
+      if !includes.nil? && !includes.is_a?(Array)
+        if includes.is_a?(String)
+          includes = [includes]
+        else
+          includes = nil
+        end
+      end
+
+      if includes.nil?
+        ids_of_non_existing_documents
+          .to_a
+          .keep_if{|id| @included_raw_entities_by_id.key?(id)}
+          .each do |id|
+          make_document(@included_raw_entities_by_id[id], nil, nested_object_types)
+          @included_raw_entities_by_id.delete(id)
+        end
+
+        ids_of_non_existing_documents = Set.new(
+          DeepClone.clone(ids)
+          .delete_if{|id| @documents_by_id.key?(id)}
+        )
+      end
+
+      ids_of_non_existing_documents = Set.new(
+        ids_of_non_existing_documents.to_a
+        .delete_if{|id| @known_missing_ids.key?(id)}
+      )
+
+      if !ids_of_non_existing_documents.empty?
+        fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
+      end
+
+      results = ids
+        .map do |id|
+        if !@known_missing_ids.key(id) && @documents_by_id.key?(id)
+          return @documents_by_id[id]
+        end
+
+        nil
+      end
+
+      if loading_one_doc
+        return results.first
+      end
+
+      results
+    end
+
+    def store(document, id = nil, options = nil)
+      change_vector = nil
+
+      if options.is_a?(Hash)
+        change_vector = options[:expected_change_vector]
+      end
+
+      document = check_document_and_metadata_before_store(document)
+      check_result = check_association_and_change_vectore_before_store(document, id, change_vector)
+      document = check_result[:document]
+      is_new_document = check_result[:is_new]
+
+      if is_new_document
+        original_metadata = DeepClone.clone(document.instance_variable_get('@metadata'))
+        document = prepare_document_id_before_store(document, id)
+        id = conventions.get_id_from_document(document)
+
+        @defer_commands.each {|command| raise InvalidOperationException,
+          "Can't store document, there is a deferred command registered "\
+          "for this document in the session. Document id: #{id}" if
+          id == command.document_id
+        }
+
+        raise InvalidOperationException,
+          "Can't store object, it was already deleted in this "\
+          "session. Document id: #{id}" if
+          @deleted_documents.key?(document)
+
+        on_document_fetched({
+          :document => document,
+          :metadata => document.instance_variable_get('@metadata'),
+          :original_metadata => original_metadata,
+          :raw_entity => conventions.convert_to_raw_entity(document)
+        })
+      end
+
+      document
+    end
+
     def save_changes
       changes = SaveChangesData.new(@defer_commands.to_a, @defer_commands.size)
 
@@ -110,7 +214,7 @@ module RavenDB
 "more responsive application." unless @number_of_requests_in_session <= max_requests
     end
 
-    def fetch_documents(ids, document_type = nil, includes = nil, nested_object_types = {})
+    def fetch_documents(ids, includes = nil, nested_object_types = {})
       response_results = []
       response_includes = []
       increment_requests_count
@@ -128,7 +232,7 @@ module RavenDB
             return nil
         end
 
-        make_document(result, document_type, nested_object_types)
+        make_document(result, nil, nested_object_types)
       end
 
       if !response_includes.empty?

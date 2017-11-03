@@ -109,7 +109,13 @@ module RavenDB
         request_executor = get_request_executor(session_database)
       end
 
-      DocumentSession.new(session_database, self, SecureRandom.uuid, request_executor)
+      session = DocumentSession.new(session_database, self, SecureRandom.uuid, request_executor)
+
+      if block_given?
+        yield(session)
+      end
+
+      session
     end
 
     def generate_id(tag = nil, database = nil)
