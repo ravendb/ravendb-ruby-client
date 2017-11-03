@@ -5,9 +5,12 @@ require 'documents/conventions'
 require 'constants/documents'
 require 'database/commands'
 require 'utilities/type_utilities'
+require 'utilities/observable'
 
 module RavenDB
   class DocumentSession
+    include Observable
+
     def initialize(db_name, document_store, id, request_executor)
       raise InvalidOperationException,
         'Invalid document store provided, Should be an DocumentStore class instance' unless
@@ -29,6 +32,10 @@ module RavenDB
       @defer_commands = Set.new([])
       @attached_queries = {}
       @number_of_requests_in_session = 0
+
+      on(RavenServerEvent::EVENT_QUERY_INITIALIZED) {|query|
+        attach_query(query)
+      }
     end
 
     def conventions
@@ -36,10 +43,57 @@ module RavenDB
     end
 
     def advanced
-      @advanced ||= AdvancedSessionOperations.new(self, @request_executor)
+      if !@advanced
+        @advanced = AdvancedSessionOperations.new(self, @request_executor)
+        @advanced.on(RavenServerEvent::EVENT_QUERY_INITIALIZED) {|query|
+          attach_query(query)
+        }
+      end
+
+      @advanced
+    end
+
+    def save_changes
+      changes = SaveChangesData.new(@defer_commands.to_a, @defer_commands.size)
+
+      @defer_commands.clear
+      prepare_delete_commands(changes)
+      prepare_update_commands(changes)
+
+      if !changes.commands_count
+        return nil
+      end
+
+      results = @request_executor.execute(changes.create_batch_command)
+
+      if !results
+        raise InvalidOperationException.new, "Cannot call Save Changes after the document store was disposed."
+      end
+
+      process_batch_command_results(results, changes)
     end
 
     protected
+    def attach_query(query)
+      if @attached_queries.key?(query)
+        raise InvalidOperationException, 'Query is already attached to session'
+      end
+
+      query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) {
+        increment_requests_count
+      }
+
+      query.on(RavenServerEvent::EVENT_DOCUMENT_FETCHED) {|conversion_result|
+        on_document_fetched(conversion_result)
+      }
+
+      query.on(RavenServerEvent::EVENT_INCLUDES_FETCHED) {|includes|
+        on_includes_fetched(includes)
+      }
+
+      @attached_queries[query] = true
+    end
+
     def increment_requests_count
       max_requests = DocumentConventions::MaxNumberOfRequestPerSession
 
@@ -54,6 +108,124 @@ module RavenDB
 "that you'll look into reducing the number of remote calls first, "\
 "since that will speed up your application significantly and result in a"\
 "more responsive application." unless @number_of_requests_in_session <= max_requests
+    end
+
+    def fetch_documents(ids, document_type = nil, includes = nil, nested_object_types = {})
+      response_results = []
+      response_includes = []
+      increment_requests_count
+
+      response = @request_executor.execute(GetDocumentCommand.new(ids, includes))
+
+      if response
+        response_results = conventions.try_fetch_results(response)
+        response_includes = conventions.try_fetch_includes(response)
+      end
+
+      response_results.map.with_index do |result, index|
+        if !result
+            @known_missing_ids.add(ids[index])
+            return nil
+        end
+
+        make_document(result, document_type, nested_object_types)
+      end
+
+      if !response_includes.empty?
+        on_includes_fetched(response_includes)
+      end
+    end
+
+    def check_document_and_metadata_before_store(document = nil)
+      if !TypeUtilities.is_document?(document)
+        raise InvalidOperationException, 'Invalid argument passed. Should be an document'
+      end
+
+      if !@raw_entities_and_metadata.key?(document)
+        document.instance_variable_set('@metadata', conventions.build_default_metadata(document))
+      end
+
+      document
+    end
+
+    def check_association_and_change_vectore_before_store(document, id = nil, change_vector = nil)
+      is_new = @raw_entities_and_metadata.key(document)
+
+      if !is_new
+        document_id = id
+        info = @raw_entities_and_metadata[document]
+        metadata = document.instance_variable_get('@metadata')
+        check_mode = ConcurrencyCheckMode::Forced
+
+        if document_id.nil?
+          document_id = conventions.get_id_from_document(document)
+        end
+
+        if change_vector.nil?
+          check_mode = ConcurrencyCheckMode::Disabled
+        else
+          info[:change_vector] = metadata['@change-vector'] = change_vector
+
+          if !document_id.nil?
+            check_mode = ConcurrencyCheckMode::Auto
+          end
+        end
+
+        info[:concurrency_check_mode] = check_mode
+        @raw_entities_and_metadata[document] = info
+      end
+
+      {:document => document, :is_new => is_new}
+    end
+
+    def prepare_document_id_before_store(document, id = nil)
+      store = @document_store
+      document_id = id
+
+      if document_id.nil?
+        document_id = conventions.get_id_from_document(document)
+      end
+
+      if !document_id.nil?
+        conventions.set_id_on_document(document, document_id)
+      end
+
+      if !document_id.nil? && !document_id.end_with?('/') && @documents_by_id.key?(document_id)
+        if !@documents_by_id[document_id].eql?(document)
+          raise NonUniqueObjectException, "Attempted to associate a different object with id #{document_id}"
+        end
+      end
+
+      if document_id.nil? || document_id.end_with?('/')
+        document_id = store.generate_id(conventions.get_type_from_document(document), @database)
+        conventions.set_id_on_document(document, document_id)
+      end
+
+      document
+    end
+
+    def prepare_update_commands(changes)
+      @raw_entities_and_metadata.each do |document, info|
+        if !is_document_changed(document)
+          return nil
+        end
+
+        id = info[:id]
+        change_vector = nil
+        raw_entity = conventions.convert_to_raw_entity(document)
+
+        if (DocumentConventions::DefaultUseOptimisticConcurrency &&
+          (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
+          (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
+          change_vector = info[:change_vector] ||
+              info[:metadata]['@change-vector'] ||
+              conventions.empty_change_vector
+        end
+
+        @documents_by_id.delete(id)
+        changes.add_document(document)
+        changes.add_command(PutDocumentData.new(id, DeepClone.clone(raw_entity), change_vector))
+      end
     end
 
     def prepare_delete_commands(changes)
@@ -111,7 +283,7 @@ module RavenDB
       end
     end
 
-    def is_document_changes(document)
+    def is_document_changed(document)
       if !@raw_entities_and_metadata.key?(document)
         return false
       end
@@ -178,6 +350,8 @@ module RavenDB
   end
 
   class AdvancedSessionOperations
+    include Observable
+
     def initialize(document_session, request_executor)
       @session = document_session
       @request_executor = request_executor
