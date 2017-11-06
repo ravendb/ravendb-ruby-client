@@ -11,6 +11,8 @@ module RavenDB
   class DocumentSession
     include Observable
 
+    attr_reader :number_of_requests_in_session
+
     def initialize(db_name, document_store, id, request_executor)
       @database = db_name
       @document_store = document_store
@@ -46,7 +48,7 @@ module RavenDB
     end
 
     def load(id_or_ids, options = nil)
-      includes = []
+      includes = nil
       ids = id_or_ids
       nested_object_types = {}
       loading_one_doc = !id_or_ids.is_a?(Array)
@@ -56,7 +58,7 @@ module RavenDB
       end
 
       if options.is_a?(Hash)
-        includes = options[:includes] || []
+        includes = options[:includes] || nil
         nested_object_types = options[:nested_object_types] || {}
       end
 
@@ -94,14 +96,9 @@ module RavenDB
         fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
       end
 
-      results = ids
-        .map do |id|
-        if !@known_missing_ids.include?(id) && @documents_by_id.key?(id)
-          return @documents_by_id[id]
-        end
-
-        nil
-      end
+      results = ids.map {|id| (!@known_missing_ids.include?(id) &&
+          @documents_by_id.key?(id)) ? @documents_by_id[id] : nil
+      }
 
       if loading_one_doc
         return results.first
@@ -198,9 +195,9 @@ module RavenDB
       raise InvalidOperationException,
           "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
 "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
-"be short lived, and Raven provides facilities like batch saves (call saveChanges() only once) "\
-"You can increase the limit by setting DocumentConvention."\
-"MaxNumberOfRequestsPerSession or MaxNumberOfRequestsPerSession, but it is advisable "\
+"be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
+"You can increase the limit by setting RavenDB::DocumentConventions::"\
+"MaxNumberOfRequestPerSession, but it is advisable "\
 "that you'll look into reducing the number of remote calls first, "\
 "since that will speed up your application significantly and result in a"\
 "more responsive application." unless @number_of_requests_in_session <= max_requests
@@ -233,7 +230,7 @@ module RavenDB
     end
 
     def check_document_and_metadata_before_store(document = nil)
-      if !TypeUtilities.is_document?(document)
+      if !TypeUtilities::is_document?(document)
         raise InvalidOperationException, 'Invalid argument passed. Should be an document'
       end
 

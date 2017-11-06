@@ -74,6 +74,8 @@ module RavenDB
         if (ids.map { |id| id.size }).sum > 1024
           @payload = {"Ids" => ids}
           @method = Net::HTTP::Post::METHOD
+
+          return
         end
       end
 
