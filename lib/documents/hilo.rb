@@ -126,7 +126,7 @@ module RavenDB
     def get_generator_for_tag(tag)
       @get_generator_lock.synchronize do
         if !@generators.key?(tag)
-          @generators[tag] = HiloIdGenerator(@store, @db_name, tag)
+          @generators[tag] = HiloIdGenerator.new(@store, @db_name, tag)
         end
 
         @generators[tag]
@@ -148,7 +148,7 @@ module RavenDB
     def get_generator_for_database(db_name)
       @get_generator_lock.synchronize do
         if !@generators.key?(db_name)
-          @generators[db_name] = HiloMultiTypeIdGenerator(@store, db_name)
+          @generators[db_name] = HiloMultiTypeIdGenerator.new(@store, db_name)
         end
 
         @generators[db_name]

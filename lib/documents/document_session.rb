@@ -290,7 +290,8 @@ module RavenDB
       end
 
       if document_id.nil? || document_id.end_with?('/')
-        document_id = store.generate_id(conventions.get_type_from_document(document), @database)
+        document_type = conventions.get_type_from_document(document)
+        document_id = store.generate_id(conventions.get_collection_name(document_type), @database)
         conventions.set_id_on_document(document, document_id)
       end
 
