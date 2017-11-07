@@ -29,7 +29,7 @@ module RavenDB
     def self.from_json(target, source = {}, metadata = {}, nested_object_types = {})
       mappings = {}
 
-      if !TypeUtilities.is_document?(target)
+      if !TypeUtilities::is_document?(target)
         raise InvalidOperationException, 'Invalid target passed. Should be a user-defined class instance'
       end
 
@@ -72,7 +72,7 @@ module RavenDB
     def self.to_json(source)
       json = {}
 
-      if !TypeUtilities.is_document?(source)
+      if !TypeUtilities::is_document?(source)
         raise InvalidOperationException, 'Invalid source passed. Should be a user-defined class instance'
       end
 
@@ -173,7 +173,7 @@ module RavenDB
           return TypeUtilities::stringify_date(variable_value)
         end
 
-        if TypeUtilities.is_document?(variable_value)
+        if TypeUtilities::is_document?(variable_value)
           return to_json(variable_value)
         end
 

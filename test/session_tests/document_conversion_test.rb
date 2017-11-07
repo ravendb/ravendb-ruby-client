@@ -24,7 +24,7 @@ class DocumentConversionTest < TestBase
   end
 
   def test_should_convert_on_store_then_reload
-    id = 'TestConversions/1'
+    id = 'TestConversions/New'
 
     @_store.open_session do |session|
       session.store(make_document(id))

@@ -29,7 +29,11 @@ module RavenDB
     end
 
     def get_collection_name(document_class_or_document_type)
-      document_type = get_document_type(document_class_or_document_type)
+      document_type = document_class_or_document_type
+
+      if document_class_or_document_type.is_a?(Class)
+        document_type = get_document_type(document_class_or_document_type)
+      end
 
       document_type.pluralize
     end
