@@ -107,6 +107,61 @@ module RavenDB
       results
     end
 
+    def delete(document_or_id, options = nil)
+      id = nil
+      info = nil
+      document = nil
+      expected_change_vector = nil
+
+      raise InvalidOperationException,
+        'Invalid argument passed. Should be document model instance or document id string' unless
+        (document_or_id.is_a?(String) || TypeUtilities::is_document?(document_or_id))
+
+      if options.is_a?(Hash)
+        expected_change_vector = options[:expected_change_vector] || nil
+      end
+
+      if document_or_id.is_a?(String)
+        id = document_or_id
+
+        if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
+          raise InvalidOperationException,
+            "Can't delete changed document using identifier. Pass document instance instead"
+        end
+      else
+        document = document_or_id
+        info = @raw_entities_and_metadata[document]
+        id = conventions.get_id_from_document(document)
+      end
+
+      if document.nil?
+        @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
+      else
+        raise InvalidOperationException,
+          "Document is not associated with the session, cannot delete unknown document instance" unless
+          @raw_entities_and_metadata.key?(document)
+
+        id = info[:id]
+        original_metadata = info[:original_metadata]
+
+        raise InvalidOperationException,
+          "Document is marked as read only and cannot be deleted" if
+          original_metadata.key?('Raven-Read-Only')
+
+        unless expected_change_vector.nil?
+          info[:expected_change_vector] = expected_change_vector
+          @raw_entities_and_metadata[document] = info
+        end
+
+        @deleted_documents.add(document)
+      end
+
+      @known_missing_ids.add(id)
+      @included_raw_entities_by_id.delete(id)
+
+      document || nil
+    end
+
     def store(document, id = nil, options = nil)
       change_vector = nil
 
@@ -325,30 +380,29 @@ module RavenDB
     def prepare_delete_commands(changes)
       @deleted_documents.each do |document|
         change_vector = nil
-        existing_document = nil
-        document_id = @raw_entities_and_metadata[document]
+        existing_document = document
+        document_id = conventions.get_id_from_document(document)
 
-        if @documents_by_id.key?(document_id)
-          existing_document = @documents_by_id[document_id]
+        if @raw_entities_and_metadata.key?(document)
+          info = @raw_entities_and_metadata[document]
 
-          if @raw_entities_and_metadata.key?(document)
-            info = @raw_entities_and_metadata[document]
-
-            if info.key?(:expected_change_vector)
-              change_vector = info[:expected_change_vector]
-            elsif DocumentConventions::DefaultUseOptimisticConcurrency
-              change_vector = info[:change_vector] || info[:metadata]["@change-vector"]
-            end
-
-            @raw_entities_and_metadata.delete(document)
-
+          if @documents_by_id.key?(info[:id])
+            document_id = info[:id]
+            existing_document = @documents_by_id[document_id]
+            @documents_by_id.delete(document_id)
           end
 
-          @documents_by_id.delete(document_id)
+          if info.key?(:expected_change_vector)
+            change_vector = info[:expected_change_vector]
+          elsif DocumentConventions::DefaultUseOptimisticConcurrency
+            change_vector = info[:change_vector] || info[:metadata]["@change-vector"]
+          end
+
+          @raw_entities_and_metadata.delete(document)
         end
 
-        changes.add_document(existing_document || document)
-        changes.add_command(DeleteCommandData.new(id, change_vector))
+        changes.add_document(existing_document)
+        changes.add_command(DeleteCommandData.new(document_id, change_vector))
       end
     end
 
