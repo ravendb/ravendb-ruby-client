@@ -4,6 +4,7 @@ require 'database/exceptions'
 require 'documents/conventions'
 require 'constants/documents'
 require 'database/commands'
+require 'documents/document_query'
 require 'utilities/type_utilities'
 require 'utilities/observable'
 
@@ -504,6 +505,18 @@ module RavenDB
     def initialize(document_session, request_executor)
       @session = document_session
       @request_executor = request_executor
+    end
+
+    def raw_query(query, params = {}, options = nil)
+      document_query = RawDocumentQuery.create(@session, @request_executor, options)
+      document_query.raw_query(query)
+
+      if params.is_a?(Hash) && !params.empty?
+        params.each {|param, value| document_query.add_parameter(param, value)}
+      end
+
+      emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
+      document_query
     end
   end
 end
