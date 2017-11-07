@@ -1,4 +1,4 @@
-require 'deep_clone'
+require 'active_support/core_ext/object/deep_dup'
 require 'net/http'
 require 'database/exceptions'
 require 'documents/conventions'
@@ -82,7 +82,7 @@ module RavenDB
         end
 
         ids_of_non_existing_documents = Set.new(
-          DeepClone.clone(ids)
+          ids.deep_dup
           .delete_if{|id| @documents_by_id.key?(id)}
         )
       end
@@ -120,7 +120,7 @@ module RavenDB
       is_new_document = check_result[:is_new]
 
       if is_new_document
-        original_metadata = DeepClone.clone(document.instance_variable_get('@metadata'))
+        original_metadata = document.instance_variable_get('@metadata').deep_dup
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
@@ -318,7 +318,7 @@ module RavenDB
 
         @documents_by_id.delete(id)
         changes.add_document(document)
-        changes.add_command(PutCommandData.new(id, DeepClone.clone(raw_entity), change_vector))
+        changes.add_command(PutCommandData.new(id, raw_entity.deep_dup, change_vector))
       end
     end
 
@@ -366,8 +366,8 @@ module RavenDB
             info = info.merge({
               :change_vector => command_result['@change-vector'],
               :metadata => metadata,
-              :original_value => DeepClone.clone(conventions.convert_to_raw_entity(document)),
-              :original_metadata => DeepClone.clone(metadata)
+              :original_value => conventions.convert_to_raw_entity(document).deep_dup,
+              :original_metadata => metadata.deep_dup
             })
 
             @documents_by_id[command_result["@id"]] = document
@@ -433,7 +433,7 @@ module RavenDB
 
       @documents_by_id[document_id] = document
       @raw_entities_and_metadata[document] = {
-        :original_value => DeepClone.clone(original_value_source),
+        :original_value => original_value_source.deep_dup,
         :original_metadata => conversion_result[:original_metadata],
         :metadata => conversion_result[:metadata],
         :change_vector => conversion_result[:metadata]['@change-vector'] || nil,

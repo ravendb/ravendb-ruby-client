@@ -1,5 +1,5 @@
 require 'date'
-require 'deep_clone'
+require 'active_support/core_ext/object/deep_dup'
 require "database/exceptions"
 
 module RavenDB
@@ -51,7 +51,7 @@ module RavenDB
         'Invalid keys argument passed. Should be an Array' unless
         keys.is_a?(Array)
 
-      copy = DeepClone.clone(hash)
+      copy = hash.deep_dup
       copy.delete_if {|key| keys.include?(key)}
 
       copy
