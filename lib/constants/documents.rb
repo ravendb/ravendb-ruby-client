@@ -29,6 +29,7 @@ module RavenDB
 
   class RavenServerEvent
     EVENT_QUERY_INITIALIZED = "query:initialized"
+    EVENT_QUERY_FIELD_VALIDATED = "query:validated"
     EVENT_DOCUMENTS_QUERIED = "queried:documents"
     EVENT_DOCUMENT_FETCHED = "fetched:document"
     EVENT_INCLUDES_FETCHED = "fetched:includes"
