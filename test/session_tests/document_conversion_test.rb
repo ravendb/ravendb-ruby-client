@@ -37,6 +37,20 @@ class DocumentConversionTest < TestBase
     end
   end
 
+  def test_should_convert_on_query
+    @_store.open_session do |session|
+      results = session.advanced.raw_query(
+        "FROM TestConversions WHERE date > $now", {
+        :now => RavenDB::TypeUtilities::stringify_date(NOW)
+      })
+      .wait_for_non_stale_results
+      .all
+
+      assert_equal(results.size, 1)
+      check_doc('TestConversions/2', results.first)
+    end
+  end
+
   protected
   def make_document(id = nil, date = NOW)
     TestConversion.new(

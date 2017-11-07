@@ -110,8 +110,14 @@ class Product
   )
     @id = id
     @name = name
-    @uid = uid
-    @ordering = ordering
+
+    unless uid.nil?
+      @uid = uid
+    end
+
+    unless ordering.nil?
+      @ordering = ordering
+    end
   end
 end
 

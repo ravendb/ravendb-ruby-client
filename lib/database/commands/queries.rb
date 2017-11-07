@@ -63,7 +63,7 @@ module RavenDB
       result = super(response)
 
       if response.is_a?(Net::HTTPNotFound)
-        raise InvalidOperationException, "Error querying index or collection: #{@index_query.query}"
+        raise IndexDoesNotExistException, "Error querying index or collection: #{@index_query.query}"
       end
 
       result
