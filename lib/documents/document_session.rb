@@ -15,6 +15,7 @@ module RavenDB
     attr_reader :number_of_requests_in_session
 
     def initialize(db_name, document_store, id, request_executor)
+      @advanced = nil
       @database = db_name
       @document_store = document_store
       @session_id = id
@@ -516,6 +517,11 @@ module RavenDB
       end
 
       emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
+
+      if block_given?
+        yield(document_query)
+      end
+
       document_query
     end
   end

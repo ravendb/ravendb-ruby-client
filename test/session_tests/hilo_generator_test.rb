@@ -1,6 +1,5 @@
 require 'ravendb'
 require 'spec_helper'
-require 'documents/hilo'
 
 class HiloGeneratorTest < TestBase
   COLLECTION = "Products"

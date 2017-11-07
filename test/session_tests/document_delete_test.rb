@@ -1,6 +1,5 @@
 require 'ravendb'
 require 'spec_helper'
-require 'database/exceptions'
 
 class DocumentDeleteTest < TestBase
   IDS = [101, 10, 106, 107]
