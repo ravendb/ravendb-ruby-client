@@ -1,5 +1,5 @@
 require 'date'
-require 'deep_clone'
+require 'active_support/core_ext/object/deep_dup'
 require 'active_support/inflector'
 require 'database/exceptions'
 require 'utilities/type_utilities'
@@ -68,7 +68,7 @@ module RavenDB
           raw_entity.is_a?(Hash)
 
       metadata = raw_entity.fetch('@metadata', {})
-      original_metadata = DeepClone.clone(metadata)
+      original_metadata = metadata.deep_dup
       doc_type = document_type || metadata['Raven-Ruby-Type']
       doc_ctor = get_document_constructor(doc_type)
       attributes = TypeUtilities::omit_keys(raw_entity, ['@metadata'])
