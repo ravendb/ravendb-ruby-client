@@ -34,7 +34,7 @@ class Product
     manufacturer = '',
     in_stock = false,
     last_update = nil
-  ) {
+  )
     @id = id
     @title = title
     @price = price
@@ -43,7 +43,7 @@ class Product
     @manufacturer = manufacturer
     @in_stock = in_stock
     @last_update = last_update
-  }
+  end
 end
 ```
 
