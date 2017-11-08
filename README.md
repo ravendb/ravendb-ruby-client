@@ -106,7 +106,7 @@ product = Product.new('iPhone X', 999.99, 'USD', 64, 'Apple', true, DateTime.new
 RavenDB.store.open_session do |session|
   product = session.store(product)
   
-  puts product.id // will output Products/<some number>-<some letter (server node tag)> e.g. Products/1-A
+  puts product.id # will output Products/<some number>-<some letter (server node tag)> e.g. Products/1-A
   session.save_changes
 end  
 ```
@@ -117,8 +117,8 @@ end
 RavenDB.store.open_session do |session|
   product = session.load('Products/1-A')
   
-  puts product.title // iPhone X
-  puts product.id // Products/1-A
+  puts product.title # iPhone X
+  puts product.id # Products/1-A
 end
 ```
 
@@ -135,8 +135,8 @@ RavenDB.store.open_session do |session|
 
   product = session.load('Products/1-A')
   
-  puts product.in_stock.inspect // false
-  puts product.last_update // outputs current date
+  puts product.in_stock.inspect # false
+  puts product.last_update # outputs current date
 end  
 ```
 
@@ -152,7 +152,7 @@ RavenDB.store.open_session do |session|
   session.save_changes
 
   product = session.load('Products/1-A')
-  puts product.inspect // nil
+  puts product.inspect # nil
 end
 ```
 
