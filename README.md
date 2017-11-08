@@ -148,7 +148,7 @@ RavenDB.store.open_session do |session|
   
   session.delete(product)
   # or you can just do
-  # await session.delete('Products/1-A')
+  # session.delete('Products/1-A')
   session.save_changes
 
   product = session.load('Products/1-A')
