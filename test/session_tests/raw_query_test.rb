@@ -296,6 +296,8 @@ class RawQueryTest < TestBase
         "SELECT doc_id", {
         :from => 2,
         :to => 4
+      }, {
+        :document_type => Product
       })
       .wait_for_non_stale_results
       .all
