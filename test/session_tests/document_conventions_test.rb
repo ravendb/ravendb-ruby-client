@@ -1,6 +1,5 @@
 require 'ravendb'
 require 'spec_helper'
-require 'utilities/type_utilities'
 
 class DocumentConventionsTest < TestBase
   def setup

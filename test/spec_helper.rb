@@ -2,13 +2,6 @@ require 'ravendb'
 require 'date'
 require 'securerandom'
 require 'minitest/autorun'
-require 'requests/request_executor'
-require 'requests/request_helpers'
-require 'documents/document_query'
-require "documents/indexes"
-require 'database/operations'
-require 'database/commands'
-require 'documents/conventions'
 
 module MiniTest
   module Assertions
@@ -117,8 +110,14 @@ class Product
   )
     @id = id
     @name = name
-    @uid = uid
-    @ordering = ordering
+
+    unless uid.nil?
+      @uid = uid
+    end
+
+    unless ordering.nil?
+      @ordering = ordering
+    end
   end
 end
 
@@ -151,5 +150,73 @@ class Order
     @name = name
     @uid = uid
     @product_id = product_id
+  end
+end
+
+class LastFm
+  attr_accessor :id, :artist, :track_id,
+                :title, :datetime_time, :tags
+
+  def initialize(
+    id = nil,
+    artist = "",
+    track_id = "",
+    title = "",
+    datetime_time = DateTime.now,
+    tags = []
+  )
+    @id = id
+    @artist = artist
+    @track_id = track_id
+    @title = title
+    @datetime_time = datetime_time
+    @tags = tags
+  end
+end
+
+class LastFmAnalyzed
+  def initialize(store)
+    index_map =  "from song in docs.LastFms "\
+      "select new {"\
+      "query = new object[] {"\
+      "song.artist,"\
+      "((object)song.datetime_time),"\
+      "song.tags,"\
+      "song.title,"\
+      "song.track_id}}"
+
+    @store = store
+    @index_definition = RavenDB::IndexDefinition.new(
+      self.class.name, index_map, nil, {
+      :fields => {
+        "query" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::Search)
+      }
+    })
+  end
+
+  def execute
+    @store.operations.send(RavenDB::PutIndexesOperation.new(@index_definition))
+  end
+end
+
+class ProductsTestingSort
+  def initialize(store)
+    index_map =  'from doc in docs '\
+      'select new {'\
+      'name = doc.name,'\
+      'uid = doc.uid,'\
+      'doc_id = doc.uid+"_"+doc.name}'
+
+    @store = store
+    @index_definition = RavenDB::IndexDefinition.new(
+      'Testing_Sort', index_map, nil, {
+      :fields => {
+        "doc_id" => RavenDB::IndexFieldOptions.new(nil, true)
+      }
+    })
+  end
+
+  def execute
+    @store.operations.send(RavenDB::PutIndexesOperation.new(@index_definition))
   end
 end

@@ -5,7 +5,7 @@ require 'date'
 require "net/http"
 require "utilities/json"
 require "database/exceptions"
-require "documents/document_query"
+require 'documents/query/index_query'
 require "documents/indexes"
 require "requests/request_helpers"
 require "utilities/type_utilities"

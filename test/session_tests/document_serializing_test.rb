@@ -1,7 +1,5 @@
 require 'ravendb'
 require 'spec_helper'
-require 'utilities/json'
-require 'utilities/type_utilities'
 
 class DocumentSerializingTest < TestBase
   def setup

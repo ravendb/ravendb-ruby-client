@@ -4,6 +4,7 @@ require 'database/exceptions'
 require 'documents/conventions'
 require 'constants/documents'
 require 'database/commands'
+require 'documents/document_query'
 require 'utilities/type_utilities'
 require 'utilities/observable'
 
@@ -14,6 +15,7 @@ module RavenDB
     attr_reader :number_of_requests_in_session
 
     def initialize(db_name, document_store, id, request_executor)
+      @advanced = nil
       @database = db_name
       @document_store = document_store
       @session_id = id
@@ -504,6 +506,23 @@ module RavenDB
     def initialize(document_session, request_executor)
       @session = document_session
       @request_executor = request_executor
+    end
+
+    def raw_query(query, params = {}, options = nil)
+      document_query = RawDocumentQuery.create(@session, @request_executor, options)
+      document_query.raw_query(query)
+
+      if params.is_a?(Hash) && !params.empty?
+        params.each {|param, value| document_query.add_parameter(param, value)}
+      end
+
+      emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
+
+      if block_given?
+        yield(document_query)
+      end
+
+      document_query
     end
   end
 end

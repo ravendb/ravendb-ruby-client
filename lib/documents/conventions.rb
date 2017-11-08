@@ -54,10 +54,12 @@ module RavenDB
       Object.const_get(document_type)
     end
 
-    def get_id_property_name(document)
+    def get_id_property_name(document_or_class)
       raise InvalidOperationException,
-        'Invalid argument passed. Should be an document' unless
-        TypeUtilities::is_document?(document)
+        'Invalid argument passed. Should be an document, class constructor or document type name' unless
+        (TypeUtilities::is_document?(document_or_class) ||
+            document_or_class.is_a?(Class) ||
+            document_or_class.is_a?(String))
 
       'id'
     end
