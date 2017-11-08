@@ -70,8 +70,18 @@ module RavenDB
           raw_entity.is_a?(Hash)
 
       metadata = raw_entity.fetch('@metadata', {})
-      original_metadata = metadata.deep_dup
       doc_type = document_type || metadata['Raven-Ruby-Type']
+
+      if doc_type.is_a?(Class)
+        doc_type = document_type.name
+      end
+
+      if doc_type.nil?
+        doc_type = 'Object'
+      end
+
+      metadata = raw_entity.fetch('@metadata', {})
+      original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
       attributes = TypeUtilities::omit_keys(raw_entity, ['@metadata'])
       document = JsonSerializer::from_json(doc_ctor.new, attributes, metadata, nested_object_types)

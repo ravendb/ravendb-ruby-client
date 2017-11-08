@@ -288,22 +288,21 @@ class RawQueryTest < TestBase
     end
   end
 
-  #TODO: resolve issue with converting projections objects to docs
-  # def test_should_query_select_fields
-  #   @_store.open_session do |session|
-  #     results = session.advanced.raw_query(
-  #       "FROM Products "\
-  #       "WHERE exact(uid BETWEEN $from AND $to)"\
-  #       "SELECT doc_id", {
-  #       :from => 2,
-  #       :to => 4
-  #     })
-  #     .wait_for_non_stale_results
-  #     .all
-  #
-  #     assert(results.all?{|result| result.instance_variable_defined?('@doc_id')})
-  #   end
-  # end
+  def test_should_query_select_fields
+    @_store.open_session do |session|
+      results = session.advanced.raw_query(
+        "FROM INDEX 'Testing_Sort' "\
+        "WHERE exact(uid BETWEEN $from AND $to)"\
+        "SELECT doc_id", {
+        :from => 2,
+        :to => 4
+      })
+      .wait_for_non_stale_results
+      .all
+
+      assert(results.all?{|result| result.instance_variable_defined?('@doc_id')})
+    end
+  end
 
   def test_should_search_by_single_keyword
     @_store.open_session do |session|
