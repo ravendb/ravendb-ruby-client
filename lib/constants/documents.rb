@@ -1,30 +1,77 @@
 module RavenDB
-  class RQLWhereOperator
-    Equals = "equals"
-    In = "in"
-    Between = "between"
-    EqualBetween = "equal_between"
-    Search = "search"
-    StartsWith = "starts_with"
-    EndsWith = "ends_with"
+  class SearchOperator
+    Or = 'OR'
+    And = 'AND'
   end
 
-  class RQLJoinOperator
-    OR = "OR"
-    AND = "AND"
-    NOT = "NOT"
+  class QueryOperator < SearchOperator
+    Not = 'NOT'
+  end
 
-    def self.isAnd(operator)
-      return self::AND == operator
-    end
+  class QueryKeyword
+    Select = 'SELECT'
+    Distinct = 'DISTINCT'
+    As = 'AS'
+    From = 'FROM'
+    Index = 'INDEX'
+    Include = 'INCLUDE'
+    Where = 'WHERE'
+    Group = 'GROUP'
+    Order = 'ORDER'
+    Load = 'LOAD'
+    By = 'BY'
+    Asc = 'ASC'
+    Desc = 'DESC'
+    In = 'IN'
+    Between = 'BETWEEN'
+    All = 'ALL'
+    Update = 'UPDATE'
+  end
 
-    def self.isOr(operator)
-      return self::OR == operator
-    end
+  class OrderingType
+    String = 'string'
+    Long = 'long'
+    Double = 'double'
+    AlphaNumeric = 'alphaNumeric'
+  end
 
-    def self.isNot(operator)
-      return self::NOT == operator
-    end
+  class SpatialRelation
+    Within = 'within'
+    Contains = 'contains'
+    Disjoint = 'disjoint'
+    Intersects = 'intersects'
+  end
+
+  class WhereOperators < SpatialRelation
+    Equals = 'equals'
+    NotEquals = 'notEquals'
+    GreaterThan = 'greaterThan'
+    GreaterThanOrEqual = 'greaterThanOrEqual'
+    LessThan = 'lessThan'
+    LessThanOrEqual = 'lessThanOrEqual'
+    In = 'in'
+    AllIn = 'allIn'
+    Between = 'between'
+    Search = 'search'
+    Lucene = 'lucene'
+    StartsWith = 'startsWith'
+    EndsWith = 'endsWith'
+    Exists = 'exists'
+  end
+
+  class FieldConstants
+    CustomSortFieldName = "__customSort"
+    DocumentIdFieldName = "id()"
+    ReduceKeyHashFieldName = "hash(key())"
+    ReduceKeyValueFieldName = "key()"
+    AllFields = "__all_fields"
+    AllStoredFields = "__all_stored_fields"
+    SpatialShapeFieldName = "spatial(shape)"
+    RangeFieldSuffix = "_Range"
+    RangeFieldSuffixLong = "_L_Range"
+    RangeFieldSuffixDouble = "_D_Range"
+    NullValue = "NULL_VALUE"
+    EmptyString = "EMPTY_STRING"
   end
 
   class RavenServerEvent
