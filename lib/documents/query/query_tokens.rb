@@ -391,7 +391,164 @@ module RavenDB
     attr_accessor :boost, :fuzzy, :proximity
     attr_reader :field_name, :where_operator, :search_operator,
                 :parameter_name, :from_parameter_name, :to_parameter_name,
-                :exact, :where_spahe, :distance_error_pct
+                :exact, :where_shape, :distance_error_pct
+
+    def self.equals(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::Equals
+      })
+    end
+
+    def self.not_equals(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::NotEquals
+      })
+    end
+
+    def self.starts_with(field_name, parameter_name)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :where_operator => WhereOperator::StartsWith
+      })
+    end
+
+    def self.ends_with(field_name, parameter_name)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :where_operator => WhereOperator::EndsWith
+      })
+    end
+
+    def self.greater_than(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::GreaterThan
+      })
+    end
+
+    def self.greater_than_or_equal(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::GreaterThanOrEqual
+      })
+    end
+
+    def self.less_than(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::LessThan
+      })
+    end
+
+    def self.less_than_or_equal(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::LessThanOrEqual
+      })
+    end
+
+    def self.in(field_name, parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::In
+      })
+    end
+
+    def self.all_in(field_name, parameter_name)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :where_operator => WhereOperator::AllIn
+      })
+    end
+
+    def self.between(field_name, from_parameter_name, to_parameter_name, exact = false)
+      self.new({
+        :field_name => field_name,
+        :from_parameter_name => from_parameter_name,
+        :to_parameter_name => to_parameter_name,
+        :exact => exact,
+        :where_operator => WhereOperator::Between
+      })
+    end
+
+    def self.search(field_name, parameter_name, op = SearchOperator::And)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :search_operator => op,
+        :where_operator => WhereOperator::Search
+      })
+    end
+
+    def self.lucene(field_name, parameter_name)
+      self.new({
+        :field_name => field_name,
+        :parameter_name => parameter_name,
+        :where_operator => WhereOperator::Lucene
+      })
+    end
+
+    def self.exists(field_name)
+      self.new({
+        :field_name => field_name,
+        :where_operator => WhereOperator::Exists
+      })
+    end
+
+    def self.within(field_name, shape, distance_error_pct)
+      self.new({
+        :field_name => field_name,
+        :where_shape => shape,
+        :distance_error_pct => distance_error_pct,
+        :where_operator => WhereOperator::Within
+      })
+    end
+
+    def self.contains(field_name, shape, distance_error_pct)
+      self.new({
+        :field_name => field_name,
+        :where_shape => shape,
+        :distance_error_pct => distance_error_pct,
+        :where_operator => WhereOperator::Contains
+      })
+    end
+
+    def self.disjoint(field_name, shape, distance_error_pct)
+      self.new({
+        :field_name => field_name,
+        :where_shape => shape,
+        :distance_error_pct => distance_error_pct,
+        :where_operator => WhereOperator::Disjoint
+      })
+    end
+
+    def self.intersects(field_name, shape, distance_error_pct)
+      self.new({
+        :field_name => field_name,
+        :where_shape => shape,
+        :distance_error_pct => distance_error_pct,
+        :where_operator => WhereOperator::Intersects
+      })
+    end
 
     def initialize(where_options)
       super
@@ -408,6 +565,159 @@ module RavenDB
       @exact = where_options[:exact] || false
       @distance_error_pct = where_options[:distance_error_pct] || nil
       @where_shape = where_options[:where_shape] || nil
+    end
+
+    def write_to(writer)
+      unless @boost.nil?
+        writer.append("boost(")
+      end
+
+      unless @fuzzy.nil?
+        writer.append("fuzzy(")
+      end
+
+      unless @proximity.nil?
+        writer.append("proximity(")
+      end
+
+      if @exact
+        writer.append("exact(")
+      end
+
+      case @where_operator
+        when WhereOperator::Search,
+             WhereOperator::Lucene,
+             WhereOperator::StartsWith,
+             WhereOperator::EndsWith,
+             WhereOperator::Exists,
+             WhereOperator::Within,
+             WhereOperator::Contains,
+             WhereOperator::Disjoint,
+             WhereOperator::Intersects
+          writer
+            .append(@where_operator)
+            .append("(")
+      end
+
+      write_field(writer, @field_name)
+
+      case @where_operator
+        when WhereOperator::In
+          writer
+            .append(" ")
+            .append(QueryKeywords.In)
+            .append(" ($")
+            .append(@parameter_name)
+            .append(")")
+        when WhereOperator::AllIn
+          writer
+            .append(" ")
+            .append(QueryKeywords.All)
+            .append(" ")
+            .append(QueryKeywords.In)
+            .append(" ($")
+            .append(@parameter_name)
+            .append(")")
+        when WhereOperator::Between
+          writer
+            .append(" ")
+            .append(QueryKeywords.Between)
+            .append(" $")
+            .append(@from_parameter_name)
+            .append(" ")
+            .append(QueryOperators.And)
+            .append(" $")
+            .append(@to_parameter_name)
+        when WhereOperator::Equals
+          writer
+            .append(" = $")
+            .append(@parameter_name)
+        when WhereOperator::NotEquals
+          writer
+            .append(" != $")
+            .append(@parameter_name)
+        when WhereOperator::GreaterThan
+          writer
+            .append(" > $")
+            .append(@parameter_name)
+        when WhereOperator::GreaterThanOrEqual
+          writer
+            .append(" >= $")
+            .append(@parameter_name)
+        when WhereOperator::LessThan
+          writer
+            .append(" < $")
+            .append(@parameter_name)
+        when WhereOperator::LessThanOrEqual
+          writer
+            .append(" <= $")
+            .append(@parameter_name)
+        when WhereOperator::Search
+          writer
+            .append(", $")
+            .append(@parameter_name)
+
+          if @search_operator === SearchOperator::And
+            writer
+              .append(", ")
+              .append(@search_operator)
+          end
+
+          writer.append(")")
+        when WhereOperator::Lucene,
+             WhereOperator::StartsWith,
+             WhereOperator::EndsWith
+          writer
+            .append(", $")
+            .append(@parameter_name)
+            .append(")")
+        when WhereOperator::Exists
+          writer
+            .append(")")
+        when WhereOperator::Within,
+             WhereOperator::Contains,
+             WhereOperator::Disjoint,
+             WhereOperator::Intersects
+          writer
+            .append(", ")
+
+          @where_shape.write_to(writer)
+
+          if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
+            writer.append(", ")
+            writer.append(@distance_error_pct.to_s)
+          end
+
+          writer
+            .append(")")
+        else
+          raise ArgumentOutOfRangeException, "Invalid where operator provided"
+      end
+
+      if @exact
+        writer.append(")")
+      end
+
+      unless @proximity.nil?
+        writer
+          .append(", ")
+          .append(@proximity.to_s)
+          .append(")")
+      end
+
+      unless @fuzzy.nil?
+        writer
+          .append(", ")
+          .append(@fuzzy.to_s)
+          .append(")")
+      end
+
+      unless @boost.nil?
+        writer
+          .append(", ")
+          .append(@boost.to_s)
+          .append(")")
+      end
     end
   end
 end

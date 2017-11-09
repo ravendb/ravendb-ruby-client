@@ -42,7 +42,7 @@ module RavenDB
     Intersects = 'intersects'
   end
 
-  class WhereOperators < SpatialRelation
+  class WhereOperator < SpatialRelation
     Equals = 'equals'
     NotEquals = 'notEquals'
     GreaterThan = 'greaterThan'
@@ -72,6 +72,12 @@ module RavenDB
     RangeFieldSuffixDouble = "_D_Range"
     NullValue = "NULL_VALUE"
     EmptyString = "EMPTY_STRING"
+  end
+
+  class SpatialConstants
+    DefaultDistanceErrorPct = 0.025
+    EarthMeanRadiusKm = 6371.0087714
+    MilesToKm = 1.60934
   end
 
   class RavenServerEvent
