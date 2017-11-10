@@ -40,7 +40,7 @@ module RavenDB
         projections = fields
       end
 
-      update_fields_to_fetch_token(FieldsToFetchToken.create(fields, projections))
+      update_fields_to_fetch_token(FieldsToFetchToken::create(fields, projections))
       self
     end
 
@@ -67,7 +67,7 @@ module RavenDB
     end
 
     def from(index_name = nil, collection_name = nil)
-      @from_token = FromToken.create(index_name, collection_name)
+      @from_token = FromToken::create(index_name, collection_name)
 
       self
     end
@@ -88,8 +88,8 @@ module RavenDB
       assert_no_raw_query
 
       @order_by_tokens.add_last(seed ?
-        OrderByToken.create_random(seed) :
-        OrderByToken.random
+        OrderByToken::create_random(seed) :
+        OrderByToken::random
       )
 
       self
@@ -129,7 +129,7 @@ module RavenDB
       params[:field_name] = ensure_valid_field_name(params[:field_name], params[:is_nested_path])
 
       append_operator_if_needed(@where_tokens)
-      @where_tokens.add_last(WhereToken.equals(params[:field_name], params[:parameter_name], params[:exact]))
+      @where_tokens.add_last(WhereToken::equals(params[:field_name], params[:parameter_name], params[:exact]))
 
       self
     end
@@ -154,7 +154,7 @@ module RavenDB
       params[:field_name] = ensure_valid_field_name(params[:field_name], params[:is_nested_path])
 
       append_operator_if_needed(@where_tokens)
-      @where_tokens.add_last(WhereToken.not_equals(params[:field_name], params[:parameter_name], params[:exact]))
+      @where_tokens.add_last(WhereToken::not_equals(params[:field_name], params[:parameter_name], params[:exact]))
 
       self
     end
@@ -163,14 +163,14 @@ module RavenDB
       @current_clause_depth = @current_clause_depth + 1
       append_operator_if_needed(@where_tokens)
       negate_if_needed
-      @where_tokens.add_last(OpenSubclauseToken.instance)
+      @where_tokens.add_last(OpenSubclauseToken::instance)
 
       self
     end
 
     def close_subclause
       @current_clause_depth = @current_clause_depth - 1
-      @where_tokens.add_last(CloseSubclauseToken.instance)
+      @where_tokens.add_last(CloseSubclauseToken::instance)
 
       self
     end
@@ -181,13 +181,112 @@ module RavenDB
       self
     end
 
+    def where_in(field_name, parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::in(field_name, parameter_name, exact))
+
+      self
+    end
+
+    def where_all_in(field_name, parameter_name)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::all_in(field_name, parameter_name))
+
+      self
+    end
+
+    def where_starts_with(field_name, parameter_name)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::starts_with(field_name, parameter_name))
+
+      self
+    end
+
+    def where_ends_with(field_name, parameter_name)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::ends_with(field_name, parameter_name))
+
+      self
+    end
+
+    def where_between(field_name, from_parameter_name, to_parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::between(field_name, from_parameter_name, to_parameter_name, exact))
+
+      self
+    end
+
+    def where_greater_than(field_name, parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::greater_than(field_name, parameter_name, exact))
+
+      self
+    end
+
+    def where_greater_than_or_equal(field_name, parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::greater_than_or_equal(field_name, parameter_name, exact))
+
+      self
+    end
+
+    def where_less_than_or_equal(field_name, parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::less_than_or_equal(field_name, parameter_name, exact))
+
+      self
+    end
+
+    def where_less_than(field_name, parameter_name, exact = false)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken::less_than(field_name, parameter_name, exact))
+
+      self
+    end
+
     def where_exists(field_name)
       field_name = ensure_valid_field_name(field_name)
 
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken.exists(field_name))
+      @where_tokens.add_last(WhereToken::exists(field_name))
 
       self
     end
@@ -201,7 +300,58 @@ module RavenDB
         raise InvalidOperationException, "Cannot add AND, previous token was already an operator token."
       end
 
-      @where_tokens.add_last(QueryOperatorToken.And)
+      @where_tokens.add_last(QueryOperatorToken::And)
+
+      self
+    end
+
+    def or_else
+      if @where_tokens.last.nil?
+          return self
+      end
+
+      if @where_tokens.last.value.is_a?(QueryOperatorToken)
+        raise InvalidOperationException, "Cannot add OR, previous token was already an operator token."
+      end
+
+      @where_tokens.add_last(QueryOperatorToken::Or)
+
+      self
+    end
+
+    def boost(boost)
+      if 1 == boost
+        return self
+      end
+
+      if boost <= 0
+        raise ArgumentOutOfRangeException, "Boost factor must be a positive number"
+      end
+
+      where_token = find_last_where_token
+      where_token.boost = boost
+
+      self
+    end
+
+    def fuzzy(fuzzy)
+      if (fuzzy < 0) || (fuzzy > 1)
+        raise ArgumentOutOfRangeException, "Fuzzy distance must be between 0.0 and 1.0"
+      end
+
+      where_token = find_last_where_token
+      where_token.fuzzy = fuzzy
+
+      self
+    end
+
+    def proximity(proximity)
+      if proximity < 1
+        raise ArgumentOutOfRangeException, "Proximity distance must be a positive number"
+      end
+
+      where_token = find_last_where_token
+      where_token.proximity = proximity
 
       self
     end
@@ -210,7 +360,7 @@ module RavenDB
       assert_no_raw_query
 
       field = ensure_valid_field_name(field)
-      @order_by_tokens.add_last(OrderByToken.create_ascending(field, ordering_type))
+      @order_by_tokens.add_last(OrderByToken::create_ascending(field, ordering_type))
 
       self
     end
@@ -219,7 +369,54 @@ module RavenDB
       assert_no_raw_query
 
       field = ensure_valid_field_name(field)
-      @order_by_tokens.add_last(OrderByToken.create_descending(field, ordering_type))
+      @order_by_tokens.add_last(OrderByToken::create_descending(field, ordering_type))
+
+      self
+    end
+
+    def order_by_score
+      assert_no_raw_query
+      @order_by_tokens.add_last(OrderByToken::score_ascending)
+
+      self
+    end
+
+    def order_by_score_descending
+      assert_no_raw_query
+      @order_by_tokens.add_last(OrderByToken::score_descending)
+
+      self
+    end
+
+    def search(field_name, search_terms_parameter_name, operator = SearchOperator::Or)
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.addLast(WhereToken::search(field_name, search_terms_parameter_name, operator))
+
+      self
+    end
+
+    #TODO: intersect
+
+    def distinct
+      if @is_distinct
+        raise InvalidOperationException, "This is already a distinct query."
+      end
+
+      @is_distinct = true
+      @select_tokens.add_first(DistinctToken::instance)
+
+      self
+    end
+
+    def where_true
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed
+
+      @where_tokens.addLast(TrueToken::instance)
 
       self
     end
@@ -276,10 +473,10 @@ module RavenDB
       end
 
       token = (QueryOperator::And == @default_operator) ?
-        QueryOperatorToken.and : QueryOperatorToken.or
+        QueryOperatorToken::and : QueryOperatorToken::or
 
       unless last_where.nil? || last_where.search_operator.nil?
-        token = QueryOperatorToken.Or
+        token = QueryOperatorToken::Or
       end
 
       tokens.add_last(token)
@@ -298,7 +495,22 @@ module RavenDB
         and_also
       end
 
-      @where_tokens.add_last(NegateToken.instance)
+      @where_tokens.add_last(NegateToken::instance)
+    end
+
+    def find_last_where_token
+      last_token = @where_tokens.last
+      where_token = nil
+
+      unless last_token.nil?
+        where_token = last_token.value
+      end
+
+      raise InvalidOperationException,
+        "Missing where clause" unless
+        where_token.is_a?(WhereToken)
+
+      where_token
     end
 
     def update_fields_to_fetch_token(fields_to_fetch)
