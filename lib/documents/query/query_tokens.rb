@@ -1,7 +1,7 @@
 require 'stringio'
 require 'constants/documents'
 require 'database/exceptions'
-require 'utilities/string_builder'
+require 'utilities/string_utility'
 
 module RavenDB
   class QueryToken

@@ -38,7 +38,7 @@ module RavenDB
 
     def to_query_token(field_name, &spatial_parameter_name_generator)
       relation_token = nil
-      shape_token = get_shape_token(spatial_parameter_name_generator)
+      shape_token = get_shape_token(&spatial_parameter_name_generator)
 
       case @relation
         when SpatialRelations::Intersects
