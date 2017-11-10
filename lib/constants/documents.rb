@@ -80,6 +80,11 @@ module RavenDB
     MilesToKm = 1.60934
   end
 
+  class SpatialUnit
+    Kilometers = 'Kilometers'
+    Miles = 'Miles'
+  end
+
   class RavenServerEvent
     EVENT_QUERY_INITIALIZED = "query:initialized"
     EVENT_QUERY_FIELD_VALIDATED = "query:validated"
