@@ -1,16 +1,17 @@
+require 'date'
 require 'digest'
 require 'active_support/inflector'
+require 'constants/documents'
 require 'database/commands'
 require 'database/exceptions'
 require 'documents/query/index_query'
 require 'documents/query/query_builder'
 require 'utilities/observable'
+require 'utilities/type_utilities'
 
 module RavenDB
   class DocumentQueryBase
     include Observable
-
-    attr_reader :index_name, :collection_name
 
     def self.create(session, request_executor, options = nil)
       with_statistics = false
@@ -294,6 +295,460 @@ module RavenDB
       @query_parameters[name] = value
 
       self
+    end
+  end
+
+  class DocumentQuery < DocumentQueryBase
+    attr_reader :index_name, :collection_name
+
+    def not
+      negate_next
+      self
+    end
+
+    def is_dynamic_map_reduce
+      @builder.is_dynamic_map_reduce
+    end
+
+    def select_fields(fields, projections = nil)
+      @builder.select_fields(fields, projections)
+
+      self
+    end
+
+    def get_projection_fields
+      @builder.get_projections_fields
+    end
+
+    def random_ordering(seed = nil)
+      @builder.random_ordering(seed)
+
+      self
+    end
+
+    def custom_sort_using(type_name, descending = nil)
+      @builder.custom_sort_using(type_name, descending)
+
+      self
+    end
+
+    def include(path)
+      @builder.include(path)
+
+      self
+    end
+
+    def using_default_operator(operator)
+      @builder.using_default_operator(operator)
+
+      self
+    end
+
+    def where_equals(where_params_or_field_name, value = nil, exact = false)
+      where_params = where_params_or_field_name
+      field_name = where_params_or_field_name
+
+      if field_name.is_a?(String)
+        return where_equals({
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        })
+      end
+
+      transformed_value = transform_value(where_params)
+      @builder.where_equals(parametrize(where_params, add_query_parameter(transformed_value)))
+
+      self
+    end
+
+    def where_not_equals(where_params_or_field_name, value = nil, exact = false)
+      where_params = where_params_or_field_name
+      field_name = where_params_or_field_name
+
+      if field_name.is_a?(String)
+        return where_not_equals({
+            :field_name => field_name,
+            :value => value,
+            :exact => exact
+        })
+      end
+
+      transformed_value = transform_value(where_params)
+      @builder.where_not_equals(parametrize(where_params, add_query_parameter(transformed_value)))
+
+      self
+    end
+
+    def open_subclause
+      @builder.open_subclause
+
+      self
+    end
+
+    def close_subclause
+      @builder.close_subclause
+
+      self
+    end
+
+    def negate_next
+      @builder.negate_next
+
+      self
+    end
+
+    def where_in(field_name, values, exact = false)
+      transformed_values = transform_values_array(field_name, values)
+      @builder.where_in(field_name, add_query_parameter(transformed_values), exact)
+
+      @self
+    end
+
+    def where_starts_with(field_name, value)
+      transformed_value = transform_value({
+        :field_name => field_name,
+        :value => value,
+        :allow_wildcards => true
+      })
+
+      @builder.where_starts_with(field_name, add_query_parameter(transformed_value))
+      self
+    end
+
+    def where_ends_with(field_name, value)
+      transformed_value = transform_value({
+        :field_name => field_name,
+        :value => value,
+        :allow_wildcards => true
+      })
+
+      @builder.where_ends_with(field_name, add_query_parameter(transformed_value))
+      self
+    end
+
+    def where_between(field_name, from, to, exact = nil)
+      transformed_from = '*'
+      transformed_to = 'NULL'
+
+      unless from.nil?
+        transformed_from = transform_value({
+          :field_name => field_name,
+          :value => from,
+          :exact => exact
+        })
+      end
+
+      unless to.nil?
+        transformed_to = transform_value({
+          :field_name => field_name,
+          :value => from,
+          :exact => exact
+        })
+      end
+
+      @builder.where_between(
+        field_name, add_query_parameter(transformed_from),
+        add_query_parameter(transformed_to), exact
+      )
+
+      self
+    end
+
+    def where_greater_than(field_name, value, exact = nil)
+      transformed_value = '*'
+
+      unless value.nil?
+        transformed_value = transform_value({
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        })
+      end
+
+      @builder.where_greater_than(field_name, add_query_parameter(transformed_value), exact)
+      self
+    end
+
+    def where_greater_than_or_equal(field_name, value, exact = nil)
+      transformed_value = '*'
+
+      unless value.nil?
+        transformed_value = transform_value({
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        })
+      end
+
+      @builder.where_greater_than_or_equal(field_name, add_query_parameter(transformed_value), exact)
+      self
+    end
+
+    def where_less_than(field_name, value, exact = nil)
+      transformed_value = 'NULL'
+
+      unless value.nil?
+        transformed_value = transform_value({
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        })
+      end
+
+      @builder.where_less_than(field_name, add_query_parameter(transformed_value), exact)
+      self
+    end
+
+    def where_less_than_or_equal(field_name, value, exact = nil)
+      transformed_value = 'NULL'
+
+      unless value.nil?
+        transformed_value = transform_value({
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        })
+      end
+
+      @builder.where_less_than_or_equal(field_name, add_query_parameter(transformed_value), exact)
+      self
+    end
+
+    def where_exists(field_name)
+      @builder.where_exists(field_name)
+
+      self
+    end
+
+    def and_also
+      @builder.and_also
+
+      self
+    end
+
+    def or_else
+      @builder.or_else
+
+      self
+    end
+
+    def boost(boost)
+      @builder.boost(boost)
+
+      self
+    end
+
+    def fuzzy(fuzzy)
+      @builder.fuzzy(fuzzy)
+
+      self
+    end
+
+    def proximity(proximity)
+      @builder.proximity(proximity)
+
+      self
+    end
+
+    def order_by(field, ordering = nil)
+      @builder.order_by(field, ordering)
+
+      self
+    end
+
+    def order_by_descending(field, ordering = nil)
+      @builder.order_by_descending(field, ordering)
+
+      self
+    end
+
+    def order_by_score
+      @builder.order_by_score
+
+      self
+    end
+
+    def order_by_score_descending
+      @builder.order_by_score_descending
+
+      self
+    end
+
+    def search(field_name, search_terms, operator = SearchOperator::Or)
+      @builder.search(field_name, add_query_parameter(search_terms), operator)
+
+      self
+    end
+
+    def intersect
+      @builder.intersect
+
+      self
+    end
+
+    def distinct
+      @builder.distinct
+
+      self
+    end
+
+    def contains_any(field_name, values)
+      transformed_values = transform_values_array(field_name, values)
+
+      unless transformed_values.empty?
+        @builder.where_in(field_name, add_query_parameter(transformed_values))
+      end
+
+      self
+    end
+
+    def contains_all(field_name, values)
+      transformed_values = transform_values_array(field_name, values)
+
+      unless transformed_values.empty?
+        @builder.where_all_in(field_name, add_query_parameter(transformed_values))
+      end
+
+      self
+    end
+
+    def group_by(field_name, *field_names)
+      fields = [field_name]
+
+      unless field_names.empty?
+        fields = fields.concat(field_names)
+      end
+
+      @builder.send(:group_by, *fields)
+      self
+    end
+
+    def group_by_key(field_name, projected_name = nil)
+      @builder.group_by_key(field_name, projected_name)
+
+      self
+    end
+
+    def group_by_sum(field_name, projected_name = nil)
+      @builder.group_by_sum(field_name, projected_name)
+
+      self
+    end
+
+    def group_by_count(projected_name = nil)
+      @builder.group_by_count(projected_name)
+
+      self
+    end
+
+    def where_true
+      @builder.where_true
+
+      self
+    end
+
+    def within_radius_of(field_name, radius, latitude, longitude, radius_units = nil, dist_error_percent = nil)
+      @builder.within_radius_of(
+        field_name, add_query_parameter(radius), add_query_parameter(latitude),
+        add_query_parameter(longitude), radius_units, dist_error_percent
+      )
+
+      self
+    end
+
+    def spatial(field_name, shape_wkt_or_criteria, relation = nil, dist_error_percent = nil)
+      criteria = shape_wkt_or_criteria
+      shape_wkt = shape_wkt_or_criteria
+
+      if criteria.is_a?(SpatialCriteria)
+        @builder.spatial(field_name, criteria) do |parameter_value|
+          add_query_parameter(parameter_value)
+        end
+      else
+        @builder.spatial(field_name, add_query_parameter(shape_wkt), relation, dist_error_percent)
+      end
+
+      self
+    end
+
+    def order_by_distance(field_name, latitude_or_shape_wkt, longitude = nil)
+      shape_wkt = latitude_or_shape_wkt
+      latitude = latitude_or_shape_wkt
+
+      if longitude.nil?
+        @builder.order_by_distance(field_name, add_query_parameter(shape_wkt))
+      else
+        @builder.order_by_distance(field_name, add_query_parameter(latitude), add_query_parameter(longitude))
+      end
+
+      self
+    end
+
+    def order_by_distance_descending(field_name, latitude_or_shape_wkt, longitude = nil)
+      shape_wkt = latitude_or_shape_wkt
+      latitude = latitude_or_shape_wkt
+
+      if longitude.nil?
+        @builder.order_by_distance_descending(field_name, add_query_parameter(shape_wkt))
+      else
+        @builder.order_by_distance_descending(field_name, add_query_parameter(latitude), add_query_parameter(longitude))
+      end
+
+      self
+    end
+
+    protected
+    def add_query_parameter(value_or_values)
+      parameter_name = "p#{@query_parameters.size}"
+
+      @query_parameters[parameter_name] = value_or_values
+      parameter_name
+    end
+
+    def transform_value(where_params)
+      value = where_params[:value]
+
+      if value.nil?
+        return nil
+      end
+
+      if "" == value
+        return ""
+      end
+
+      if value.is_a?(Date) || value.is_a?(DateTime)
+        TypeUtilities::stringify_date(value)
+      end
+
+      raise InvalidArgumentException,
+        "Invalid value passed to query condition. "\
+        "Only integer / number / string / dates / bools and nil values are supported" unless
+        ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String))
+
+      value
+    end
+
+    def transform_values_array(field_name, values)
+      result = []
+      unpacked = values.flatten
+
+      unpacked.each do |value|
+        nested_where_params = {
+          :field_name => field_name,
+          :value => value,
+          :allow_wildcards => true
+        }
+
+        result.push(transform_value(nested_where_params))
+      end
+
+      result
+    end
+
+    def parametrize(where_params, parameter_name)
+      where_params.delete(:value)
+      where_params[:parameter_name] = parameter_name
     end
   end
 end

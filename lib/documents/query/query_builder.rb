@@ -4,6 +4,7 @@ require 'utilities/observable'
 require 'utilities/string_utility'
 require 'constants/documents'
 require 'documents/query/query_tokens'
+require 'documents/query/spatial'
 
 module RavenDB
   class QueryBuilder
@@ -399,7 +400,18 @@ module RavenDB
       self
     end
 
-    #TODO: intersect
+    def intersect
+      @last_token = @where_tokens.last
+
+      raise InvalidOperationException,
+        "Cannot add INTERSECT at this point." unless
+        (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
+
+      @is_intersect = true
+      @where_tokens.add_last(IntersectMarkerToken::instance)
+
+      self
+    end
 
     def distinct
       if @is_distinct
@@ -412,11 +424,124 @@ module RavenDB
       self
     end
 
+    def group_by(field_name, *field_names)
+      raise InvalidOperationException,
+        "GroupBy only works with dynamic queries." unless
+        @from_token.is_dynamic
+
+      assert_no_raw_query
+      @is_group_by = true
+
+      fields = [field_name]
+
+      if field_names.is_a?(Array)
+        fields = fields.concat(field_names)
+      end
+
+      fields.each do |field|
+        field = ensure_valid_field_name(field)
+        @group_by_tokens.add_last(GroupByToken::create(field))
+      end
+
+      self
+    end
+
+    def group_by_key(field_name, projected_name = nil)
+      assert_no_raw_query
+      @is_group_by = true
+
+      if !projected_name.nil? && @alias_to_group_by_field_name.key?(projected_name)
+        field_already_projected = @alias_to_group_by_field_name[projected_name]
+
+        if field_name.nil? || field_name.empty? || (field_name == field_already_projected)
+          field_name = field_already_projected
+        end
+      end
+
+      @select_tokens.add_last(GroupByKeyToken::create(field_name, projected_name))
+
+      self
+    end
+
+    def group_by_sum(field_name, projected_name = nil)
+      assert_no_raw_query
+      @is_group_by = true
+
+      field_name = ensure_valid_field_name(field_name)
+      @select_tokens.add_last(GroupBySumToken::create(field_name, projected_name))
+
+      self
+    end
+
+    def group_by_count(projected_name = nil)
+      assert_no_raw_query
+      @is_group_by = true
+
+      @select_tokens.add_last(GroupByCountToken::create(projected_name))
+
+      self
+    end
+
     def where_true
       append_operator_if_needed(@where_tokens)
       negate_if_needed
 
-      @where_tokens.addLast(TrueToken::instance)
+      @where_tokens.add_last(TrueToken::instance)
+
+      self
+    end
+
+    def within_radiusof(field_name, radius_parameter_name, latitude_parameter_name,
+      longitude_parameter_name, radius_units = SpatialUnits::Kilometers,
+      dist_error_percent = SpatialConstants::DefaultDistanceErrorPct
+    )
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed
+
+      @where_tokens.add_last(WhereToken::within(
+        field_name, ShapeToken::circle(
+          radius_parameter_name,
+          latitude_parameter_name,
+          longitude_parameter_name,
+          radius_units),
+        dist_error_percent)
+      )
+
+      self
+    end
+
+    def spatial(field_name, shape_wkt_parameter_name_or_criteria,
+      relation = nil, dist_error_percent = nil
+    )
+      criteria = shape_wkt_parameter_name_or_criteria
+      field_name = ensure_valid_field_name(field_name)
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed
+
+      if shape_wkt_parameter_name_or_criteria.is_a?(SpatialCriteria)
+        @where_tokens.add_last(criteria.to_query_token(field_name){ yield })
+      else
+        shape_wkt_parameter_name = shape_wkt_parameter_name_or_criteria
+        relation = relation
+
+        criteria = WktCriteria.new(nil, relation, dist_error_percent)
+        @where_tokens.add_last(criteria.to_query_token(field_name){ shape_wkt_parameter_name })
+      end
+
+      self
+    end
+
+    def order_by_distance(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      @order_by_tokens.add_last(OrderByToken::create_distance_ascending(fieldName, latitudeOrShapeWktParameterName, longitudeParameterName));
+
+      self
+    end
+
+    def order_by_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      this.orderByTokens.addLast(OrderByToken.createDistanceDescending(fieldName, latitudeOrShapeWktParameterName, longitudeParameterName));
 
       self
     end
@@ -426,7 +551,21 @@ module RavenDB
         return @query_raw
       end
 
-      #TODO: build query from tokens
+      raise InvalidOperationException,
+        "A clause was not closed correctly within this query, current clause "\
+        "depth = #{@current_clause_depth}" unless
+        @current_clause_depth == 0
+
+      query_text = StringBuilder.new
+
+      build_from(query_text)
+      build_group_by(query_text)
+      build_where(query_text)
+      build_order_by(query_text)
+      build_select(query_text)
+      build_include(query_text)
+
+      query_text.to_string
     end
 
     protected
@@ -546,6 +685,167 @@ module RavenDB
         "RawQuery was called, cannot modify this query by calling on operations that "\
         "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)" unless
         @query_raw.nil?
+    end
+
+    def build_from(writer)
+      @from_token.write_to(writer)
+    end
+
+    def build_order_by(writer)
+      tokens = @order_by_tokens
+
+      unless tokens.count > 0
+        return
+      end
+
+      writer
+        .append(" ")
+        .append(QueryKeywords::Order)
+        .append(" ")
+        .append(QueryKeywords::By)
+        .append(" ")
+
+      tokens.each do |item|
+        unless item.first
+          writer.append(", ")
+        end
+
+        item.value.write_to(writer)
+      end
+    end
+
+    def build_group_by(writer)
+      tokens = @group_by_tokens
+
+      unless tokens.count > 0
+        return
+      end
+
+      writer
+          .append(" ")
+          .append(QueryKeywords::Group)
+          .append(" ")
+          .append(QueryKeywords::By)
+          .append(" ")
+
+      tokens.each do |item|
+        unless item.first
+          writer.append(", ")
+        end
+
+        item.value.write_to(writer)
+      end
+    end
+
+    def build_select(writer)
+      tokens = @select_tokens
+
+      unless tokens.count > 0
+        return
+      end
+
+      writer
+        .append(" ")
+        .append(QueryKeywords::Select)
+        .append(" ")
+
+      if (1 == tokens.count) && tokens.first.value.is_a?(DistinctToken)
+        tokens.first.value.writeTo(writer)
+        writer.append(" *")
+
+        return
+      end
+
+      tokens.each do |item|
+        is_first = item.first
+        previous_token = is_first ? nil : item.previous.value
+
+        if !is_first && !previous_token.is_a?(DistinctToken)
+          writer.append(",")
+        end
+
+        self.class.add_space_if_needed(previous_token, item.value, writer)
+        item.value.write_to(writer)
+      end
+    end
+
+    def build_include(writer)
+      if @includes.nil? || (@includes.size == 0)
+        return
+      end
+
+      writer
+        .append(" ")
+        .append(QueryKeywords::Include)
+        .append(" ")
+
+      @includes.each_with_index do |include, index|
+        required_quotes = false
+
+        unless index == 0
+          writer.append(",")
+        end
+
+        include.chars.each do |ch|
+          if !ch.alnum?  && !['_', '.'].include?(ch)
+            required_quotes = true
+            break
+          end
+        end
+
+        if required_quotes
+          writer
+            .append("'")
+            .append(include.gsub(/'/, "\\'"))
+            .append("'")
+        else
+          writer.append(include)
+        end
+      end
+    end
+
+    def build_where(writer)
+      tokens = @where_tokens
+
+      if tokens.nil? || (tokens.count == 0)
+        return
+      end
+
+      writer
+        .append(" ")
+        .append(QueryKeywords.Where)
+        .append(" ")
+
+      if @is_intersect
+        writer.append("intersect(")
+      end
+
+      tokens.each do |item|
+        is_first = item.first
+        previous_token = is_first ? nil : item.previous.value
+
+        self.class.add_space_if_needed(previous_token, item.value, writer)
+        item.value.write_to(writer)
+      end
+
+      if @is_intersect
+        writer
+          .append(") ")
+      end
+    end
+
+    def self.add_space_if_needed(previous_token, current_token, writer)
+      if previous_token.nil?
+        return
+      end
+
+      if previous_token.is_a?(OpenSubclauseToken) ||
+        current_token.is_a?(CloseSubclauseToken)
+        current_token.is_a?(IntersectMarkerToken)
+        return
+      end
+
+      writer.append(" ")
     end
   end
 end
