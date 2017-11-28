@@ -223,6 +223,18 @@ module RavenDB
       process_batch_command_results(results, changes)
     end
 
+    def query(options = nil)
+      document_query = DocumentQuery.create(self, @request_executor, options)
+
+      emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
+
+      if block_given?
+        yield(document_query)
+      end
+
+      document_query
+    end
+
     protected
     def attach_query(query)
       if @attached_queries.key?(query)
