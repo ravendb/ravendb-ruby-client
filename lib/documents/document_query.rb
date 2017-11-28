@@ -700,7 +700,7 @@ module RavenDB
 
     protected
     def add_query_parameter(value_or_values)
-      parameter_name = "p#{@query_parameters.size}"
+      parameter_name = "p#{@query_parameters.size}".to_sym
 
       @query_parameters[parameter_name] = value_or_values
       parameter_name

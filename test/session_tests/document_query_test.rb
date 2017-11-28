@@ -357,7 +357,4 @@ class DocumentQueryTest < TestBase
       end
     end
   end
-
-  protected
-
 end
