@@ -158,72 +158,85 @@ end
 
 ## Querying documents
 
-At this moment only `RawDocumentQuery` is supported, query builder is under development.
-
-1. Create `RawDocumentQuery` instance using `session.advanced.raw_query` method:
-
+1. Create `RavenDB::DocumentQuery` instance using `query` method of session:
 ```ruby
-query = session.advanced.raw_query("FROM Products")
-```
-2. You can pass params to query. In query you should use `$` symbol before parameter name, for pass values to query, pass to second `raw_query` method parameter an hash where keys are symbols corresponding to parameter names:
-
-```ruby
-query = session.advanced.raw_query(
-  "FROM Products WHERE manufacturer = $manufacturer", 
-  {:manufacturer => "Apple"}
-)
-```
-
-3. For pass dates as parameter value, use `RavenDB::TypeUtilities::stringify_date`:
-
-```ruby
-session.advanced.raw_query(
-  "FROM Products WHERE last_update >= $begin_of_week", {
-  :begin_of_week => RavenDB::TypeUtilities::stringify_date(DateTime.new(2017, 11, 6, 0, 0, 0))
+query = session.query({
+  :collection => 'Products', # specify which collection you'd like to query
+  # optionally you may specify an index name for querying
+  # :index_name => 'PopularProductsWithViewsCount'
 })
 ```
-
-4. Apply pagination, set wait for non-stale results flag etc:
-
-```ruby
+2. Apply conditions, ordering etc. Query supports chaining calls:
+```javascript
 query
   .wait_for_non_stale_results
-  .skip(10)
-  .take(10)
+  .using_default_operator(RavenDB::QueryOperator::And)  
+  .where_equals('manufacturer', 'Apple')
+  .where_equals('in_stock', true)
+  .where_between('last_update', DateTime.strptime('2017-10-01T00:00:00', '%Y-%m-%dT%H:%M:%S'), DateTime::now)
+  .order_by('price')
 ```
-
-5. Finally, you may get query results:
-
+3. Finally, you may get query results:
 ```
-products = query.all
+documents = query.all
 ```
-
-6. You can wrap all actions done with query in a block:
+4. You can wrap all actions done with query in a block:
 
 ```ruby
-session.advanced.raw_query("FROM Products") |query|
+session.query({ :collection => 'Products' }) do |query|
   products = query
     .wait_for_non_stale_results
+    .using_default_operator(RavenDB::QueryOperator::And)  
+    .where_equals('manufacturer', 'Apple')
+    .where_equals('in_stock', true)
+    .where_between('last_update', DateTime.strptime('2017-10-01T00:00:00', '%Y-%m-%dT%H:%M:%S'), DateTime::now)
+    .order_by('price')
     .skip(10)
     .take(10)
     .all 
 end
 ```
 
-7. If you're using SELECT clause in query, pass document class (or class name) as `:document_type` parameter in the query options:
+5. If you used `select_fields` method in in query, pass document class (or class name) as `:document_type` parameter in the query options:
 
 ```ruby
-products_with_names_only = session.advanced.raw_query(
-  "FROM Products SELECT name", 
-  {}, {:document_type => Product}
-)
-.wait_for_non_stale_results
-.all
+products_with_names_only = session.query({
+    :document_type => Product,
+    :collection => 'Products'
+  })
+  .select_fields(['name'])
+  .wait_for_non_stale_results
+  .all
 ```
 
-#### RawDocumentQuery methods overview
+#### RavenDB::DocumentQuery methods overview
 | Method | RQL / description |
 | ------------- | ------------- |
+|`select_fields(fields, projections = nil)`|`SELECT field1 [AS projection1], ...`|
+|`distinct(): this;`|`SELECT DISTINCT`|
+|`where_equals(field_name, value, exact = false)`|`WHERE fieldName = <value>`|
+|`where_not_equals(field_name, value, exact = false)`|`WHERE fieldName != <value>`|
+|`where_in(field_name, values, exact = false)`|`WHERE fieldName IN (<value1>, <value2>, ...)`|
+|`where_starts_with(field_name, value)`|`WHERE startsWith(fieldName, '<value>')`|
+|`where_ends_with(field_name, value)`|`WHERE endsWith(fieldName, '<value>')`|
+|`where_between(field_name, from, to, exact = nil)`|`WHERE fieldName BETWEEN <start> AND <end>`|
+|`where_greater_than(field_name, value, exact = nil)`|`WHERE fieldName > <value>`|
+|`where_greater_than_or_equal(field_name, value, exact = nil)`|`WHERE fieldName >= <value>`|
+|`where_less_than(field_name, value, exact = nil)`|`WHERE fieldName < <value>`|
+|`where_less_than_or_equal(field_name, value, exact = nil)`|`WHERE fieldName <= <value>`|
+|`where_exists(field_name)`|`WHERE exists(fieldName)`|
+|`contains_any(field_name, values)`|`WHERE fieldName IN (<value1>, <value2>, ...)`|
+|`contains_all(field_name, values)`|`WHERE fieldName ALL IN (<value1>, <value2>, ...)`|
+|`search(field_name, search_terms, operator = RavenDB::SearchOperator::Or)`|Performs full-text search|
+|`open_subclause`|Opens subclause `(`|
+|`close_subclause`|Closes subclause `)`|
+|`negate_next`|Adds `NOT` before next condition|
+|`and_also`|Adds `AND` before next condition|
+|`or_else`|Adds `OR` before next condition|
+|`using_default_operator(operator)`|Sets default operator (which will be used if no `andAlso()` / `orElse` was called. Just after query instantiation, `OR` is used as default operator. Default operator can be changed only before adding any conditions|
+|`order_by(field, ordering_type = nil)`|`ORDER BY field`|
+|`order_by_descending(field, ordering_type = nil)`|`ORDER BY field DESC`|
+|`random_ordering(seed = nil)`|`ORDER BY random()`|
 |`take(count)`|`Limits the number of result entries to *count* `|
 |`skip(count)`|`Skips first *count* results `|
 |`first`|Returns first document from result set|
