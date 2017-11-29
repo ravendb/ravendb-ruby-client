@@ -402,7 +402,7 @@ module RavenDB
       transformed_values = transform_values_array(field_name, values)
       @builder.where_in(field_name, add_query_parameter(transformed_values), exact)
 
-      @self
+      self
     end
 
     def where_starts_with(field_name, value)
@@ -442,7 +442,7 @@ module RavenDB
       unless to.nil?
         transformed_to = transform_value({
           :field_name => field_name,
-          :value => from,
+          :value => to,
           :exact => exact
         })
       end
@@ -718,13 +718,15 @@ module RavenDB
       end
 
       if value.is_a?(Date) || value.is_a?(DateTime)
-        TypeUtilities::stringify_date(value)
+        return TypeUtilities::stringify_date(value)
       end
 
       raise InvalidArgumentException,
         "Invalid value passed to query condition. "\
         "Only integer / number / string / dates / bools and nil values are supported" unless
-        ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String))
+        ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
+          value.is_a?(Date) || value.is_a?(DateTime)
+        )
 
       value
     end
@@ -749,6 +751,8 @@ module RavenDB
     def parametrize(where_params, parameter_name)
       where_params.delete(:value)
       where_params[:parameter_name] = parameter_name
+
+      where_params
     end
   end
 end

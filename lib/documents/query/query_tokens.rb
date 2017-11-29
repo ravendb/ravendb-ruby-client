@@ -61,12 +61,12 @@ module RavenDB
   class FieldsToFetchToken < QueryToken
     attr_reader :fields_to_fetch, :projections
 
-    def create(fields_to_fetch, projections = [])
+    def self.create(fields_to_fetch, projections = [])
       self.new(fields_to_fetch, projections)
     end
 
     def initialize(fields_to_fetch, projections = [])
-      super
+      super()
 
       raise ArgumentNullException,
         "Fields list can't be empty" if
@@ -114,7 +114,7 @@ module RavenDB
     end
 
     def initialize(index_name = nil, collection_name = nil)
-      super
+      super()
 
       @collection_name = collection_name
       @index_name = index_name
@@ -160,7 +160,7 @@ module RavenDB
     end
 
     def initialize(field_name = nil)
-      super
+      super()
 
       @field_name = field_name
     end
@@ -174,7 +174,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords.As)
+        .append(QueryKeyword::As)
         .append(" ")
         .append(@field_name)
     end
@@ -200,7 +200,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords.As)
+        .append(QueryKeyword::As)
         .append(" ")
         .append(@projected_name)
     end
@@ -227,7 +227,7 @@ module RavenDB
 
       writer
           .append(" ")
-          .append(QueryKeywords.As)
+          .append(QueryKeyword::As)
           .append(" ")
           .append(@projected_name)
     end
@@ -314,7 +314,7 @@ module RavenDB
     end
 
     def initialize(field_name, descending = false, ordering = OrderingType::String)
-      super
+      super()
 
       @field_name = field_name
       @descending = descending
@@ -342,11 +342,11 @@ module RavenDB
 
   class QueryOperatorToken < QueryToken
     def self.and
-      self.new(QueryOperator::AND)
+      self.new(QueryOperator::And)
     end
 
     def self.or
-      self.new(QueryOperator::OR)
+      self.new(QueryOperator::Or)
     end
 
     def initialize(query_operator)
@@ -551,7 +551,7 @@ module RavenDB
     end
 
     def initialize(where_options)
-      super
+      super()
 
       @boost = nil
       @fuzzy = nil
@@ -605,27 +605,27 @@ module RavenDB
         when WhereOperator::In
           writer
             .append(" ")
-            .append(QueryKeywords.In)
+            .append(QueryKeyword::In)
             .append(" ($")
             .append(@parameter_name)
             .append(")")
         when WhereOperator::AllIn
           writer
             .append(" ")
-            .append(QueryKeywords.All)
+            .append(QueryKeyword::All)
             .append(" ")
-            .append(QueryKeywords.In)
+            .append(QueryKeyword::In)
             .append(" ($")
             .append(@parameter_name)
             .append(")")
         when WhereOperator::Between
           writer
             .append(" ")
-            .append(QueryKeywords.Between)
+            .append(QueryKeyword::Between)
             .append(" $")
             .append(@from_parameter_name)
             .append(" ")
-            .append(QueryOperators.And)
+            .append(QueryOperator::And)
             .append(" $")
             .append(@to_parameter_name)
         when WhereOperator::Equals

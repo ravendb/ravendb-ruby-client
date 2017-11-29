@@ -301,7 +301,7 @@ module RavenDB
         raise InvalidOperationException, "Cannot add AND, previous token was already an operator token."
       end
 
-      @where_tokens.add_last(QueryOperatorToken::And)
+      @where_tokens.add_last(QueryOperatorToken::and)
 
       self
     end
@@ -315,7 +315,7 @@ module RavenDB
         raise InvalidOperationException, "Cannot add OR, previous token was already an operator token."
       end
 
-      @where_tokens.add_last(QueryOperatorToken::Or)
+      @where_tokens.add_last(QueryOperatorToken::or)
 
       self
     end
@@ -395,7 +395,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.addLast(WhereToken::search(field_name, search_terms_parameter_name, operator))
+      @where_tokens.add_last(WhereToken::search(field_name, search_terms_parameter_name, operator))
 
       self
     end
@@ -535,13 +535,13 @@ module RavenDB
     end
 
     def order_by_distance(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      @order_by_tokens.add_last(OrderByToken::create_distance_ascending(fieldName, latitudeOrShapeWktParameterName, longitudeParameterName));
+      @order_by_tokens.add_last(OrderByToken::create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
 
       self
     end
 
     def order_by_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      this.orderByTokens.addLast(OrderByToken.createDistanceDescending(fieldName, latitudeOrShapeWktParameterName, longitudeParameterName));
+      @order_by_tokens.add_last(OrderByToken::create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
 
       self
     end
@@ -615,7 +615,7 @@ module RavenDB
         QueryOperatorToken::and : QueryOperatorToken::or
 
       unless last_where.nil? || last_where.search_operator.nil?
-        token = QueryOperatorToken::Or
+        token = QueryOperatorToken::or
       end
 
       tokens.add_last(token)
@@ -700,9 +700,9 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords::Order)
+        .append(QueryKeyword::Order)
         .append(" ")
-        .append(QueryKeywords::By)
+        .append(QueryKeyword::By)
         .append(" ")
 
       tokens.each do |item|
@@ -723,9 +723,9 @@ module RavenDB
 
       writer
           .append(" ")
-          .append(QueryKeywords::Group)
+          .append(QueryKeyword::Group)
           .append(" ")
-          .append(QueryKeywords::By)
+          .append(QueryKeyword::By)
           .append(" ")
 
       tokens.each do |item|
@@ -746,7 +746,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords::Select)
+        .append(QueryKeyword::Select)
         .append(" ")
 
       if (1 == tokens.count) && tokens.first.value.is_a?(DistinctToken)
@@ -776,7 +776,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords::Include)
+        .append(QueryKeyword::Include)
         .append(" ")
 
       @includes.each_with_index do |include, index|
@@ -813,7 +813,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeywords.Where)
+        .append(QueryKeyword::Where)
         .append(" ")
 
       if @is_intersect

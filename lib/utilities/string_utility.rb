@@ -22,6 +22,8 @@ module RavenDB
 
     def append(string)
       @io.print(string)
+
+      self
     end
 
     def to_string

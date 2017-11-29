@@ -172,9 +172,10 @@ class DocumentQueryTest < TestBase
     uids = [4, 6, 90]
 
     @_store.open_session do |session|
-      session
+      results = session
         .query({
-          :index_name => 'Testing_Sort'
+          :index_name => 'Testing_Sort',
+          :document_type => Product
         })
         .where_in('uid', uids)
         .wait_for_non_stale_results

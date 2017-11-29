@@ -3,7 +3,7 @@ require 'ravendb'
 require 'spec_helper'
 
 class QueryBuilderTest < TestBase
-  def can_understand_equality
+  def test_can_understand_equality
     query = @_store
       .open_session
       .query({:collection => 'Users'})
@@ -15,7 +15,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 'red')
   end
 
-  def can_understand_exact_equality
+  def test_can_understand_exact_equality
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -27,7 +27,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 'ayende')
   end
 
-  def can_understand_equal_on_date
+  def test_can_understand_equal_on_date
     date_time = DateTime.strptime("2010-05-15T00:00:00", "%Y-%m-%dT%H:%M:%S")
 
     query = @_store
@@ -41,7 +41,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], '2010-05-15T00:00:00.0000000')
   end
 
-  def can_understand_equal_on_bool
+  def test_can_understand_equal_on_bool
     query = @_store
       .open_session
       .query({:collection => 'Users'})
@@ -53,7 +53,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], false)
   end
 
-  def can_understand_not_equal
+  def test_can_understand_not_equal
     query = @_store
       .open_session
       .query({:collection => 'Users'})
@@ -65,7 +65,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], false)
   end
 
-  def can_understand_in
+  def test_can_understand_in
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -77,7 +77,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], ['ryan', 'heath'])
   end
 
-  def no_conditions_should_produce_empty_where
+  def test_no_conditions_should_produce_empty_where
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -87,7 +87,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query, "FROM INDEX 'IndexName'")
   end
 
-  def can_understand_and
+  def test_can_understand_and
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -102,7 +102,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p1], 'ayende@ayende.com')
   end
 
-  def can_understand_or
+  def test_can_understand_or
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -117,7 +117,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p1], 'ayende@ayende.com')
   end
 
-  def can_understand_less_than
+  def test_can_understand_less_than
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -129,7 +129,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_less_than_or_equal
+  def test_can_understand_less_than_or_equal
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -141,11 +141,11 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_greater_than
+  def test_can_understand_greater_than
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
-      .whereGreaterThan('Age', 16)
+      .where_greater_than('Age', 16)
 
     index_query = query.get_index_query
 
@@ -153,7 +153,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_greater_than_or_equal
+  def test_can_understand_greater_than_or_equal
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -165,7 +165,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_projection_of_single_field
+  def test_can_understand_projection_of_single_field
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -178,7 +178,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_projection_of_multiple_fields
+  def test_can_understand_projection_of_multiple_fields
     query = @_store
       .open_session
       .query({:index_name => 'IndexName'})
@@ -191,7 +191,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 16)
   end
 
-  def can_understand_between
+  def test_can_understand_between
     min = 1224
     max = 1226
 
@@ -207,7 +207,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p1], max)
   end
 
-  def can_understand_starts_with
+  def test_can_understand_starts_with
     query = @_store
       .open_session
       .query({ :collection => 'Users' })
@@ -219,7 +219,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 'foo')
   end
 
-  def can_understand_ends_with
+  def test_can_understand_ends_with
     query = @_store
       .open_session
       .query({ :collection => 'Users' })
@@ -231,7 +231,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 'foo')
   end
 
-  def should_wrap_first_not_with_true_token
+  def test_should_wrap_first_not_with_true_token
     query = @_store
       .open_session
       .query({ :collection => 'Users' })
@@ -245,7 +245,7 @@ class QueryBuilderTest < TestBase
     assert_equal(index_query.query_parameters[:p0], 'foo')
   end
 
-  def can_understand_subclauses
+  def test_can_understand_subclauses
     query = @_store
       .open_session
       .query({
@@ -257,7 +257,7 @@ class QueryBuilderTest < TestBase
         .where_equals('Name', 'rob')
         .or_else
         .where_equals('Name', 'dave')
-      .closeSubclause
+      .close_subclause
 
     index_query = query.get_index_query
   
