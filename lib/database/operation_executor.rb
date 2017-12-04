@@ -46,7 +46,7 @@ module RavenDB
           exception = ExceptionsFactory.create_from(response["Result"])
 
           if exception.nil?
-            exception = InvalidOperationException.new(response["Result"]["Error"])
+            exception = RuntimeError.new(response["Result"]["Error"])
           end
 
           return {
@@ -104,7 +104,7 @@ module RavenDB
       end  
       
       if !command
-        raise InvalidOperationException, error_message
+        raise RuntimeError, error_message
       end
 
       result = executor.execute(command)
@@ -199,7 +199,7 @@ module RavenDB
 
   class ServerOperationExecutor < AbstractOperationExecutor
     def send(operation)
-      raise InvalidOperationException, 'Invalid operation passed. It should be derived from ServerOperation' unless operation.is_a?(ServerOperation)
+      raise RuntimeError, 'Invalid operation passed. It should be derived from ServerOperation' unless operation.is_a?(ServerOperation)
 
       super(operation)
     end
@@ -230,7 +230,7 @@ module RavenDB
     end
 
     def send(operation)
-      raise InvalidOperationException, 'Invalid operation passed. It should be derived from AdminOperation' unless operation.is_a?(AdminOperation)
+      raise RuntimeError, 'Invalid operation passed. It should be derived from AdminOperation' unless operation.is_a?(AdminOperation)
       
       super(operation)
     end

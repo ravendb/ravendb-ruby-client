@@ -8,23 +8,24 @@ require 'documents/document_session'
 
 module RavenDB
   class Configuration
-    attr_accessor :default_database, :urls
+    attr_accessor :database, :urls
   end
 
   class DocumentStore
-    def initialize(url_or_urls = nil, default_database = nil)
+    def initialize(url_or_urls = nil, database = nil)
       @_urls = []  
       @_conventions = nil
       @_request_executors = nil
       @_operations = nil
       @_admin = nil
       @_initialized = false
-      @_database = default_database
+      @_database = database
+      @_disposed = false
       set_urls(url_or_urls)
     end
 
-    def self.create(url_or_urls, default_database)
-      self.new(url_or_urls, default_database)
+    def self.create(url_or_urls, database)
+      self.new(url_or_urls, database)
     end
 
     def configure
@@ -35,8 +36,8 @@ module RavenDB
           yield(config)
         end
 
-        if config.default_database
-          @_database = config.default_database
+        if config.database
+          @_database = config.database
         end
 
         if config.urls
@@ -44,7 +45,7 @@ module RavenDB
         end
 
         if !@_database
-          raise InvalidOperationException, "Default database isn't set."
+          raise RuntimeError, "Default database isn't set."
         end
 
         if @_urls.any? {|url| url.downcase.start_with?('https') }
@@ -147,13 +148,17 @@ module RavenDB
     end
 
     def dispose
-      assert_configure
-      @_generator.return_unused_range rescue nil
-      admin.server.dispose
+      unless @_disposed
+        @_disposed = true
 
-      if @_request_executors.is_a?(Hash)
-        @_request_executors.each_value do |executors|
-          executors.each_value {|executor| executor.dispose}
+        assert_configure
+        @_generator.return_unused_range rescue nil
+        admin.server.dispose
+
+        if @_request_executors.is_a?(Hash)
+          @_request_executors.each_value do |executors|
+            executors.each_value {|executor| executor.dispose}
+          end
         end
       end
     end
@@ -171,7 +176,7 @@ module RavenDB
 
     def assert_configure
       if !@_initialized
-        raise InvalidOperationException, "You cannot open a session or access the database commands"\
+        raise RuntimeError, "You cannot open a session or access the database commands"\
   " before initializing the document store. Did you forget calling configure ?"
       end
     end

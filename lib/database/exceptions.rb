@@ -16,16 +16,26 @@ module RavenDB
       exception_message = type_or_message
 
       if type_or_message && message
+        exception_type = type_or_message
         exception_message = message
 
-        begin
-          exception_ctor = Object.const_get("RavenDB::#{type_or_message}")
-        rescue
-          exception_ctor = RavenException
+        case exception_type
+          when "InvalidOperationException"
+            exception_ctor = RuntimeError
+          when "ArgumentNullException", "InvalidArgumentException"
+            exception_ctor = ArgumentError
+          when "ArgumentOutOfRangeException"
+            exception_ctor = IndexError
+          else
+            begin
+              exception_ctor = Object.const_get("RavenDB::#{exception_type}")
+            rescue
+              exception_ctor = RavenException
+            end
         end
       end
 
-      exception_ctor.new(message, status_code)
+      exception_ctor.new(exception_message, status_code)
     end
 
     def self.create_from(json_or_response, status_code = nil)
@@ -75,9 +85,7 @@ module RavenDB
     end
   end  
 
-  class InvalidOperationException < RavenException 
-  end
-  class ErrorResponseException < RavenException 
+  class ErrorResponseException < RavenException
   end
   class DocumentDoesNotExistsException < RavenException 
   end
@@ -85,13 +93,7 @@ module RavenDB
   end
   class ConcurrencyException < RavenException 
   end
-  class InvalidArgumentException < RavenException
-  end
-  class ArgumentNullException < RavenException
-  end
-  class ArgumentOutOfRangeException < RavenException 
-  end
-  class DatabaseDoesNotExistException < RavenException 
+  class DatabaseDoesNotExistException < RavenException
   end
   class AuthorizationException < RavenException 
   end

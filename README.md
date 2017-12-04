@@ -59,7 +59,7 @@ require 'models/product'
 ```ruby
 RavenDB.store.configure do |config|
   config.urls = ["database url"]
-  config.default_database = 'default database name'
+  config.database = 'database name'
 end
 ```
 
@@ -167,7 +167,7 @@ query = session.query({
 })
 ```
 2. Apply conditions, ordering etc. Query supports chaining calls:
-```javascript
+```ruby
 query
   .wait_for_non_stale_results
   .using_default_operator(RavenDB::QueryOperator::And)  
@@ -179,22 +179,6 @@ query
 3. Finally, you may get query results:
 ```
 documents = query.all
-```
-4. You can wrap all actions done with query in a block:
-
-```ruby
-session.query({ :collection => 'Products' }) do |query|
-  products = query
-    .wait_for_non_stale_results
-    .using_default_operator(RavenDB::QueryOperator::And)  
-    .where_equals('manufacturer', 'Apple')
-    .where_equals('in_stock', true)
-    .where_between('last_update', DateTime.strptime('2017-10-01T00:00:00', '%Y-%m-%dT%H:%M:%S'), DateTime::now)
-    .order_by('price')
-    .skip(10)
-    .take(10)
-    .all 
-end
 ```
 
 5. If you used `select_fields` method in in query, pass document class (or class name) as `:document_type` parameter in the query options:

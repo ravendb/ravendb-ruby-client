@@ -11,11 +11,11 @@ module RavenDB
       assert_node(server_node)
 
       if !@id
-        raise InvalidOperationException, "Nil Id is not valid"
+        raise RuntimeError, "Nil Id is not valid"
       end
 
       if !@id.is_a?(String)
-        raise InvalidOperationException, "Id must be a string"
+        raise RuntimeError, "Id must be a string"
       end
 
       if @change_vector
@@ -34,7 +34,7 @@ module RavenDB
     protected
     def check_response(response)
       if !response.is_a?(Net::HTTPNoContent)
-        raise InvalidOperationException, "Could not delete document #{@id}"
+        raise RuntimeError, "Could not delete document #{@id}"
       end
     end
   end
@@ -52,7 +52,7 @@ module RavenDB
       assert_node(server_node)
 
       if !@id_or_ids
-        raise InvalidOperationException, "nil ID is not valid"
+        raise RuntimeError, "nil ID is not valid"
       end
 
       ids = @id_or_ids.is_a?(Array) ? @id_or_ids : [@id_or_ids]
@@ -115,15 +115,15 @@ module RavenDB
       assert_node(server_node)
 
       if @id.nil?
-        raise InvalidOperationException, 'Empty ID is invalid'
+        raise RuntimeError, 'Empty ID is invalid'
       end
 
       if @patch.nil?
-        raise InvalidOperationException, 'Empty patch is invalid'
+        raise RuntimeError, 'Empty patch is invalid'
       end
 
       if @patch_if_missing && !@patch_if_missing.script
-        raise InvalidOperationException, 'Empty script is invalid'
+        raise RuntimeError, 'Empty script is invalid'
       end
 
       @params = {"id" => @id}
@@ -151,7 +151,7 @@ module RavenDB
       result = super(response)
 
       if !response.is_a?(Net::HTTPOK) && !response.is_a?(Net::HTTPNotModified)
-        raise InvalidOperationException, "Could not patch document #{@id}"
+        raise RuntimeError, "Could not patch document #{@id}"
       end
 
       if response.body
@@ -170,7 +170,7 @@ module RavenDB
 
     def create_request(server_node)
       if !@document
-        raise InvalidOperationException, 'Document must be an object'
+        raise RuntimeError, 'Document must be an object'
       end
 
       @payload = @document

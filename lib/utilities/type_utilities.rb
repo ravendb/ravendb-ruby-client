@@ -24,7 +24,7 @@ module RavenDB
       invalid_date_message = 'Invalid parameter passed to RavenDB'\
         '::TypeUtilities::stringify_date. It should be instance of DateTime'
 
-      raise InvalidOperationException, invalid_date_message unless
+      raise RuntimeError, invalid_date_message unless
           (datetime.is_a?(DateTime) || datetime.is_a?(Date))
 
       datetime.strftime(DATE_STRINGIFY_FORMAT)
@@ -43,11 +43,11 @@ module RavenDB
     end
 
     def self.omit_keys(hash, keys = [])
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid hash argument passed. Should be an Hash' unless
         hash.is_a?(Hash)
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid keys argument passed. Should be an Array' unless
         keys.is_a?(Array)
 

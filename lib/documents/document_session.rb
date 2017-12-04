@@ -115,7 +115,7 @@ module RavenDB
       document = nil
       expected_change_vector = nil
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be document model instance or document id string' unless
         (document_or_id.is_a?(String) || TypeUtilities::is_document?(document_or_id))
 
@@ -127,7 +127,7 @@ module RavenDB
         id = document_or_id
 
         if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
-          raise InvalidOperationException,
+          raise RuntimeError,
             "Can't delete changed document using identifier. Pass document instance instead"
         end
       else
@@ -139,14 +139,14 @@ module RavenDB
       if document.nil?
         @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
       else
-        raise InvalidOperationException,
+        raise RuntimeError,
           "Document is not associated with the session, cannot delete unknown document instance" unless
           @raw_entities_and_metadata.key?(document)
 
         id = info[:id]
         original_metadata = info[:original_metadata]
 
-        raise InvalidOperationException,
+        raise RuntimeError,
           "Document is marked as read only and cannot be deleted" if
           original_metadata.key?('Raven-Read-Only')
 
@@ -181,13 +181,13 @@ module RavenDB
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
-        @defer_commands.each {|command| raise InvalidOperationException,
+        @defer_commands.each {|command| raise RuntimeError,
           "Can't store document, there is a deferred command registered "\
           "for this document in the session. Document id: #{id}" if
           id == command.document_id
         }
 
-        raise InvalidOperationException,
+        raise RuntimeError,
           "Can't store object, it was already deleted in this "\
           "session. Document id: #{id}" if
           @deleted_documents.include?(document)
@@ -217,7 +217,7 @@ module RavenDB
       results = @request_executor.execute(changes.create_batch_command)
 
       if !results
-        raise InvalidOperationException.new, "Cannot call Save Changes after the document store was disposed."
+        raise RuntimeError.new, "Cannot call Save Changes after the document store was disposed."
       end
 
       process_batch_command_results(results, changes)
@@ -228,17 +228,13 @@ module RavenDB
 
       emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
 
-      if block_given?
-        yield(document_query)
-      end
-
       document_query
     end
 
     protected
     def attach_query(query)
       if @attached_queries.key?(query)
-        raise InvalidOperationException, 'Query is already attached to session'
+        raise RuntimeError, 'Query is already attached to session'
       end
 
       query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) {
@@ -261,7 +257,7 @@ module RavenDB
 
       @number_of_requests_in_session = @number_of_requests_in_session + 1
 
-      raise InvalidOperationException,
+      raise RuntimeError,
           "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
 "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
 "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
@@ -300,7 +296,7 @@ module RavenDB
 
     def check_document_and_metadata_before_store(document = nil)
       if !TypeUtilities::is_document?(document)
-        raise InvalidOperationException, 'Invalid argument passed. Should be an document'
+        raise RuntimeError, 'Invalid argument passed. Should be an document'
       end
 
       if !@raw_entities_and_metadata.key?(document)
@@ -529,10 +525,6 @@ module RavenDB
       end
 
       emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
-
-      if block_given?
-        yield(document_query)
-      end
 
       document_query
     end

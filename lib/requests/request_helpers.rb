@@ -107,6 +107,7 @@ module RavenDB
     def dispose
       if @_timer
         @_timer.exit
+        @_timer = nil
       end
     end
   end
@@ -220,7 +221,7 @@ module RavenDB
 
     def assert_topology
       if !@topology || !@topology.nodes || @topology.nodes.empty?
-        raise InvalidOperationException, "Empty database topology, this shouldn't happen."
+        raise RuntimeError, "Empty database topology, this shouldn't happen."
       end
     end
   end
