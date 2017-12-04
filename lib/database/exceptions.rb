@@ -85,7 +85,9 @@ module RavenDB
   end
   class ConcurrencyException < RavenException 
   end
-  class ArgumentNullException < RavenException 
+  class InvalidArgumentException < RavenException
+  end
+  class ArgumentNullException < RavenException
   end
   class ArgumentOutOfRangeException < RavenException 
   end

@@ -175,7 +175,7 @@ class LastFm
 end
 
 class LastFmAnalyzed
-  def initialize(store)
+  def initialize(store, test)
     index_map =  "from song in docs.LastFms "\
       "select new {"\
       "query = new object[] {"\
@@ -185,6 +185,7 @@ class LastFmAnalyzed
       "song.title,"\
       "song.track_id}}"
 
+    @test = test
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
       self.class.name, index_map, nil, {
@@ -196,6 +197,24 @@ class LastFmAnalyzed
 
   def execute
     @store.operations.send(RavenDB::PutIndexesOperation.new(@index_definition))
+
+    self
+  end
+
+  def check_fulltext_search_result(last_fm, query)
+    search_in = []
+    fields = ["artist", "title"]
+
+    fields.each {|field| query.each {|keyword|
+      search_in.push({
+        :keyword => keyword,
+        :sample => last_fm.instance_variable_get("@#{field}")
+      })
+    }}
+
+    @test.assert(search_in.any? {|comparsion|
+      comparsion[:sample].include?(comparsion[:keyword])
+    })
   end
 end
 

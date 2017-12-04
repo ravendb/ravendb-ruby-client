@@ -2,7 +2,7 @@ require 'date'
 require 'ravendb'
 require 'spec_helper'
 
-class RawQueryTest < TestBase
+class DocumentQueryTest < TestBase
   def setup
     super
 
@@ -31,11 +31,10 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_single_condition
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE name = $name", {
-        :name => 'test101'
+      results = session.query({
+        :collection => 'Products'
       })
+      .where_equals('name', 'test101')
       .wait_for_non_stale_results
       .all
 
@@ -46,15 +45,14 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_few_conditions_joined_by_or
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE name = $name "\
-        "OR uid = $uid", {
-        :name => 'test101',
-        :uid => 4
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :collection => 'Products'
+        })
+        .where_equals('name', 'test101')
+        .where_equals('uid', 4)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 2)
       assert(results.first.name.include?('test101') || results.last.name.include?('test101'))
@@ -64,15 +62,15 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_few_conditions_joined_by_and
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE name = $name "\
-        "AND uid = $uid", {
-        :name => 'test107',
-        :uid => 5
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :collection => 'Products'
+        })
+        .using_default_operator(RavenDB::QueryOperator::And)
+        .where_equals('name', 'test107')
+        .where_equals('uid', 5)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, 'test107')
@@ -84,13 +82,13 @@ class RawQueryTest < TestBase
     names = ['test101', 'test107', 'test106']
 
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE name IN ($names)", {
-        :names => names
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :collection => 'Products'
+        })
+        .where_in('name', names)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 4)
 
@@ -102,13 +100,13 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_starts_with
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE startsWith(name, $name)", {
-        :name => 'n'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+           :collection => 'Products'
+        })
+        .where_starts_with('name', 'n')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, 'new_testing')
@@ -117,13 +115,13 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_ends_with
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE endsWith(name, $name)", {
-        :name => '7'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+           :collection => 'Products'
+        })
+        .where_ends_with('name', '7')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 2)
       assert(results.all? {|result| result.name = 'test107'})
@@ -132,14 +130,13 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_between
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Products "\
-        "WHERE uid BETWEEN $from AND $to", {
-        :from => 2,
-        :to => 4
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :collection => 'Products'
+        })
+        .where_between('uid', 2, 4)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 3)
       assert(results.all? {|result| (2..4).to_a.include?(result.uid) })
@@ -148,12 +145,11 @@ class RawQueryTest < TestBase
 
   def test_should_query_by_exists
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM @all_docs "\
-        "WHERE exists(ordering)"
-      )
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query
+        .where_exists('ordering')
+        .wait_for_non_stale_results
+        .all
 
       assert(results.all? {|result| result.instance_variable_defined?('@ordering') })
     end
@@ -162,21 +158,12 @@ class RawQueryTest < TestBase
   def test_should_fail_query_by_unexisting_index
     @_store.open_session do |session|
       assert_raises(RavenDB::IndexDoesNotExistException) do
-        session.advanced
-          .raw_query("FROM INDEX 's'")
+        session
+          .query({
+             :index_name => 's'
+           })
           .wait_for_non_stale_results
           .all
-      end
-    end
-  end
-
-  def test_should_fail_query_with_invalid_rql
-    @_store.open_session do |session|
-      assert_raises(RavenDB::ParseException) do
-        session.advanced
-            .raw_query("FROM Products WHERE")
-            .wait_for_non_stale_results
-            .all
       end
     end
   end
@@ -185,13 +172,14 @@ class RawQueryTest < TestBase
     uids = [4, 6, 90]
 
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM INDEX 'Testing_Sort' "\
-        "WHERE uid IN ($uids)", {
-        :uids => uids
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :index_name => 'Testing_Sort',
+          :document_type => Product
+        })
+        .where_in('uid', uids)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 3)
 
@@ -203,13 +191,12 @@ class RawQueryTest < TestBase
 
   def test_should_query_with_ordering
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM @all_docs "\
-        "WHERE exists(ordering) "\
-        "ORDER BY ordering"
-      )
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query
+        .where_exists('ordering')
+        .order_by('ordering')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.first.ordering, 'a')
     end
@@ -217,13 +204,12 @@ class RawQueryTest < TestBase
 
   def test_should_query_with_descending_ordering
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM @all_docs "\
-        "WHERE exists(ordering) "\
-        "ORDER BY ordering DESC"
-      )
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query
+        .where_exists('ordering')
+        .order_by_descending('ordering')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.first.ordering, 'd')
     end
@@ -231,33 +217,32 @@ class RawQueryTest < TestBase
 
   def test_should_query_with_includes
     @_store.open_session do |session|
-      session.advanced.raw_query(
-        "FROM Orders "\
-        "WHERE uid = $uid "\
-        "INCLUDE product_id", {
-        :uid => 92
-      })
-      .wait_for_non_stale_results
-      .all
+      session
+        .query({
+          :collection => 'Orders'
+        })
+        .where_equals('uid', 92)
+        .include('product_id')
+        .wait_for_non_stale_results
+        .all
 
       session.load('Products/108')
-
       assert_equal(session.number_of_requests_in_session, 1)
     end
   end
 
   def test_should_query_with_nested_objects
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM Companies "\
-        "WHERE name = $name ", {
-        :name => 'withNesting'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+           :collection => 'Companies'
+        })
+        .where_equals('name', 'withNesting')
+        .wait_for_non_stale_results
+        .all
 
-      assert(results.first.product.is_a?(Product))
       assert(results.first.is_a?(Company))
+      assert(results.first.product.is_a?(Product))
     end
   end
 
@@ -267,8 +252,13 @@ class RawQueryTest < TestBase
     total_pages = nil
 
     @_store.open_session do |session|
-      total_count = session.advanced.raw_query("FROM Products WHERE exists(uid)")
-        .wait_for_non_stale_results.count
+      total_count = session
+        .query({
+          :collection => 'Products'
+        })
+        .where_exists('uid')
+        .wait_for_non_stale_results
+        .count
 
       total_pages = (total_count.to_f / page_size).ceil
 
@@ -278,7 +268,12 @@ class RawQueryTest < TestBase
 
     (1..total_pages).to_a do |page|
       @_store.open_session do |session|
-        products = session.advanced.raw_query("FROM Products WHERE exists(uid) ORDER BY uid")
+        products = session
+          .query({
+            :collection => 'Products'
+          })
+          .where_exists('uid')
+          .order_by('uid')
           .wait_for_non_stale_results
           .skip((page - 1) * page_size)
           .take(page_size)
@@ -292,17 +287,15 @@ class RawQueryTest < TestBase
 
   def test_should_query_select_fields
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM INDEX 'Testing_Sort' "\
-        "WHERE exact(uid BETWEEN $from AND $to)"\
-        "SELECT doc_id", {
-        :from => 2,
-        :to => 4
-      }, {
-        :document_type => Product
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :index_name => 'Testing_Sort',
+          :document_type => Product
+        })
+        .select_fields(['doc_id'])
+        .where_between('uid', 2, 4, true)
+        .wait_for_non_stale_results
+        .all
 
       assert(results.all?{|result| result.instance_variable_defined?('@doc_id')})
     end
@@ -310,13 +303,14 @@ class RawQueryTest < TestBase
 
   def test_should_search_by_single_keyword
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM INDEX '#{LastFmAnalyzed.name}' "\
-        "WHERE search(query, $query)", {
-        :query => 'Me'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :index_name => LastFmAnalyzed.name,
+          :document_type => LastFm
+        })
+        .search('query', 'Me')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 2)
       results.each{|last_fm| @lastfm.check_fulltext_search_result(last_fm, ['Me'])}
@@ -325,13 +319,14 @@ class RawQueryTest < TestBase
 
   def test_should_search_by_two_keywords
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM INDEX '#{LastFmAnalyzed.name}' "\
-        "WHERE search(query, $query)", {
-        :query => 'Me Bobo'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :index_name => LastFmAnalyzed.name,
+          :document_type => LastFm
+        })
+        .search('query', 'Me Bobo')
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 3)
 
@@ -343,15 +338,17 @@ class RawQueryTest < TestBase
 
   def test_should_search_full_text_with_boost
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM INDEX '#{LastFmAnalyzed.name}' "\
-        "WHERE boost(search(query, $me), 10) "\
-        "OR boost(search(query, $bobo), 2)", {
-        :me => 'Me',
-        :bobo => 'Bobo'
-      })
-      .wait_for_non_stale_results
-      .all
+      results = session
+        .query({
+          :index_name => LastFmAnalyzed.name,
+          :document_type => LastFm
+        })
+        .search('query', 'Me')
+        .boost(10)
+        .search('query', 'Bobo')
+        .boost(2)
+        .wait_for_non_stale_results
+        .all
 
       assert_equal(results.size, 3)
       assert_equal(results.last.title, 'Spanish Grease')

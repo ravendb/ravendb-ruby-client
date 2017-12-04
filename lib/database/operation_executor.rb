@@ -42,7 +42,7 @@ module RavenDB
             :status => response["Status"],
             :response => response
           }
-          when OperationStatus::Faulted
+        when OperationStatus::Faulted
           exception = ExceptionsFactory.create_from(response["Result"])
 
           if exception.nil?
