@@ -79,8 +79,10 @@ module RavenDB
     end
 
     def dispose
-      @_disposed = true
-      cancel_failing_nodes_timers
+      unless @_disposed
+        @_disposed = true
+        cancel_failing_nodes_timers
+      end
     end
 
     protected
@@ -137,11 +139,11 @@ module RavenDB
       end
 
       if !command.is_a?(RavenCommand)
-        raise InvalidOperationException, 'Not a valid command'
+        raise RuntimeError, 'Not a valid command'
       end
 
       if !server_node.is_a?(ServerNode)
-        raise InvalidOperationException, 'Not a valid server node'
+        raise RuntimeError, 'Not a valid server node'
       end
 
       response = nil

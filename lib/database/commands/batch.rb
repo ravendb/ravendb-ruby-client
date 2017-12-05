@@ -10,7 +10,7 @@ module RavenDB
       assert_node(server_node)
 
       if !commands.all? { |data| data && data.is_a?(RavenCommandData) }
-        raise InvalidOperationException, "Not a valid command"
+        raise RuntimeError, "Not a valid command"
       end
 
       @end_point = "/databases/#{server_node.database}/bulk_docs"
@@ -21,7 +21,7 @@ module RavenDB
       result = super(response)
 
       if !response.body
-        raise InvalidOperationException, "Invalid response body received"
+        raise RuntimeError, "Invalid response body received"
       end
 
       result["Results"]

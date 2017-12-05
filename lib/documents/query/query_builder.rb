@@ -46,7 +46,7 @@ module RavenDB
     end
 
     def using_default_operator(operator)
-      raise InvalidOperationException,
+      raise RuntimeError,
         "Default operator can only be set "\
         "before any where clause is added." unless
         @where_tokens.empty?
@@ -58,7 +58,7 @@ module RavenDB
     def raw_query(query)
       unless [@group_by_tokens, @order_by_tokens,
         @select_tokens, @where_tokens].all? {|tokens| tokens.empty?}
-        raise InvalidOperationException,
+        raise RuntimeError,
           "You can only use RawQuery on a new query, "\
           "without applying any operations (such as Where, Select, OrderBy, GroupBy, etc)"
       end
@@ -298,7 +298,7 @@ module RavenDB
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
-        raise InvalidOperationException, "Cannot add AND, previous token was already an operator token."
+        raise RuntimeError, "Cannot add AND, previous token was already an operator token."
       end
 
       @where_tokens.add_last(QueryOperatorToken::and)
@@ -312,7 +312,7 @@ module RavenDB
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
-        raise InvalidOperationException, "Cannot add OR, previous token was already an operator token."
+        raise RuntimeError, "Cannot add OR, previous token was already an operator token."
       end
 
       @where_tokens.add_last(QueryOperatorToken::or)
@@ -326,7 +326,7 @@ module RavenDB
       end
 
       if boost <= 0
-        raise ArgumentOutOfRangeException, "Boost factor must be a positive number"
+        raise IndexError, "Boost factor must be a positive number"
       end
 
       where_token = find_last_where_token
@@ -337,7 +337,7 @@ module RavenDB
 
     def fuzzy(fuzzy)
       if (fuzzy < 0) || (fuzzy > 1)
-        raise ArgumentOutOfRangeException, "Fuzzy distance must be between 0.0 and 1.0"
+        raise IndexError, "Fuzzy distance must be between 0.0 and 1.0"
       end
 
       where_token = find_last_where_token
@@ -348,7 +348,7 @@ module RavenDB
 
     def proximity(proximity)
       if proximity < 1
-        raise ArgumentOutOfRangeException, "Proximity distance must be a positive number"
+        raise IndexError, "Proximity distance must be a positive number"
       end
 
       where_token = find_last_where_token
@@ -403,7 +403,7 @@ module RavenDB
     def intersect
       @last_token = @where_tokens.last
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         "Cannot add INTERSECT at this point." unless
         (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
 
@@ -415,7 +415,7 @@ module RavenDB
 
     def distinct
       if @is_distinct
-        raise InvalidOperationException, "This is already a distinct query."
+        raise RuntimeError, "This is already a distinct query."
       end
 
       @is_distinct = true
@@ -425,7 +425,7 @@ module RavenDB
     end
 
     def group_by(field_name, *field_names)
-      raise InvalidOperationException,
+      raise RuntimeError,
         "GroupBy only works with dynamic queries." unless
         @from_token.is_dynamic
 
@@ -551,7 +551,7 @@ module RavenDB
         return @query_raw
       end
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         "A clause was not closed correctly within this query, current clause "\
         "depth = #{@current_clause_depth}" unless
         @current_clause_depth == 0
@@ -645,7 +645,7 @@ module RavenDB
         where_token = last_token.value
       end
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         "Missing where clause" unless
         where_token.is_a?(WhereToken)
 
@@ -681,7 +681,7 @@ module RavenDB
     end
 
     def assert_no_raw_query
-      raise InvalidOperationException,
+      raise RuntimeError,
         "RawQuery was called, cannot modify this query by calling on operations that "\
         "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)" unless
         @query_raw.nil?

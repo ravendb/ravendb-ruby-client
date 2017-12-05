@@ -9,7 +9,7 @@ module RavenDB
       assert_node(server_node)
 
       if !@index_name
-        raise InvalidOperationException, "nil or empty index_name is invalid"
+        raise RuntimeError, "nil or empty index_name is invalid"
       end
 
       @params = {"name" => @index_name}
@@ -77,16 +77,16 @@ module RavenDB
       super('', Net::HTTP::Put::METHOD)
 
       if indexes.empty?
-        raise InvalidOperationException, 'No indexes specified'
+        raise RuntimeError, 'No indexes specified'
       end
 
       indexes.each do |index|
         if !index.is_a?(IndexDefinition)
-          raise InvalidOperationException, 'All indexes should be instances of IndexDefinition'
+          raise RuntimeError, 'All indexes should be instances of IndexDefinition'
         end
 
         if !index.name
-          raise InvalidOperationException, 'All indexes should have a name'
+          raise RuntimeError, 'All indexes should have a name'
         end
 
         @indexes.push(index)

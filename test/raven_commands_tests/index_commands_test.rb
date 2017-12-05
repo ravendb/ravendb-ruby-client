@@ -40,7 +40,7 @@ class IndexCommandsTest < TestBase
   end
 
   def test_should_delete_index_with_fail
-    assert_raises(RavenDB::RavenException) do
+    assert_raises(RuntimeError) do
       @_store.operations.send(RavenDB::DeleteIndexOperation.new(nil))    
     end  
   end

@@ -59,7 +59,7 @@ module RavenDB
         begin
           request.body = JSON.generate(@payload)
         rescue JSON::GeneratorError
-          raise InvalidOperationException, 'Invalid payload specified. Can be JSON object only'
+          raise RuntimeError, 'Invalid payload specified. Can be JSON object only'
         end
         @headers['Content-Type'] = 'application/json'
       end 
@@ -126,11 +126,11 @@ module RavenDB
       options = @options
 
       if !query.is_a?(IndexQuery)
-        raise InvalidOperationException, "Query must be instance of IndexQuery class"
+        raise RuntimeError, "Query must be instance of IndexQuery class"
       end
 
       if !options.is_a?(QueryOperationOptions)
-        raise InvalidOperationException, "Options must be instance of QueryOperationOptions class"
+        raise RuntimeError, "Options must be instance of QueryOperationOptions class"
       end
 
       @params = {

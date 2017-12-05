@@ -161,7 +161,7 @@ module RavenDB
           "There's more than one result corresponding to given query criteria." :
           "There's no results corresponding to given query criteria."
 
-        raise InvalidOperationException, error_message
+        raise RuntimeError, error_message
       end
 
       @take = take
@@ -721,7 +721,7 @@ module RavenDB
         return TypeUtilities::stringify_date(value)
       end
 
-      raise InvalidArgumentException,
+      raise ArgumentError,
         "Invalid value passed to query condition. "\
         "Only integer / number / string / dates / bools and nil values are supported" unless
         ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||

@@ -65,7 +65,7 @@ class DocumentDeleteTest < TestBase
       product = session.load(id)
       product.name = "Testing"
 
-      assert_raises(RavenDB::InvalidOperationException) {session.delete(id)}
+      assert_raises(RuntimeError) {session.delete(id)}
     end
   end
 

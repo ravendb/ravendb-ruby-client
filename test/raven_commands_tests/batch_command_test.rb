@@ -36,7 +36,7 @@ class BatchCommandTest < TestBase
   end
 
   def test_should_fail_the_test_with_invalid_command_data
-    assert_raises(RavenDB::RavenException) do 
+    assert_raises(RuntimeError) do
       @_request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_put_command2, nil]))
     end  
   end

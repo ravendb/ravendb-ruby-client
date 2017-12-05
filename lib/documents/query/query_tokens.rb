@@ -68,7 +68,7 @@ module RavenDB
     def initialize(fields_to_fetch, projections = [])
       super()
 
-      raise ArgumentNullException,
+      raise ArgumentError,
         "Fields list can't be empty" if
         fields_to_fetch.empty?
 
@@ -210,7 +210,7 @@ module RavenDB
     def initialize(field_name = nil, projected_name = nil)
       super(field_name, projected_name)
 
-      raise ArgumentNullException,
+      raise ArgumentError,
         "Field name can't be null" if
         field_name.nil?
     end
@@ -237,7 +237,7 @@ module RavenDB
     def initialize(field_name = nil)
       super(field_name)
 
-      raise ArgumentNullException,
+      raise ArgumentError,
         "Field name can't be null" if
         field_name.nil?
     end
@@ -298,7 +298,7 @@ module RavenDB
     end
 
     def self.create_random(seed)
-      raise ArgumentNullException,
+      raise ArgumentError,
         "Seed can't be null" if
         seed.nil?
 
@@ -691,7 +691,7 @@ module RavenDB
           writer
             .append(")")
         else
-          raise ArgumentOutOfRangeException, "Invalid where operator provided"
+          raise IndexError, "Invalid where operator provided"
       end
 
       if @exact

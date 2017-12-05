@@ -39,7 +39,7 @@ module RavenDB
     end
 
     def get_document_type(document_class)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be an document class constructor' unless
         document_class.is_a?(Class)
 
@@ -47,7 +47,7 @@ module RavenDB
     end
 
     def get_document_constructor(document_type)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be an string' unless
         document_type.is_a?(String)
 
@@ -55,7 +55,7 @@ module RavenDB
     end
 
     def get_id_property_name(document_or_class)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be an document, class constructor or document type name' unless
         (TypeUtilities::is_document?(document_or_class) ||
             document_or_class.is_a?(Class) ||
@@ -65,7 +65,7 @@ module RavenDB
     end
 
     def convert_to_document(raw_entity, document_type = nil, nested_object_types = {})
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid raw_entity passed. Should be an hash' unless
           raw_entity.is_a?(Hash)
 
@@ -109,7 +109,7 @@ module RavenDB
     end
 
     def try_fetch_results(command_response)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid command_response passed. Should be an hash' unless
         command_response.is_a?(Hash)
 
@@ -123,7 +123,7 @@ module RavenDB
     end
 
     def try_fetch_includes(command_response)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid command_response passed. Should be an hash' unless
         command_response.is_a?(Hash)
 
@@ -141,7 +141,7 @@ module RavenDB
     end
 
     def check_is_projection?(response_item)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid command_response passed. Should be an hash' unless
           response_item.is_a?(Hash)
 
@@ -190,7 +190,7 @@ module RavenDB
     end
 
     def get_type_from_document(document)
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be an document' unless
         TypeUtilities::is_document?(document)
 
@@ -215,7 +215,7 @@ module RavenDB
       metadata = {}
       nested_types = {}
 
-      raise InvalidOperationException,
+      raise RuntimeError,
         'Invalid argument passed. Should be an document' unless
         TypeUtilities::is_document?(document)
 

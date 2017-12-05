@@ -29,11 +29,11 @@ module RavenDB
       super('', Net::HTTP::Post::METHOD)
 
       if !index_query.is_a?(IndexQuery)
-        raise InvalidOperationException, 'Query must be an instance of IndexQuery class'
+        raise RuntimeError, 'Query must be an instance of IndexQuery class'
       end
 
       if !conventions
-        raise InvalidOperationException, 'Document conventions cannot be empty'
+        raise RuntimeError, 'Document conventions cannot be empty'
       end
 
       @index_query = index_query
