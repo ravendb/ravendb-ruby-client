@@ -74,8 +74,6 @@ session = RavenDB.store.open_session
 ```ruby
 product = session.load('Products/1-A')
 product.in_stock = true
-
-session.store(product)
 ```
 
 5. Call `save_changes` when you'll finish working with a session:
@@ -91,7 +89,6 @@ RavenDB.store.open_session do |session|
   product = session.load('Products/1-A')
   product.in_stock = true
 
-  session.store(product)
   session.save_changes
 end
 ```
@@ -130,7 +127,6 @@ RavenDB.store.open_session do |session|
   product.in_stock = false
   product.last_update = DateTime.now
 
-  session.store(product)
   session.save_changes
 
   product = session.load('Products/1-A')

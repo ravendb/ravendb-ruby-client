@@ -3,23 +3,6 @@ require 'ravendb'
 require 'spec_helper'
 
 class DocumentStoreTest < TestBase
-  def setup
-    super
-
-    @_store.open_session do |session|
-      product101 = Product.new("Products/101", "test")
-      product10 = Product.new("Products/10", "test")
-      order = Order.new("Orders/105", "testing_order", 92, "Products/101")
-      company = Company.new("Companies/1", "test", Product.new(nil, "testing_nested"))
-
-      session.store(product101)
-      session.store(product10)
-      session.store(order)
-      session.store(company)
-      session.save_changes
-    end
-  end
-
   def test_should_store_without_id
     foo = nil
 
@@ -112,5 +95,70 @@ class DocumentStoreTest < TestBase
     end
   end
 
-    #TODO: implement test_should_fail_after_delete when session.delete will be implemented
+  def test_should_fail_on_explicit_call_after_delete
+    foo = nil
+    key = 'testingStore'
+
+    @_store.open_session do |session|
+      foo = Foo.new(key, 'test', 20)
+      session.store(foo)
+      session.save_changes
+    end
+
+    @_store.open_session do |session|
+      session.delete(key)
+
+      assert_raises(RuntimeError) {session.store(foo)}
+    end
+  end
+
+  def test_should_store_existing_doc_without_explicit_call
+    key = 'testingStore'
+
+    @_store.open_session do |session|
+      foo = Foo.new(key, 'test', 20)
+      session.store(foo)
+      session.save_changes
+    end
+
+    @_store.open_session do |session|
+      foo = session.load(key)
+      foo.name = 'name changed'
+      foo.order = 10
+
+      session.save_changes
+    end
+
+    @_store.open_session do |session|
+      foo = session.load(key)
+
+      assert_equal(foo.name, 'name changed')
+      assert_equal(foo.order, 10)
+    end
+  end
+
+  def test_should_ignore_update_without_explicit_call_after_doc_deleted
+    key = 'testingStore'
+
+    @_store.open_session do |session|
+      foo = Foo.new(key, 'test', 20)
+      session.store(foo)
+      session.save_changes
+    end
+
+    @_store.open_session do |session|
+      foo = session.load(key)
+      session.delete(foo)
+
+      foo.name = 'name changed'
+      foo.order = 10
+
+      refute_raises(RuntimeError) {session.save_changes}
+    end
+
+    @_store.open_session do |session|
+      foo = session.load(key)
+      assert_nil(foo)
+    end
+  end
 end
