@@ -5,14 +5,15 @@ require 'requests/request_executor'
 require 'database/exceptions'
 require 'documents/hilo'
 require 'documents/document_session'
+require 'auth/request_options'
 
 module RavenDB
   class Configuration
-    attr_accessor :database, :urls
+    attr_accessor :database, :urls, :document_store_options
   end
 
   class DocumentStore
-    def initialize(url_or_urls = nil, database = nil)
+    def initialize(url_or_urls = nil, database = nil, options = nil)
       @_urls = []  
       @_conventions = nil
       @_request_executors = nil
@@ -21,6 +22,7 @@ module RavenDB
       @_initialized = false
       @_database = database
       @_disposed = false
+      @_document_store_options = options
       set_urls(url_or_urls)
     end
 
@@ -48,8 +50,8 @@ module RavenDB
           raise RuntimeError, "Default database isn't set."
         end
 
-        if @_urls.any? {|url| url.downcase.start_with?('https') }
-          raise NotSupportedException, "Access to secured servers is not yet supported in Ruby client"
+        if @_document_store_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
+          raise NotSupportedException, "Access to secured servers requires DocumentStoreOptions to be set"
         end
 
         @_generator = HiloMultiDatabaseIdGenerator.new(self)
@@ -183,10 +185,18 @@ module RavenDB
 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database
+      options = nil
+
+      unless @_document_store_options.nil?
+        options = RequestExecutorOptions.new(
+          @_document_store_options.certificate,
+          @_document_store_options.password
+        )
+      end
       
       (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(single_node_url, db_name) :
-        RequestExecutor.create(urls, db_name)
+        RequestExecutor.create_for_single_node(single_node_url, db_name, options) :
+        RequestExecutor.create(urls, db_name, options)
     end
   end  
 end

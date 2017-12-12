@@ -38,6 +38,11 @@ module RavenDB
       @_await_first_topology_lock = Mutex.new
       @_update_topology_lock = Mutex.new
       @_update_failed_node_timer_lock = Mutex.new
+      @_request_executor_options = nil
+
+      if options.key?(:request_executor_options)
+        @_request_executor_options = options[:request_executor_options]
+      end
 
       if !@_without_topology && !urls.empty?
         start_first_topology_update(urls)
@@ -46,20 +51,22 @@ module RavenDB
       end
     end
 
-    def self.create(urls, database = nil)
+    def self.create(urls, database = nil, options = nil)
       return self.new(database, {
         :without_topology => false,
-        :first_topology_update_urls => urls.clone
+        :first_topology_update_urls => urls.clone,
+        :request_executor_options => options
       })
     end
 
-    def self.create_for_single_node(url, database = nil)
+    def self.create_for_single_node(url, database = nil, options = nil)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       return self.new(database, {
         :without_topology => true,
         :single_node_topology => topology,
-        :topology_etag => -2
+        :topology_etag => -2,
+        :request_executor_options => options
       })
     end
 
