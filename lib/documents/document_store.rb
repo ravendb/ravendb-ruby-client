@@ -5,15 +5,21 @@ require 'requests/request_executor'
 require 'database/exceptions'
 require 'documents/hilo'
 require 'documents/document_session'
-require 'auth/request_options'
+require 'auth/auth_options'
 
 module RavenDB
   class Configuration
-    attr_accessor :database, :urls, :document_store_options
+    attr_accessor :database, :urls, :auth_options
+
+    def initialize
+      @database = nil
+      @urls = nil
+      @auth_options = nil
+    end
   end
 
   class DocumentStore
-    def initialize(url_or_urls = nil, database = nil, options = nil)
+    def initialize(url_or_urls = nil, database = nil, auth_options = nil)
       @_urls = []  
       @_conventions = nil
       @_request_executors = nil
@@ -22,7 +28,7 @@ module RavenDB
       @_initialized = false
       @_database = database
       @_disposed = false
-      @_document_store_options = options
+      @_auth_options = auth_options
       set_urls(url_or_urls)
     end
 
@@ -38,11 +44,15 @@ module RavenDB
           yield(config)
         end
 
-        if config.database
+        unless config.database.nil?
           @_database = config.database
         end
 
-        if config.urls
+        unless config.auth_options.nil?
+          @_auth_options = config.auth_options
+        end
+
+        unless config.urls.nil?
           set_urls(config.urls)
         end
 
@@ -50,7 +60,11 @@ module RavenDB
           raise RuntimeError, "Default database isn't set."
         end
 
-        if @_document_store_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
+        raise ArgumentError,
+          "Invalid auth options provided" unless
+          @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
+
+        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
           raise NotSupportedException, "Access to secured servers requires DocumentStoreOptions to be set"
         end
 
@@ -71,6 +85,10 @@ module RavenDB
 
     def single_node_url
       @_urls.first
+    end
+
+    def auth_options
+      @_auth_options
     end
 
     def operations
@@ -185,18 +203,18 @@ module RavenDB
 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database
-      options = nil
+      auth_options = nil
 
-      unless @_document_store_options.nil?
-        options = RequestExecutorOptions.new(
-          @_document_store_options.certificate,
-          @_document_store_options.password
+      unless @_auth_options.nil?
+        auth_options = RequestAuthOptions.new(
+            @_auth_options.certificate,
+            @_auth_options.password
         )
       end
       
       (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(single_node_url, db_name, options) :
-        RequestExecutor.create(urls, db_name, options)
+        RequestExecutor.create_for_single_node(single_node_url, db_name, auth_options) :
+        RequestExecutor.create(urls, db_name, auth_options)
     end
   end  
 end

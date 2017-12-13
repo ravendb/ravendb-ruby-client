@@ -214,8 +214,8 @@ module RavenDB
       conventions = store.conventions
 
       conventions.disable_topology_updates ?
-       ClusterRequestExecutor.create_for_single_node(store.single_node_url) : 
-       ClusterRequestExecutor.create(store.urls)
+       ClusterRequestExecutor.create_for_single_node(store.single_node_url, nil, store.auth_options) :
+       ClusterRequestExecutor.create(store.urls, nil, store.auth_options)
     end    
   end
 

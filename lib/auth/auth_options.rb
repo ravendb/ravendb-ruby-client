@@ -1,10 +1,10 @@
 require 'auth/certificate'
 
 module RavenDB
-  class RequestOptions
+  class AuthOptions
     attr_reader :certificate, :password
 
-    def initialize(certificate, password)
+    def initialize(certificate, password = nil)
       raise ArgumentError,
         "Invalid certificate provided" unless
           certificate.is_a?(Certificate)
@@ -14,11 +14,11 @@ module RavenDB
     end
   end
 
-  class DocumentStoreOptions < RequestOptions
+  class StoreAuthOptions < AuthOptions
 
   end
 
-  class RequestExecutorOptions < RequestOptions
+  class RequestAuthOptions < AuthOptions
 
   end
 end
