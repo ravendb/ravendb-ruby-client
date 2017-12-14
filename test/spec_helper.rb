@@ -36,7 +36,7 @@ class TestBase < Minitest::Test
     @_store = RavenDB::DocumentStore.new([DEFAULT_URL], @_current_database)
     @_store.configure do |config|
       unless CERT_FILE.nil?
-        config.auth_options = RavenDB::StoreAuthOptions.new(RavenDB::Certificate::from_file(CERT_FILE))
+        config.auth_options = RavenDB::StoreAuthOptions.new(CERT_FILE, CERT_PASSPHRASE)
       end
     end
 

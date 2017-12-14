@@ -65,7 +65,7 @@ module RavenDB
           @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
 
         if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
-          raise NotSupportedException, "Access to secured servers requires DocumentStoreOptions to be set"
+          raise NotSupportedException, "Access to secured servers requires StoreAuthOptions to be set"
         end
 
         @_generator = HiloMultiDatabaseIdGenerator.new(self)

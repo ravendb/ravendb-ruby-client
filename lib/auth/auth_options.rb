@@ -5,12 +5,15 @@ module RavenDB
     attr_reader :certificate, :password
 
     def initialize(certificate, password = nil)
-      raise ArgumentError,
-        "Invalid certificate provided" unless
-          certificate.is_a?(Certificate)
-
       @certificate = certificate
       @password = password
+      @rsa_key = nil
+    end
+
+    def get_rsa_key
+      @rsa_key ||= Certificate
+         .create(@certificate, @password)
+         .rsa_key
     end
   end
 

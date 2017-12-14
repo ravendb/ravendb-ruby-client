@@ -335,8 +335,11 @@ module RavenDB
         client = Net::HTTP.new(uri.host, uri.port)
 
         if "https" == uri.scheme
-          client.cert = @_auth_options.certificate
-          # TODO: passphrase ? is X509 supports it in Ruby?
+          raise NotSupportedException,
+            "Access to secured servers requires RequestAuthOptions to be set" unless
+            @_auth_options.is_a?(RequestAuthOptions)
+
+          client.key = @_auth_options.get_rsa_key
         end
 
         @_http_clients[url] = client
