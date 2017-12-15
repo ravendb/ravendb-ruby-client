@@ -218,7 +218,8 @@ module RavenDB
       unless store.auth_options.nil?
         auth = RequestAuthOptions.new(
           store.auth_options.certificate,
-          store.auth_options.password
+          store.auth_options.password,
+          store.auth_options.root
         )
       end
 

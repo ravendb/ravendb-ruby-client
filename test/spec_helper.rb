@@ -30,13 +30,14 @@ class TestBase < Minitest::Test
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
   CERT_FILE = ENV["CERTIFICATE"] || nil
   CERT_PASSPHRASE = ENV["PASSPHRASE"] || nil
+  ROOT_CERT_FILE = ENV["ROOT_CERTIFICATE"] || nil
 
   def setup
     @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"
     @_store = RavenDB::DocumentStore.new([DEFAULT_URL], @_current_database)
     @_store.configure do |config|
       unless CERT_FILE.nil?
-        config.auth_options = RavenDB::StoreAuthOptions.new(CERT_FILE, CERT_PASSPHRASE)
+        config.auth_options = RavenDB::StoreAuthOptions.new(CERT_FILE, CERT_PASSPHRASE, ROOT_CERT_FILE)
       end
     end
 

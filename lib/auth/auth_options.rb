@@ -2,11 +2,12 @@ require 'auth/certificate'
 
 module RavenDB
   class AuthOptions
-    attr_reader :certificate, :password
+    attr_reader :certificate, :password, :root
 
-    def initialize(certificate, password = nil)
+    def initialize(certificate, password = nil, root = nil)
       @certificate = certificate
       @password = password
+      @root = root
       @_cert_wrapper = nil
     end
 

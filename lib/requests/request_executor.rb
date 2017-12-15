@@ -339,9 +339,13 @@ module RavenDB
             "Access to secured servers requires RequestAuthOptions to be set" unless
             @_auth_options.is_a?(RequestAuthOptions)
 
+          client.use_ssl = true
           client.key = @_auth_options.get_rsa_key
           client.cert = @_auth_options.get_x509_certificate
-          client.use_ssl = true
+
+          unless @_auth_options.root.nil?
+            client.ca_file = @_auth_options.root
+          end
         end
 
         @_http_clients[url] = client

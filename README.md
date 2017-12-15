@@ -228,5 +228,5 @@ products_with_names_only = session.query({
 ## Running tests
 
 ```bash
-URL=<RavenDB server url including port> rake test
+URL=<RavenDB server url including port> [CERTIFICATE=<path to .pem certificate> [PASSPHRASE=<.pem certificate passphrase>] [ROOT_CERTIFICATE=<path to .cer root certificate>]] rake test
 ```
