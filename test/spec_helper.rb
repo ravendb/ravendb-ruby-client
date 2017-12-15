@@ -28,7 +28,7 @@ end
 class TestBase < Minitest::Test  
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
-  CERT_FILE = ENV["CERT"] || nil
+  CERT_FILE = ENV["CERTIFICATE"] || nil
   CERT_PASSPHRASE = ENV["PASSPHRASE"] || nil
 
   def setup

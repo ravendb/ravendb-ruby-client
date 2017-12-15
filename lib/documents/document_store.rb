@@ -32,8 +32,8 @@ module RavenDB
       set_urls(url_or_urls)
     end
 
-    def self.create(url_or_urls, database)
-      self.new(url_or_urls, database)
+    def self.create(url_or_urls, database, auth_options = nil)
+      self.new(url_or_urls, database, auth_options)
     end
 
     def configure
@@ -203,18 +203,18 @@ module RavenDB
 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database
-      auth_options = nil
+      auth = nil
 
       unless @_auth_options.nil?
-        auth_options = RequestAuthOptions.new(
+        auth = RequestAuthOptions.new(
             @_auth_options.certificate,
             @_auth_options.password
         )
       end
-      
-      (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(single_node_url, db_name, auth_options) :
-        RequestExecutor.create(urls, db_name, auth_options)
+
+      (true == for_single_node) ?
+        RequestExecutor.create_for_single_node(single_node_url, db_name, auth) :
+        RequestExecutor.create(urls, db_name, auth)
     end
   end  
 end

@@ -330,16 +330,18 @@ module RavenDB
     def http_client(server_node)
       url = server_node.url
 
-      if !@_http_clients.key?(url)
+      unless @_http_clients.key?(url)
         uri = URI.parse(url)
         client = Net::HTTP.new(uri.host, uri.port)
 
-        if "https" == uri.scheme
+        if uri.is_a?(URI::HTTPS)
           raise NotSupportedException,
             "Access to secured servers requires RequestAuthOptions to be set" unless
             @_auth_options.is_a?(RequestAuthOptions)
 
           client.key = @_auth_options.get_rsa_key
+          client.cert = @_auth_options.get_x509_certificate
+          client.use_ssl = true
         end
 
         @_http_clients[url] = client
