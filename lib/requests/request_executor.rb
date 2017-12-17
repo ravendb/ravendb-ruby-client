@@ -9,6 +9,7 @@ require 'database/commands'
 require 'documents/conventions'
 require 'requests/request_helpers'
 require 'utilities/observable'
+require 'auth/auth_options'
 
 module RavenDB
   class RequestExecutor
@@ -38,6 +39,15 @@ module RavenDB
       @_await_first_topology_lock = Mutex.new
       @_update_topology_lock = Mutex.new
       @_update_failed_node_timer_lock = Mutex.new
+      @_auth_options = nil
+
+      if options.key?(:auth_options)
+        @_auth_options = options[:auth_options]
+
+        raise ArgumentError,
+          "Invalid auth options provided" unless
+          @_auth_options.is_a?(RequestAuthOptions)
+      end
 
       if !@_without_topology && !urls.empty?
         start_first_topology_update(urls)
@@ -46,20 +56,22 @@ module RavenDB
       end
     end
 
-    def self.create(urls, database = nil)
+    def self.create(urls, database = nil, auth_options = nil)
       return self.new(database, {
         :without_topology => false,
-        :first_topology_update_urls => urls.clone
+        :first_topology_update_urls => urls.clone,
+        :auth_options => auth_options
       })
     end
 
-    def self.create_for_single_node(url, database = nil)
+    def self.create_for_single_node(url, database = nil, auth_options = nil)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       return self.new(database, {
         :without_topology => true,
         :single_node_topology => topology,
-        :topology_etag => -2
+        :topology_etag => -2,
+        :auth_options => auth_options
       })
     end
 
@@ -318,9 +330,25 @@ module RavenDB
     def http_client(server_node)
       url = server_node.url
 
-      if !@_http_clients.key?(url)
+      unless @_http_clients.key?(url)
         uri = URI.parse(url)
-        @_http_clients[url] = Net::HTTP.new(uri.host, uri.port) 
+        client = Net::HTTP.new(uri.host, uri.port)
+
+        if uri.is_a?(URI::HTTPS)
+          raise NotSupportedException,
+            "Access to secured servers requires RequestAuthOptions to be set" unless
+            @_auth_options.is_a?(RequestAuthOptions)
+
+          client.use_ssl = true
+          client.key = @_auth_options.get_rsa_key
+          client.cert = @_auth_options.get_x509_certificate
+
+          unless @_auth_options.root.nil?
+            client.ca_file = @_auth_options.root
+          end
+        end
+
+        @_http_clients[url] = client
       end  
 
       @_http_clients[url]

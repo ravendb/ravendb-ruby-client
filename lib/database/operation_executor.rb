@@ -6,6 +6,7 @@ require 'database/exceptions'
 require 'constants/database'
 require 'constants/documents'
 require 'requests/request_executor'
+require 'auth/auth_options'
 
 module RavenDB
   class OperationAwaiter
@@ -210,12 +211,21 @@ module RavenDB
 
     protected
     def request_executor_factory
+      auth = nil
       store = @store
       conventions = store.conventions
 
+      unless store.auth_options.nil?
+        auth = RequestAuthOptions.new(
+          store.auth_options.certificate,
+          store.auth_options.password,
+          store.auth_options.root
+        )
+      end
+
       conventions.disable_topology_updates ?
-       ClusterRequestExecutor.create_for_single_node(store.single_node_url) : 
-       ClusterRequestExecutor.create(store.urls)
+       ClusterRequestExecutor.create_for_single_node(store.single_node_url, nil, auth) :
+       ClusterRequestExecutor.create(store.urls, nil, auth)
     end    
   end
 

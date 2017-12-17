@@ -9,6 +9,7 @@
 /pkg/
 /spec/reports/
 /spec/examples.txt
+/test/certs/
 /test/tmp/
 /test/version_tmp/
 /tmp/

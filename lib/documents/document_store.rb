@@ -5,14 +5,21 @@ require 'requests/request_executor'
 require 'database/exceptions'
 require 'documents/hilo'
 require 'documents/document_session'
+require 'auth/auth_options'
 
 module RavenDB
   class Configuration
-    attr_accessor :database, :urls
+    attr_accessor :database, :urls, :auth_options
+
+    def initialize
+      @database = nil
+      @urls = nil
+      @auth_options = nil
+    end
   end
 
   class DocumentStore
-    def initialize(url_or_urls = nil, database = nil)
+    def initialize(url_or_urls = nil, database = nil, auth_options = nil)
       @_urls = []  
       @_conventions = nil
       @_request_executors = nil
@@ -21,11 +28,12 @@ module RavenDB
       @_initialized = false
       @_database = database
       @_disposed = false
+      @_auth_options = auth_options
       set_urls(url_or_urls)
     end
 
-    def self.create(url_or_urls, database)
-      self.new(url_or_urls, database)
+    def self.create(url_or_urls, database, auth_options = nil)
+      self.new(url_or_urls, database, auth_options)
     end
 
     def configure
@@ -36,11 +44,15 @@ module RavenDB
           yield(config)
         end
 
-        if config.database
+        unless config.database.nil?
           @_database = config.database
         end
 
-        if config.urls
+        unless config.auth_options.nil?
+          @_auth_options = config.auth_options
+        end
+
+        unless config.urls.nil?
           set_urls(config.urls)
         end
 
@@ -48,8 +60,12 @@ module RavenDB
           raise RuntimeError, "Default database isn't set."
         end
 
-        if @_urls.any? {|url| url.downcase.start_with?('https') }
-          raise NotSupportedException, "Access to secured servers is not yet supported in Ruby client"
+        raise ArgumentError,
+          "Invalid auth options provided" unless
+          @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
+
+        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
+          raise NotSupportedException, "Access to secured servers requires StoreAuthOptions to be set"
         end
 
         @_generator = HiloMultiDatabaseIdGenerator.new(self)
@@ -69,6 +85,10 @@ module RavenDB
 
     def single_node_url
       @_urls.first
+    end
+
+    def auth_options
+      @_auth_options
     end
 
     def operations
@@ -183,10 +203,19 @@ module RavenDB
 
     def create_request_executor(database = nil, for_single_node = nil)
       db_name = database || @_database
-      
-      (true == for_single_node) ? 
-        RequestExecutor.create_for_single_node(single_node_url, db_name) :
-        RequestExecutor.create(urls, db_name)
+      auth = nil
+
+      unless @_auth_options.nil?
+        auth = RequestAuthOptions.new(
+            @_auth_options.certificate,
+            @_auth_options.password,
+            @_auth_options.root
+        )
+      end
+
+      (true == for_single_node) ?
+        RequestExecutor.create_for_single_node(single_node_url, db_name, auth) :
+        RequestExecutor.create(urls, db_name, auth)
     end
   end  
 end
