@@ -224,6 +224,41 @@ products_with_names_only = session.query({
 |`all`|Returns all documents from result set (considering `take` / `skip` options)|
 |`count`|Returns count of all documents matching query criteria (non-considering `take` / `skip` options)|
 
+## Working with secured server
+1. Put generated client certificate somewhere on your app structure. Optionally you can store it as string on your application config file or in the database
+2. Instantiate `RavenDB::StoreAuthOptions`. Pass path to the certificate file (or string with its contents) and passphrase (if needed) to constructor:
+```ruby
+auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
+
+# or
+
+auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem', 'passphrase')
+
+# or
+
+certificate = <<CERTIFICATE
+-----BEGIN CERTIFICATE-----
+...
+-----END CERTIFICATE-----
+-----BEGIN RSA PRIVATE KEY-----
+...
+-----END RSA PRIVATE KEY-----
+CERTIFICATE
+auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
+``` 
+3. Pass `RavenDB::StoreAuthOptions` instance to `auth_options` attribute of config when you configuring store:
+
+```ruby
+RavenDB.store.configure do |config|
+  config.urls = ["database url"]
+  config.database = 'database name'
+  config.auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
+end
+```
+
+#### Auth exceptions
+- if no `RavenDB::StoreAuthOptions` was provided, an `RavenDB::NotSupportedException` will be raised during store initialization
+- if certificate is invalid or doesn't have permissions for specific operations, an `RavenDB::AuthorizationException` will be raised
 
 ## Running tests
 
