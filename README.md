@@ -244,7 +244,7 @@ certificate = <<CERTIFICATE
 ...
 -----END RSA PRIVATE KEY-----
 CERTIFICATE
-auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
+auth_options = RavenDB::StoreAuthOptions.new(certificate)
 ``` 
 3. Pass `RavenDB::StoreAuthOptions` instance to `auth_options` attribute of config when you configuring store:
 
