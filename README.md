@@ -225,17 +225,8 @@ products_with_names_only = session.query({
 |`count`|Returns count of all documents matching query criteria (non-considering `take` / `skip` options)|
 
 ## Working with secured server
-1. Put generated client certificate somewhere on your app structure. Optionally you can store it as string on your application config file or in the database
-2. Instantiate `RavenDB::StoreAuthOptions`. Pass path to the certificate file (or string with its contents) and passphrase (if needed) to constructor:
+1. Instantiate `RavenDB::StoreAuthOptions`. Pass contents of the .pem certificate and passphrase (optional) to constructor:
 ```ruby
-auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
-
-# or
-
-auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem', 'passphrase')
-
-# or
-
 certificate = <<CERTIFICATE
 -----BEGIN CERTIFICATE-----
 ...
@@ -245,23 +236,27 @@ certificate = <<CERTIFICATE
 -----END RSA PRIVATE KEY-----
 CERTIFICATE
 auth_options = RavenDB::StoreAuthOptions.new(certificate)
+
+#or 
+
+auth_options = RavenDB::StoreAuthOptions.new(certificate, "my passphrase")
 ``` 
-3. Pass `RavenDB::StoreAuthOptions` instance to `auth_options` attribute of config when you configuring store:
+2. Pass `RavenDB::StoreAuthOptions` instance to `auth_options` config option when you're configuring store:
 
 ```ruby
 RavenDB.store.configure do |config|
   config.urls = ["database url"]
   config.database = 'database name'
-  config.auth_options = RavenDB::StoreAuthOptions.new('./path/to/certiface.pem')
+  config.auth_options = RavenDB::StoreAuthOptions.new(certificate)
 end
 ```
 
 #### Auth exceptions
-- if no `RavenDB::StoreAuthOptions` was provided, an `RavenDB::NotSupportedException` will be raised during store initialization
+- if no `RavenDB::StoreAuthOptions` was provided and you're trying to work with secured server, an `RavenDB::NotSupportedException` will be raised during store initialization
 - if certificate is invalid or doesn't have permissions for specific operations, an `RavenDB::AuthorizationException` will be raised
 
 ## Running tests
 
 ```bash
-URL=<RavenDB server url including port> [CERTIFICATE=<path to .pem certificate> [PASSPHRASE=<.pem certificate passphrase>] [ROOT_CERTIFICATE=<path to .cer root certificate>]] rake test
+URL=<RavenDB server url including port> [CERTIFICATE=<path to .pem certificate> [PASSPHRASE=<.pem certificate passphrase>]] rake test
 ```

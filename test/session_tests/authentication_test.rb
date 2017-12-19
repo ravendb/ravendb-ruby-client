@@ -65,6 +65,10 @@ CERTIFICATE
   end
 
   def test_should_raise_unauthorized_exception_when_trying_to_connect_to_secured_server_with_invalid_certificate
+    unless DEFAULT_URL.downcase.include?('https://')
+      return
+    end
+
     assert_raises(RavenDB::AuthorizationException) do
       store = RavenDB::DocumentStore.new(
           [DEFAULT_URL], @_current_database,
