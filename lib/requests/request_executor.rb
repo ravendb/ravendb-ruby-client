@@ -2,6 +2,7 @@ require 'uri'
 require 'time'
 require 'thread'
 require 'net/http'
+require 'openssl'
 require 'constants/database'
 require 'constants/documents'
 require 'database/exceptions'
@@ -168,7 +169,7 @@ module RavenDB
       
       begin
         response = http_client(server_node).request(request)
-      rescue Net::OpenTimeout => ssl_exception
+      rescue OpenSSL::SSL::SSLError => ssl_exception
         request_exception = unauthorized_error(server_node, request)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
