@@ -2,6 +2,7 @@ require 'uri'
 require 'time'
 require 'thread'
 require 'net/http'
+require 'openssl'
 require 'constants/database'
 require 'constants/documents'
 require 'database/exceptions'
@@ -33,6 +34,7 @@ module RavenDB
       @_last_known_urls = nil
       @_failed_nodes_statuses = {}
       @_first_topology_update = nil
+      @_first_topology_update_exception = nil
       @_node_selector = nil
       @_without_topology = options[:without_topology] || false
       @_topology_etag = options[:topology_etag] || 0
@@ -121,7 +123,9 @@ module RavenDB
       end  
 
       if !is_fulfilled
-        if is_first_topology_update_tries_expired?
+        if @_first_topology_update_exception.is_a?(AuthorizationException)
+          raise @_first_topology_update_exception
+        elsif is_first_topology_update_tries_expired?
           raise DatabaseLoadFailureException, 'Max topology update tries reached'
         elsif
           sleep 0.1
@@ -165,6 +169,8 @@ module RavenDB
       
       begin
         response = http_client(server_node).request(request)
+      rescue OpenSSL::SSL::SSLError => ssl_exception
+        request_exception = unauthorized_error(server_node, request)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
       end
@@ -175,6 +181,8 @@ module RavenDB
         ].any? { |response_type| response.is_a?(response_type) }
           message = "HTTP #{response.code}: #{response.message}"
           request_exception = UnsuccessfulRequestException.new(message)
+        elsif response.is_a?(Net::HTTPForbidden)
+          request_exception = unauthorized_error(server_node, request)
         else
           if response.is_a?(Net::HTTPNotFound)
             response.body = nil
@@ -190,7 +198,9 @@ module RavenDB
 
       should_retry = !request_exception.nil?
 
-      if should_retry && command.was_failed?
+      if should_retry && (command.was_failed? ||
+        request_exception.is_a?(AuthorizationException)
+      )
         raise request_exception
       end
       
@@ -210,8 +220,11 @@ module RavenDB
          for url in urls do
            begin
              update_topology(ServerNode.new(url, @initial_database))
+             @_first_topology_update_exception = nil
              updated = true
              break
+           rescue AuthorizationException => exception
+             @_first_topology_update_exception = exception
            rescue
              next
            end  
@@ -342,17 +355,33 @@ module RavenDB
           client.use_ssl = true
           client.key = @_auth_options.get_rsa_key
           client.cert = @_auth_options.get_x509_certificate
-
-          unless @_auth_options.root.nil?
-            client.ca_file = @_auth_options.root
-          end
         end
 
         @_http_clients[url] = client
       end  
 
       @_http_clients[url]
-    end  
+    end
+
+    def unauthorized_error(server_node, request)
+      message = nil
+
+      if !!server_node.database
+        message = "database #{server_node.database} on "
+      end
+
+      message = "Forbidden access to #{message}#{server_node.url} node, "
+
+      if @_auth_options.certificate.nil?
+        message = "#{message}a certificate is required."
+      else
+        message = "#{message}certificate does not have permission to access it or is unknown."
+      end
+
+      message = "#{message} #{request.method} #{request.path}"
+
+      AuthorizationException.new(message)
+    end
   end  
 
   class ClusterRequestExecutor < RequestExecutor

@@ -5,19 +5,7 @@ module RavenDB
     attr_reader :rsa_key, :x509_cert
 
     def self.create(source, password = nil)
-      if File.exist?(source)
-        self.from_file(source, password)
-      else
-        self.from_string(source, password)
-      end
-    end
-
-    def self.from_string(pem, password = nil)
-      self.new(pem, password)
-    end
-
-    def self.from_file(path, password = nil)
-      self.from_string(File::read(path), password)
+      self.new(source, password)
     end
 
     def initialize(pem, password)
