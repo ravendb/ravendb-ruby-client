@@ -48,7 +48,7 @@ module RavenDB
 
         raise ArgumentError,
           "Invalid auth options provided" unless
-          @_auth_options.is_a?(RequestAuthOptions)
+          @_auth_options.is_a?(RequestAuthOptions) || @_auth_options.nil?
       end
 
       if !@_without_topology && !urls.empty?

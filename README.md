@@ -2,7 +2,7 @@
 
 ## Installation
 
-For global intsall run:
+For global install run:
 
 ```bash
 gem install --save ravendb
