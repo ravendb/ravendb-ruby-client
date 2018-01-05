@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class IndexCommandsTest < TestBase  
+class IndexCommandsTest < RavenDatabaseTest
   def should_put_index_with_success
     @_index = RavenDB::IndexDefinition.new('region', @_index_map)
 

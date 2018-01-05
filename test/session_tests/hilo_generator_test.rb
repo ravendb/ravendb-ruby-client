@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class HiloGeneratorTest < TestBase
+class HiloGeneratorTest < RavenDatabaseTest
   COLLECTION = "Products"
 
   def setup

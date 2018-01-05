@@ -2,7 +2,7 @@ require 'date'
 require 'ravendb'
 require 'spec_helper'
 
-class QueryBuilderTest < TestBase
+class QueryBuilderTest < RavenTest
   def test_can_understand_equality
     query = @_store
       .open_session

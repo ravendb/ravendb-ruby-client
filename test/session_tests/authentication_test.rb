@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class AuthenticationTest < TestBase
+class AuthenticationTest < RavenDatabaseTest
   def setup
     super
 

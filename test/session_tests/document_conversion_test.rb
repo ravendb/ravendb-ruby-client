@@ -2,7 +2,7 @@ require 'date'
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentConversionTest < TestBase
+class DocumentConversionTest < RavenDatabaseTest
   NOW = DateTime.now
 
   def setup

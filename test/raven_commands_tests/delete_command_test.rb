@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class DeleteCommandTest < TestBase
+class DeleteCommandTest < RavenDatabaseTest
   @_change_vector = nil
   @_other_change_vector = nil  
   

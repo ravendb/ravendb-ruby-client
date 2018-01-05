@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentLoadTest < TestBase
+class DocumentLoadTest < RavenDatabaseTest
   def setup
     super
 

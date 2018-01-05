@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentDeleteTest < TestBase
+class DocumentDeleteTest < RavenDatabaseTest
   IDS = [101, 10, 106, 107]
 
   def setup

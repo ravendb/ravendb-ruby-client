@@ -25,7 +25,7 @@ module MiniTest
   end
 end
 
-class TestBase < Minitest::Test  
+class RavenTest < Minitest::Test
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
   CERT_FILE = ENV["CERTIFICATE"] || nil
@@ -40,31 +40,52 @@ class TestBase < Minitest::Test
       end
     end
 
-    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
-    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
-  
-    @_index_map = 
-      "from doc in docs "\
+    @_store.conventions.disable_topology_updates = true
+  end
+
+  def teardown
+    @_store.dispose
+    @_store = nil
+    @_current_database = nil
+  end
+end
+
+class RavenDatabaseTest < RavenTest
+  def setup
+    super
+    @_store.conventions.disable_topology_updates = false
+    @_index_map =
+        "from doc in docs "\
       "select new{"\
       "Tag = doc[\"@metadata\"][\"@collection\"],"\
       "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\
-      "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"    
-  
-    @_index = RavenDB::IndexDefinition.new("Testing", @_index_map)
-    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    @_request_executor = @_store.get_request_executor    
-  end  
+      "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
+
+    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
+    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
+    @_request_executor = @_store.get_request_executor
+  end
 
   def teardown
     @_store.admin.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
-    @_store.dispose
-    
-    @_index_map = nil
-    @_index = nil
     @_request_executor = nil
-    @_store = nil
-    @_current_database = nil    
-  end  
+    @_index_map = nil
+    super
+  end
+end
+
+class RavenDatabaseIndexesTest < RavenDatabaseTest
+  def setup
+    super
+
+    @_index = RavenDB::IndexDefinition.new("Testing", @_index_map)
+    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
+  end
+
+  def teardown
+    super
+    @_index = nil
+  end
 end
 
 class SerializingTest
@@ -72,7 +93,6 @@ class SerializingTest
                 :boolean_prop, :nil_prop, :hash_prop, :array_prop,
                 :deep_hash_prop, :deep_array_prop, :deep_array_hash_prop,
                 :date_prop, :deep_foo_prop, :deep_array_foo_prop
-
 end
 
 class Foo

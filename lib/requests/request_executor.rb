@@ -48,7 +48,7 @@ module RavenDB
 
         raise ArgumentError,
           "Invalid auth options provided" unless
-          @_auth_options.is_a?(RequestAuthOptions)
+          @_auth_options.nil? || @_auth_options.is_a?(RequestAuthOptions)
       end
 
       if !@_without_topology && !urls.empty?
@@ -169,13 +169,13 @@ module RavenDB
       
       begin
         response = http_client(server_node).request(request)
-      rescue OpenSSL::SSL::SSLError => ssl_exception
+      rescue OpenSSL::SSL::SSLError
         request_exception = unauthorized_error(server_node, request)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
       end
 
-      if !response.nil?
+      unless response.nil?
         if [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
             Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable
         ].any? { |response_type| response.is_a?(response_type) }

@@ -2,7 +2,7 @@ require 'date'
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentQueryTest < TestBase
+class DocumentQueryTest < RavenDatabaseTest
   def setup
     super
 

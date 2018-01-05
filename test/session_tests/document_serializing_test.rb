@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentSerializingTest < TestBase
+class DocumentSerializingTest < RavenTest
   def setup
     super
 
