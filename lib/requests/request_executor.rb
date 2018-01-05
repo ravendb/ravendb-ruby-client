@@ -169,13 +169,13 @@ module RavenDB
       
       begin
         response = http_client(server_node).request(request)
-      rescue OpenSSL::SSL::SSLError
+      rescue OpenSSL::SSL::SSLError => ssl_exception
         request_exception = unauthorized_error(server_node, request)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
       end
 
-      unless response.nil?
+      if !response.nil?
         if [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
             Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable
         ].any? { |response_type| response.is_a?(response_type) }
