@@ -228,7 +228,7 @@ exact = false)</pre></td>
     <tr>
         <td><pre lang="ruby">where_between(field_name, from, to, 
 exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName BETWEEN <start> AND <end></pre></td>
+        <td><pre lang="sql">WHERE fieldName BETWEEN &lt;start&gt; AND &lt;end&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_greater_than(field_name, value, 
