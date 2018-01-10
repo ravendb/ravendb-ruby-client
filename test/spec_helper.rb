@@ -62,12 +62,12 @@ class RavenDatabaseTest < RavenTest
       "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
 
     db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
-    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
+    @_store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
     @_request_executor = @_store.get_request_executor
   end
 
   def teardown
-    @_store.admin.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
+    @_store.maintenance.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
     @_request_executor = nil
     @_index_map = nil
     super
