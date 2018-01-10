@@ -200,7 +200,7 @@ products_with_names_only = session.query({
         <td><pre lang="sql">SELECT field1 [AS projection1], ...</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">distinct(): this;</pre></td>
+        <td><pre lang="ruby">distinct</pre></td>
         <td><pre lang="sql">SELECT DISTINCT</pre></td>
     </tr>
     <tr>
