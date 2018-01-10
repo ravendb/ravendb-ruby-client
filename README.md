@@ -190,39 +190,138 @@ products_with_names_only = session.query({
 ```
 
 #### RavenDB::DocumentQuery methods overview
-| Method | RQL / description |
-| ------------- | ------------- |
-|`select_fields(fields, projections = nil)`|`SELECT field1 [AS projection1], ...`|
-|`distinct(): this;`|`SELECT DISTINCT`|
-|`where_equals(field_name, value, exact = false)`|`WHERE fieldName = <value>`|
-|`where_not_equals(field_name, value, exact = false)`|`WHERE fieldName != <value>`|
-|`where_in(field_name, values, exact = false)`|`WHERE fieldName IN (<value1>, <value2>, ...)`|
-|`where_starts_with(field_name, value)`|`WHERE startsWith(fieldName, '<value>')`|
-|`where_ends_with(field_name, value)`|`WHERE endsWith(fieldName, '<value>')`|
-|`where_between(field_name, from, to, exact = nil)`|`WHERE fieldName BETWEEN <start> AND <end>`|
-|`where_greater_than(field_name, value, exact = nil)`|`WHERE fieldName > <value>`|
-|`where_greater_than_or_equal(field_name, value, exact = nil)`|`WHERE fieldName >= <value>`|
-|`where_less_than(field_name, value, exact = nil)`|`WHERE fieldName < <value>`|
-|`where_less_than_or_equal(field_name, value, exact = nil)`|`WHERE fieldName <= <value>`|
-|`where_exists(field_name)`|`WHERE exists(fieldName)`|
-|`contains_any(field_name, values)`|`WHERE fieldName IN (<value1>, <value2>, ...)`|
-|`contains_all(field_name, values)`|`WHERE fieldName ALL IN (<value1>, <value2>, ...)`|
-|`search(field_name, search_terms, operator = RavenDB::SearchOperator::Or)`|Performs full-text search|
-|`open_subclause`|Opens subclause `(`|
-|`close_subclause`|Closes subclause `)`|
-|`negate_next`|Adds `NOT` before next condition|
-|`and_also`|Adds `AND` before next condition|
-|`or_else`|Adds `OR` before next condition|
-|`using_default_operator(operator)`|Sets default operator (which will be used if no `andAlso()` / `orElse` was called. Just after query instantiation, `OR` is used as default operator. Default operator can be changed only before adding any conditions|
-|`order_by(field, ordering_type = nil)`|`ORDER BY field`|
-|`order_by_descending(field, ordering_type = nil)`|`ORDER BY field DESC`|
-|`random_ordering(seed = nil)`|`ORDER BY random()`|
-|`take(count)`|`Limits the number of result entries to *count* `|
-|`skip(count)`|`Skips first *count* results `|
-|`first`|Returns first document from result set|
-|`single`|Returns single document matching query criteria. If there are no such document or more then one - throws an Exception|
-|`all`|Returns all documents from result set (considering `take` / `skip` options)|
-|`count`|Returns count of all documents matching query criteria (non-considering `take` / `skip` options)|
+<table>
+    <tr>
+        <th>Method</th>
+        <th>RQL / description</th>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">select_fields(fields, projections = nil)</pre></td>
+        <td><pre lang="sql">SELECT field1 [AS projection1], ...</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">distinct(): this;</pre></td>
+        <td><pre lang="sql">SELECT DISTINCT</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_equals(field_name, value, exact = false)</pre></td>
+        <td><pre lang="sql">WHERE fieldName = &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_not_equals(field_name, value, exact = false)</pre></td>
+        <td><pre lang="sql">WHERE fieldName != &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_in(field_name, values, exact = false)</pre></td>
+        <td><pre lang="sql">WHERE fieldName IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_starts_with(field_name, value)</pre></td>
+        <td><pre lang="sql">WHERE startsWith(fieldName, '&lt;value&gt;')</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_ends_with(field_name, value)</pre></td>
+        <td><pre lang="sql">WHERE endsWith(fieldName, '&lt;value&gt;')</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_between(field_name, from, to, exact = nil)</pre></td>
+        <td><pre lang="sql">WHERE fieldName BETWEEN <start> AND <end></pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_greater_than(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="sql">WHERE fieldName > &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_greater_than_or_equal(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="sql">WHERE fieldName >= &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_less_than(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="sql">WHERE fieldName < &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_less_than_or_equal(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="sql">WHERE fieldName <= &lt;value&gt;</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">where_exists(field_name)</pre></td>
+        <td><pre lang="sql">WHERE exists(fieldName)</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">contains_any(field_name, values)</pre></td>
+        <td><pre lang="sql">WHERE fieldName IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">contains_all(field_name, values)</pre></td>
+        <td><pre lang="sql">WHERE fieldName ALL IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">search(field_name, search_terms, operator = RavenDB::SearchOperator::Or)</pre></td>
+        <td>Performs full-text search</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">open_subclause</pre></td>
+        <td>Opens subclause <code>(</code></pre>
+        </td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">close_subclause</pre></td>
+        <td>Closes subclause <code>)</code></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">negate_next</pre></td>
+        <td>Adds <code>NOT</code> before next condition</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">and_also</pre></td>
+        <td>Adds <code>AND</code> before next condition</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">or_else</pre></td>
+        <td>Adds <code>OR</code> before next condition</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">using_default_operator(operator)</pre></td>
+        <td>Sets default operator (which will be used if no <code>and_also</code> / <code>or_else</code> was called. Just after query instantiation, <code>OR</code> is used as default operator. Default operator can be changed only before adding any conditions</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">order_by(field, ordering_type = nil)</pre></td>
+        <td><pre lang="sql">ORDER BY field</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">order_by_descending(field, ordering_type = nil)</pre></td>
+        <td><pre lang="sql">ORDER BY field DESC</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">random_ordering(seed = nil)</pre></td>
+        <td><pre lang="sql">ORDER BY random()</pre></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">take(count)</pre></td>
+        <td>Limits the number of result entries to <code>count</code></td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">skip(count)</pre></td>
+        <td>Skips first <code>count</code> results</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">first</pre></td>
+        <td>Returns first document from result set</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">single</pre></td>
+        <td>Returns single document matching query criteria. If there are no such document or more then one - throws an Exception</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">all</pre></td>
+        <td>Returns all documents from result set (considering <code>take</code> / <code>skip</code> options)</td>
+    </tr>
+    <tr>
+        <td><pre lang="ruby">count</pre></td>
+        <td>Returns count of all documents matching query criteria (non-considering <code>take</code> / <code>skip</code> options)</td>
+    </tr>
+</table>
+
 
 ## Working with secured server
 1. Instantiate `RavenDB::StoreAuthOptions`. Pass contents of the .pem certificate and passphrase (optional) to constructor:
