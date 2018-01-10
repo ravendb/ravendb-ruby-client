@@ -204,11 +204,13 @@ products_with_names_only = session.query({
         <td><pre lang="sql">SELECT DISTINCT</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_equals(field_name, value, exact = false)</pre></td>
+        <td><pre lang="ruby">where_equals(field_name, value, 
+exact = false)</pre></td>
         <td><pre lang="sql">WHERE fieldName = &lt;value&gt;</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_not_equals(field_name, value, exact = false)</pre></td>
+        <td><pre lang="ruby">where_not_equals(field_name, value, 
+exact = false)</pre></td>
         <td><pre lang="sql">WHERE fieldName != &lt;value&gt;</pre></td>
     </tr>
     <tr>
@@ -224,7 +226,8 @@ products_with_names_only = session.query({
         <td><pre lang="sql">WHERE endsWith(fieldName, '&lt;value&gt;')</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_between(field_name, from, to, exact = nil)</pre></td>
+        <td><pre lang="ruby">where_between(field_name, from, to, 
+exact = nil)</pre></td>
         <td><pre lang="sql">WHERE fieldName BETWEEN <start> AND <end></pre></td>
     </tr>
     <tr>
@@ -294,7 +297,8 @@ operator = RavenDB::SearchOperator::Or)</pre></td>
         <td><pre lang="sql">ORDER BY field</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">order_by_descending(field, ordering_type = nil)</pre></td>
+        <td><pre lang="ruby">order_by_descending(field, 
+ordering_type = nil)</pre></td>
         <td><pre lang="sql">ORDER BY field DESC</pre></td>
     </tr>
     <tr>
