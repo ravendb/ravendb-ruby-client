@@ -256,7 +256,8 @@ products_with_names_only = session.query({
         <td><pre lang="sql">WHERE fieldName ALL IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">search(field_name, search_terms, operator = RavenDB::SearchOperator::Or)</pre></td>
+        <td><pre lang="ruby">search(field_name, search_terms, 
+operator = RavenDB::SearchOperator::Or)</pre></td>
         <td>Performs full-text search</td>
     </tr>
     <tr>
