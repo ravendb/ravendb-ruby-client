@@ -228,19 +228,23 @@ products_with_names_only = session.query({
         <td><pre lang="sql">WHERE fieldName BETWEEN <start> AND <end></pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_greater_than(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="ruby">where_greater_than(field_name, value, 
+exact = nil)</pre></td>
         <td><pre lang="sql">WHERE fieldName > &lt;value&gt;</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_greater_than_or_equal(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="ruby">where_greater_than_or_equal(field_name, value, 
+exact = nil)</pre></td>
         <td><pre lang="sql">WHERE fieldName >= &lt;value&gt;</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_less_than(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="ruby">where_less_than(field_name, value, 
+exact = nil)</pre></td>
         <td><pre lang="sql">WHERE fieldName < &lt;value&gt;</pre></td>
     </tr>
     <tr>
-        <td><pre lang="ruby">where_less_than_or_equal(field_name, value, exact = nil)</pre></td>
+        <td><pre lang="ruby">where_less_than_or_equal(field_name, value, 
+exact = nil)</pre></td>
         <td><pre lang="sql">WHERE fieldName <= &lt;value&gt;</pre></td>
     </tr>
     <tr>
