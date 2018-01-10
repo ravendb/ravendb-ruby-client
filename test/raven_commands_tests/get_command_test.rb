@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class GetCommandTest < TestBase
+class GetCommandTest < RavenDatabaseTest
   @_put_command = nil
   @_other_put_command = nil
   @_response = nil

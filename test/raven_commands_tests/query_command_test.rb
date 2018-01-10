@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class QueryCommandTest < TestBase  
+class QueryCommandTest < RavenDatabaseIndexesTest
   def setup
     super() 
 
@@ -29,7 +29,7 @@ class QueryCommandTest < TestBase
   end
 
   def test_test_should_query_only_metadata
-    result = @_request_executor.execute(RavenDB::QueryCommand.new(@_conventions,@_index_query, true))
+    result = @_request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query, true, false))
 
     refute(result["Results"].first.key?('Name'))
   end
@@ -47,4 +47,4 @@ class QueryCommandTest < TestBase
       @_request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query))
     end
   end
-end  
+end

@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class QueryOperationsTest < TestBase
+class QueryOperationsTest < RavenDatabaseTest
   def setup
     super()
 
