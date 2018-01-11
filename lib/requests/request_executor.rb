@@ -169,7 +169,7 @@ module RavenDB
       
       begin
         response = http_client(server_node).request(request)
-      rescue OpenSSL::SSL::SSLError => ssl_exception
+      rescue OpenSSL::SSL::SSLError
         request_exception = unauthorized_error(server_node, request)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
