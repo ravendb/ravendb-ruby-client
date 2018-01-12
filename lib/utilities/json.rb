@@ -25,6 +25,14 @@ class Net::HTTPResponse
 end
 
 module RavenDB
+  class AttributeSerializer
+    def on_serialized(serialized)
+    end
+
+    def on_unserialized(serialized)
+    end
+  end
+
   class JsonSerializer
     def self.from_json(target, source = {}, metadata = {}, nested_object_types = {})
       mappings = {}

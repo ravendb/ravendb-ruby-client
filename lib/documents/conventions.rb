@@ -13,11 +13,13 @@ module RavenDB
     MaxLengthOfQueryUsingGetUrl = 1024 + 512
     IdentityPartsSeparator = "/"
     
-    attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates
+    attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
 
     def initialize
       @set_id_only_if_property_is_defined = false
       @disable_topology_updates = false
+      @_document_id_resolvers = []
+      @serializers = []
     end
 
     def empty_collection
@@ -26,6 +28,20 @@ module RavenDB
 
     def empty_change_vector
       nil
+    end
+
+    def add_attribute_serializer(serializer)
+      raise ArgumentError, 
+        "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer" unless
+        serializer.is_a?(AttributeSerializer)
+
+      @serializers.push(serializer)  
+    end
+    
+    def add_id_property_resolver(&resolver)
+      if block_given?
+        @_document_id_resolvers.push(resolver)
+      end
     end
 
     def get_collection_name(document_class_or_document_type)
@@ -54,14 +70,55 @@ module RavenDB
       Object.const_get(document_type)
     end
 
-    def get_id_property_name(document_or_class)
-      raise RuntimeError,
-        'Invalid argument passed. Should be an document, class constructor or document type name' unless
-        (TypeUtilities::is_document?(document_or_class) ||
-            document_or_class.is_a?(Class) ||
-            document_or_class.is_a?(String))
+    def get_id_property_name(document_or_class, document = nil)
+      id_property = 'id'
+      document_type = nil
+      document_class = nil
+      document_instance = document
 
-      'id'
+      if TypeUtilities::is_document?(document_or_class)
+        document_class = document_or_class.class
+        document_instance = document_class
+      elsif document_or_class.is_a?(Class)
+        document_class = document_or_class
+      elsif document_or_class.is_a?(String)
+        document_type = document_or_class
+      end  
+
+      if document_type.nil? && !document_class.nil?
+        document_type = document_or_class.name
+      end
+
+      raise RuntimeError,
+        'Invalid argument passed. Should be an document, class constructor or document type name' if
+        document_type.nil?
+
+      if @_document_id_resolvers.key?(document_type)
+        id_property = @_document_id_resolvers[document_type]
+      else
+        found_id_property = nil
+
+        @_document_id_resolvers.each do |resolver|
+          begin
+            found_id_property = resolver.call({
+              :document_type => document_type,
+              :document_class => document_class,
+              :document => document_instance
+            }) || nil 
+          rescue
+            found_id_property = nil
+          end
+
+          break unless found_id_property.nil?
+        end
+
+        unless found_id_property.nil?
+          id_property = found_id_property
+          @_document_id_resolvers[document_type] = id_property
+        end
+      end  
+
+      id_property
     end
 
     def convert_to_document(raw_entity, document_type = nil, nested_object_types = {})

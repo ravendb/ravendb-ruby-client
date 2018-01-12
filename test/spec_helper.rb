@@ -2,6 +2,7 @@ require 'ravendb'
 require 'date'
 require 'securerandom'
 require 'minitest/autorun'
+require 'active_support/inflector'
 
 module MiniTest
   module Assertions
@@ -167,10 +168,10 @@ class Order
   attr_accessor :id, :name, :uid, :product_id
 
   def initialize(
-      id = nil,
-      name = "",
-      uid = nil,
-      product_id = nil
+    id = nil,
+    name = "",
+    uid = nil,
+    product_id = nil
   )
     @id = id
     @name = name
@@ -197,6 +198,31 @@ class LastFm
     @title = title
     @datetime_time = datetime_time
     @tags = tags
+  end
+end
+
+class TestCustomDocumentId
+  attr_accessor :item_id, :item_title
+  
+  def initialize(
+    item_id = nil,
+    item_title = nil
+  )
+    @item_id = item_id
+    @item_title = item_title
+  end
+end
+
+class TestCustomSerializer < TestCustomDocumentId
+  attr_accessor :item_options
+
+  def initialize(
+    item_id = nil,
+    item_title = nil,
+    item_options = []
+  )
+    super(item_id, item_title)
+    @item_options = item_options
   end
 end
 
@@ -263,5 +289,31 @@ class ProductsTestingSort
 
   def execute
     @store.operations.send(RavenDB::PutIndexesOperation.new(@index_definition))
+  end
+end
+
+class CustomAttributeSerializer < RavenDB::AttributeSerializer
+  def on_serialized(serialized)
+    metadata = serialized[:metadata]
+
+    unless metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(false)
+
+      if serialized[:original_attribute] == 'item_options'
+        serialized[:serialized_value] = serialized[:original_value].join(",")
+      end
+    end
+  end
+
+  def on_unserialized(serialized)
+    metadata = serialized[:metadata]
+
+    unless metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].underscore
+
+      if serialized[:original_attribute] == 'itemOptions'
+        serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
+      end
+    end
   end
 end

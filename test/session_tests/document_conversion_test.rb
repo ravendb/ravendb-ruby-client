@@ -39,15 +39,75 @@ class DocumentConversionTest < RavenDatabaseTest
 
   def test_should_convert_on_query
     @_store.open_session do |session|
-      results = session.advanced.raw_query(
-        "FROM TestConversions WHERE date > $now", {
-        :now => RavenDB::TypeUtilities::stringify_date(NOW)
+      results = session.query({
+        :collection => 'TestConversions'
       })
+      .where_greater_than('date', NOW)
       .wait_for_non_stale_results
       .all
 
       assert_equal(results.size, 1)
       check_doc('TestConversions/2', results.first)
+    end
+  end
+
+  def test_should_support_custom_id_property
+    id = nil
+
+    @_store.conventions.add_id_property_resolver do |document_info|
+      if document_info[:document_type] == TestCustomDocumentId.name
+        'item_id'
+      end
+    end
+
+    @_store.open_session do |session|
+      doc = TestCustomDocumentId.new(nil, 'New Item')
+      
+      session.store(doc)
+      session.save_changes
+      id = doc.item_id
+    end
+
+    @_store.open_session do |session|
+      doc = session.load(id)
+
+      assert_equal(doc.item_id, id)
+      assert_equal(doc.item_title, 'New Item')
+    end
+  end
+
+  def test_should_support_custom_serializer
+    id = nil
+
+    @_store.conventions.add_id_property_resolver do |document_info|
+      if document_info[:document_type] == TestCustomDocumentId.name
+        'item_id'
+      end
+    end
+
+    @_store.conventions.add_attribute_serializer(CustomAttributeSerializer.new)
+
+    @_store.open_session do |session|
+      doc = TestCustomSerializer.new(nil, 'New Item', [1, 2, 3])
+      
+      session.store(doc)
+      session.save_changes
+      id = doc.item_id
+    end
+
+    @_store.open_session do |session|
+      doc = session.load(id)
+
+      assert_equal(doc.item_id, id)
+      assert_equal(doc.item_title, 'New Item')
+      assert_equal(doc.item_options, [1, 2, 3])
+
+      raw_entities_and_metadata = session.instance_variable_get('@raw_entities_and_metadata')
+      info = raw_entities_and_metadata[doc]
+      raw_entity = info[:raw_entity]
+
+      assert_equal(raw_entity['itemTitle'], 'New Item')
+      assert_equal(raw_entity['itemOptions'], '1,2,3')
     end
   end
 

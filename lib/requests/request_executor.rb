@@ -122,7 +122,7 @@ module RavenDB
         end
       end  
 
-      if !is_fulfilled
+      unless is_fulfilled
         if @_first_topology_update_exception.is_a?(AuthorizationException)
           raise @_first_topology_update_exception
         elsif is_first_topology_update_tries_expired?
