@@ -80,7 +80,7 @@ class DocumentConversionTest < RavenDatabaseTest
     id = nil
 
     @_store.conventions.add_id_property_resolver do |document_info|
-      if document_info[:document_type] == TestCustomDocumentId.name
+      if document_info[:document_type] == TestCustomSerializer.name
         'item_id'
       end
     end
@@ -104,12 +104,12 @@ class DocumentConversionTest < RavenDatabaseTest
 
       raw_entities_and_metadata = session.instance_variable_get('@raw_entities_and_metadata')
       info = raw_entities_and_metadata[doc]
-      raw_entity = info[:raw_entity]
+      raw_entity = info[:original_value]
 
       assert_equal(raw_entity['itemTitle'], 'New Item')
       assert_equal(raw_entity['itemOptions'], '1,2,3')
     end
-  end
+  end 
 
   protected
   def make_document(id = nil, date = NOW)

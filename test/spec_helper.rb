@@ -296,8 +296,8 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
   def on_serialized(serialized)
     metadata = serialized[:metadata]
 
-    unless metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
-      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(false)
+    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
 
       if serialized[:original_attribute] == 'item_options'
         serialized[:serialized_value] = serialized[:original_value].join(",")
@@ -308,7 +308,7 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
   def on_unserialized(serialized)
     metadata = serialized[:metadata]
 
-    unless metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
       serialized[:serialized_attribute] = serialized[:original_attribute].underscore
 
       if serialized[:original_attribute] == 'itemOptions'

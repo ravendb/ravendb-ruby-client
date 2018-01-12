@@ -34,7 +34,7 @@ module RavenDB
   end
 
   class JsonSerializer
-    def self.from_json(target, source = {}, metadata = {}, nested_object_types = {})
+    def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil)
       mappings = {}
 
       if !TypeUtilities::is_document?(target)
@@ -53,54 +53,100 @@ module RavenDB
       if nested_object_types.is_a?(Hash) && nested_object_types.size
         mappings = mappings.merge(nested_object_types)
       end
-
-      source.each do |key, value|
-        variable_name = key
-
-        if "@metadata" != key
-          variable_name = "@#{key}"
-        end
-
-        target.instance_variable_set(variable_name, json_to_variable(value, key, mappings))
-      end
+      
+      current_metadata = {}
 
       if metadata.is_a?(Hash) && metadata.size
-        current_metadata = {}
-
         if target.instance_variable_defined?('@metadata')
           current_metadata = target.instance_variable_get('@metadata') || {}
         end
 
-        target.instance_variable_set('@metadata', current_metadata.merge(metadata))
+        current_metadata = current_metadata.merge(metadata)
+        target.instance_variable_set('@metadata', current_metadata)
+      end
+
+      source.each do |key, value|
+        variable_name = key
+        variable_value = value
+
+        if "@metadata" != key
+          serialized = {
+            :original_attribute => key,
+            :serialized_attribute => key,
+            :original_value => value,
+            :serialized_value => json_to_variable(value, key, mappings, conventions, parent_path),
+            :attribute_path => build_path(key, parent_path),
+            :source => source, 
+            :target => target,
+            :metadata => current_metadata, 
+            :nested_object_types => nested_object_types
+          }
+
+          unless conventions.nil?
+            conventions.serializers.each do |serializer|            
+              serializer.on_unserialized(serialized)         
+            end
+          end
+
+          variable_name = "@#{serialized[:serialized_attribute]}"
+          variable_value = serialized[:serialized_value]
+        end
+
+        target.instance_variable_set(variable_name, variable_value)
       end
 
       target
     end
 
-    def self.to_json(source)
+    def self.to_json(source, conventions = nil, parent_path = nil)
       json = {}
 
       if !TypeUtilities::is_document?(source)
         raise RuntimeError, 'Invalid source passed. Should be a user-defined class instance'
       end
 
+      current_metadata = {}
+
+      if source.instance_variable_defined?('@metadata')
+        current_metadata = source.instance_variable_get('@metadata') || {}
+      end
+
       source.instance_variables.each do |variable|
         variable_name = variable.to_s
-        json_property = variable_name
         variable_value = source.instance_variable_get(variable)
+        json_property = variable_name
+        json_value = variable_value
 
         if '@metadata' != variable_name
           json_property = json_property.gsub('@', '')
+
+          serialized = {
+            :original_attribute => json_property,
+            :serialized_attribute => json_property,
+            :original_value => variable_value,
+            :serialized_value => variable_to_json(variable_value, json_property, conventions, parent_path),
+            :attribute_path => build_path(json_property, parent_path),
+            :source => source,
+            :metadata => current_metadata
+          }
+          
+          unless conventions.nil?
+            conventions.serializers.each do |serializer|            
+              serializer.on_serialized(serialized)         
+            end
+          end  
+
+          json_property = serialized[:serialized_attribute]
+          json_value = serialized[:serialized_value]          
         end
 
-        json[json_property] = variable_to_json(variable_value, variable_name)
+        json[json_property] = json_value
       end
 
       json
     end
 
-    protected
-    def self.json_to_variable(json_value, key = nil, mappings = {})
+    def self.json_to_variable(json_value, key = nil, mappings = {}, conventions = nil, parent_path = nil)
       if mappings.key?(key)
         nested_object_type = mappings[key]
 
@@ -109,7 +155,7 @@ module RavenDB
         end
 
         if json_value.is_a?(Hash)
-          document = json_to_document(json_value, nested_object_type)
+          document = json_to_document(json_value, nested_object_type, conventions, build_path(key, parent_path))
 
           if !document.nil?
             return document
@@ -120,7 +166,7 @@ module RavenDB
           documents = []
 
           if json_value.all? {|json_value_item|
-            document = json_to_document(json_value_item, nested_object_type)
+            document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
             was_converted = !document.nil?
 
             if !document.nil?
@@ -138,7 +184,7 @@ module RavenDB
         value = []
 
         json_value.each do |json_array_value|
-          value.push(json_to_variable(json_array_value, key))
+          value.push(json_to_variable(json_array_value, key, {}, conventions, parent_path))
         end
 
         return value
@@ -148,7 +194,7 @@ module RavenDB
         value = {}
 
         json_value.each do |json_hash_key, json_hash_value|
-          value[json_hash_key.to_s] = json_to_variable(json_hash_value, json_hash_key.to_s)
+          value[json_hash_key.to_s] = json_to_variable(json_hash_value, json_hash_key.to_s, {}, conventions, build_path(key, parent_path))
         end
 
         return value
@@ -157,7 +203,7 @@ module RavenDB
       json_value
     end
 
-    def self.json_to_document(json_value, nested_object_type)
+    def self.json_to_document(json_value, nested_object_type, conventions = nil, parent_path = nil)
       nested_object_metadata = {}
 
       if json_value.key?('@metadata') && json_value['@metadata'].is_a?(Hash)
@@ -169,27 +215,27 @@ module RavenDB
           nested_object_type = Object.const_get(nested_object_type)
         end
 
-        return from_json(nested_object_type.new, json_value, nested_object_metadata)
+        return from_json(nested_object_type.new, json_value, nested_object_metadata, nil, conventions, parent_path)
       end
 
       nil
     end
 
-    def self.variable_to_json(variable_value, variable = nil)
+    def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil)
       if '@metadata' != variable && !!variable_value != variable_value
         if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
           return TypeUtilities::stringify_date(variable_value)
         end
 
         if TypeUtilities::is_document?(variable_value)
-          return to_json(variable_value)
+          return to_json(variable_value, conventions, build_path(variable, parent_path))
         end
 
         if variable_value.is_a?(Hash)
           json = {}
 
           variable_value.each do |key, value|
-            json[key.to_s] = variable_to_json(value, key.to_s)
+            json[key.to_s] = variable_to_json(value, key.to_s, conventions, build_path(variable, parent_path))
           end
 
           return json
@@ -199,7 +245,7 @@ module RavenDB
           json = []
 
           variable_value.each do |value|
-            json.push(variable_to_json(value, variable))
+            json.push(variable_to_json(value, variable, conventions, parent_path))
           end
 
           return json
@@ -208,5 +254,15 @@ module RavenDB
 
       variable_value
     end
+
+    def self.build_path(attribute, parent_path = nil)
+      unless parent_path.nil?
+        return "#{parent_path}.#{attribute}";
+      end
+
+      attribute
+    end
+
+    private_class_method :new, :json_to_variable, :json_to_document, :variable_to_json, :build_path
   end
 end

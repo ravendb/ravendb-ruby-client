@@ -19,6 +19,7 @@ module RavenDB
       @set_id_only_if_property_is_defined = false
       @disable_topology_updates = false
       @_document_id_resolvers = []
+      @_id_properties_names_cache = {}
       @serializers = []
     end
 
@@ -78,7 +79,7 @@ module RavenDB
 
       if TypeUtilities::is_document?(document_or_class)
         document_class = document_or_class.class
-        document_instance = document_class
+        document_instance = document_or_class        
       elsif document_or_class.is_a?(Class)
         document_class = document_or_class
       elsif document_or_class.is_a?(String)
@@ -86,15 +87,15 @@ module RavenDB
       end  
 
       if document_type.nil? && !document_class.nil?
-        document_type = document_or_class.name
+        document_type = document_class.name
       end
 
       raise RuntimeError,
         'Invalid argument passed. Should be an document, class constructor or document type name' if
         document_type.nil?
 
-      if @_document_id_resolvers.key?(document_type)
-        id_property = @_document_id_resolvers[document_type]
+      if @_id_properties_names_cache.key?(document_type)
+        id_property = @_id_properties_names_cache[document_type]
       else
         found_id_property = nil
 
@@ -114,7 +115,7 @@ module RavenDB
 
         unless found_id_property.nil?
           id_property = found_id_property
-          @_document_id_resolvers[document_type] = id_property
+          @_id_properties_names_cache[document_type] = id_property
         end
       end  
 
@@ -129,7 +130,7 @@ module RavenDB
       metadata = raw_entity.fetch('@metadata', {})
       doc_type = document_type || metadata['Raven-Ruby-Type']
 
-      if doc_type.is_a?(Class)
+      if document_type.is_a?(Class)
         doc_type = document_type.name
       end
 
@@ -141,7 +142,7 @@ module RavenDB
       original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
       attributes = TypeUtilities::omit_keys(raw_entity, ['@metadata'])
-      document = JsonSerializer::from_json(doc_ctor.new, attributes, metadata, nested_object_types)
+      document = JsonSerializer::from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
       set_id_on_document(document, metadata['@id'] || nil)
 
@@ -156,7 +157,7 @@ module RavenDB
 
     def convert_to_raw_entity(document)
       id_property = get_id_property_name(document)
-      raw_entity = JsonSerializer::to_json(document)
+      raw_entity = JsonSerializer::to_json(document, self)
 
       if raw_entity.key?(id_property)
         raw_entity.delete_if {|key| id_property == key}
