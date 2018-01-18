@@ -36,15 +36,17 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
 
+      @headers["Content-Type"] = "application/octet-stream"
+      @method = Net::HTTP::Put::METHOD
+
       unless @_change_vector.nil?
         @headers["If-Match"] = "\"#{@_change_vector}\""
       end
 
       unless TypeUtilities::is_nil_or_whitespace?(@_content_type)
+        @headers["Content-Type"] = @_content_type
         @params['contentType'] = @_content_type
-      end
-
-      @method = Net::HTTP::Put::METHOD
+      end      
     end
 
     def to_request_options
@@ -62,6 +64,8 @@ module RavenDB
       unless @_change_vector.nil?
         @headers["If-Match"] = "\"#{@_change_vector}\""
       end
+
+      @method = Net::HTTP::Delete::METHOD
     end
   end
 
@@ -70,7 +74,7 @@ module RavenDB
       super(document_id, name, change_vector)
 
       raise ArgumentError, "Change Vector cannot be null for non-document attachment type" if
-        @_change_vector.nil? && !AttachmentType::isDocument(type)
+        @_change_vector.nil? && !AttachmentType::is_document(type)
 
       @_type = type  
     end
@@ -78,7 +82,7 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
 
-      unless AttachmentType::isDocument(@_type)
+      unless AttachmentType::is_document(@_type)
         @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
         @method = Net::HTTP::Post::METHOD
       end
@@ -94,11 +98,11 @@ module RavenDB
         super.set_response(response)
       end  
 
-      attachment = response.body
+      attachment = response.body.force_encoding('ASCII-8BIT')
       content_type = try_get_header('Content-Type')
       hash = try_get_header('Attachment-Hash')  
       change_vector = try_get_header('Etag')
-      size = try_get_header('Attachment-Hash')
+      size = try_get_header('Attachment-Size')
 
       begin
         size = Integer(size || "")
@@ -111,7 +115,7 @@ module RavenDB
       end
 
       {
-        :stream => attachment
+        :stream => attachment,
         :attachment_details => {
           :content_type => content_type,
           :name => @_name,

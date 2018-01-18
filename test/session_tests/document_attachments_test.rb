@@ -36,16 +36,16 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       )
 
       attachment_result = @_store.operations.send(
-        RavenDB::GetAttachmentOperations.new(product.id, "1x1.gif",
+        RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
         RavenDB::AttachmentType::Document
         )
       )
 
-      assert_equals(attachment_result[:stream], attachment_raw)
-      assert_equals(attachment_result[:attachment_details][:document_id], product.id)
-      assert_equals(attachment_result[:attachment_details][:content_type], 'image/gif')
-      assert_equals(attachment_result[:attachment_details][:name], '1x1.gif')
-      assert_equals(attachment_result[:attachment_details][:size], attachment_raw.size)
+      assert_equal(attachment_result[:stream], attachment_raw)
+      assert_equal(attachment_result[:attachment_details][:document_id], product.id)
+      assert_equal(attachment_result[:attachment_details][:content_type], 'image/gif')
+      assert_equal(attachment_result[:attachment_details][:name], '1x1.gif')
+      assert_equal(attachment_result[:attachment_details][:size], attachment_raw.size)
     end
   end
 
@@ -62,13 +62,13 @@ class DocumentAttachmentsTest < RavenDatabaseTest
         )
       )
 
-      attachment_result = @_store.operations.send(
-        RavenDB::DeleteAttachmentOperations.new(product.id, "1x1.gif")
+      @_store.operations.send(
+        RavenDB::DeleteAttachmentOperation.new(product.id, "1x1.gif")
       )
 
       assert_raises(RavenDB::DocumentDoesNotExistException) do
         @_store.operations.send(
-          RavenDB::GetAttachmentOperations.new(product.id, "1x1.gif",
+          RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
           RavenDB::AttachmentType::Document
           )
         )
