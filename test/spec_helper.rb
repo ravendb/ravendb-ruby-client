@@ -56,7 +56,7 @@ class RavenDatabaseTest < RavenTest
     super
     @_store.conventions.disable_topology_updates = false
     @_index_map =
-        "from doc in docs "\
+      "from doc in docs "\
       "select new{"\
       "Tag = doc[\"@metadata\"][\"@collection\"],"\
       "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\

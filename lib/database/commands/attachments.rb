@@ -85,10 +85,14 @@ module RavenDB
     end
 
     def set_response(response)
-      @_last_response = response
-
       raise DocumentDoesNotExistException if
         response.is_a?(Net::HTTPNotFound)
+
+      if response.json(false).nil?
+        @_last_response = response
+      else 
+        super.set_response(response)
+      end  
 
       attachment = response.body
       content_type = try_get_header('Content-Type')
