@@ -9,6 +9,7 @@ require 'documents/query/index_query'
 require "documents/indexes"
 require "requests/request_helpers"
 require "utilities/type_utilities"
+require "constants/documents"
 
 module RavenDB
   class RavenCommand

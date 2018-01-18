@@ -109,4 +109,17 @@ module RavenDB
     Forced = 'Forced'
     Disabled = 'Disabled'
   end
+
+  class AttachmentType
+    Document = 'Document'
+    Revision = 'Revision'
+    
+    def self.is_document(type)
+      type == Document
+    end
+
+    def self.is_revision(type)
+      type == Revision
+    end
+  end
 end
