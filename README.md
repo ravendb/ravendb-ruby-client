@@ -433,7 +433,7 @@ By default document id is stored onto `id` property of document. But you can def
 ```ruby
 # models/item.rb
 class Item
-  attr_accessor :item_id, :title, :options
+  attr_accessor :item_id, :item_title, :item_options
 
   def initialize(item_id = nil, item_title = "", item_options = [])
     @item_id = item_id
