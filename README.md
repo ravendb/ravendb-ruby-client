@@ -462,7 +462,7 @@ end
 session = store.open_session
 
 session.store(Item.new(nil, 'First Item', [1, 2, 3]))
-session.save_changes()
+session.save_changes
 
 puts item.item_id # Items/1-A
 
@@ -550,7 +550,7 @@ require './serializers/custom'
 
 store.conventions.add_attribute_serializer(serializer)
 
-sesssion = store.open_session()
+sesssion = store.open_session
 
 session.store(Item.new(nil, 'First Item', [1, 2, 3]))
 session.save_changes

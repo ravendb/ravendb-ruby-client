@@ -390,7 +390,7 @@ module RavenDB
       end     
 
       unless ssl_exception.nil?
-        message = "#{message} SSL Exception: #{body["Message"]}"
+        message = "#{message} SSL Exception: #{ssl_exception]}"
       end
 
       message = "#{message} #{request.method} #{request.path}"
