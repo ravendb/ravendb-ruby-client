@@ -363,6 +363,213 @@ end
 - if no `RavenDB::StoreAuthOptions` was provided and you're trying to work with secured server, an `RavenDB::NotSupportedException` will be raised during store initialization
 - if certificate is invalid or doesn't have permissions for specific operations, an `RavenDB::AuthorizationException` will be raised
 
+## Advanced features
+
+#### Attachments support
+
+You can attach binary files to documents. 
+
+1. For attach a file, use `RavenDB::PutAttachmentOperation`. Pass document id, attachment name (it can be just a file name), content type and file contents:
+
+```ruby
+require 'ravendb'
+
+# ...
+file_name = './iphone-x.png'
+
+store.operations.send(
+  RavenDB::PutAttachmentOperation.new(
+    'Products/1-A', 
+    File.basename(fileName), 
+    File.read(fileName), 
+    'image/png' 
+  )
+)   
+```
+
+2. For read an attachment, use `RavenDB::GetAttachmentOperation`. Pass document id and attachment name. File contents will be stored as `:stream` key of response:
+
+```ruby
+require 'ravendb'
+
+# ...
+file_name = 'iphone-x.png'
+
+attachment_result = store.operations.send(
+  RavenDB::GetAttachmentOperation.new(
+    'Products/1-A', 
+    file_name, 
+    RavenDB::AttachmentTypes::Document
+  )
+)
+
+file = File.new(`./${fileName}`, "wb")
+file.write(attachment_result[:stream])
+file.close
+```
+
+3. For delete an attachment, use `RavenDB::DeleteAttachmentOperation`. Pass document id and attachment name.
+
+```ruby
+require 'ravendb'
+
+# ...
+file_name = 'iphone-x.png'
+
+store.operations.send(
+  RavenDB::DeleteAttachmentOperation(
+    'Products/1-A', 
+    file_name
+  )
+)
+```
+
+#### Custom document id property
+
+By default document id is stored onto `id` property of document. But you can define which name of id property should be for specific document types. 
+
+1. Call `store.conventions.add_id_property_resolver` and pass an callback block. It accepts document info hash and should return id property name:
+
+```ruby
+# models/item.rb
+class Item
+  attr_accessor :item_id, :title, :options
+
+  def initialize(item_id = nil, item_title = "", item_options = [])
+    @item_id = item_id
+    @item_title = item_title   
+    @item_options = item_options 
+  end  
+end
+
+# main.rb
+require 'ravendb'
+    
+# ...
+store.conventions.add_id_property_resolver do |document_info|
+  case document_info[:document_type]
+  when Item.name
+    'item_id'
+  else
+    'id'  
+  end
+end
+```
+
+2. Now client will read/fill `item_id` property with document id while doing CRUD operations:
+
+```ruby
+session = store.open_session
+
+session.store(Item.new(nil, 'First Item', [1, 2, 3]))
+session.save_changes()
+
+puts item.item_id # Items/1-A
+
+session = store.open_session
+item = session.load('Items/1-A')
+
+puts item.item_id # Items/1-A
+puts item.item_title # First Item
+puts item.item_options.inspect # [1, 2, 3]
+```
+
+#### Custom attributes serializer
+
+You can define custom serializers if you need to implement your own logic for convert attributes names/values for specific document types.
+
+1. Define your serializer as an class derived from `RavenDB::AttributeSerializer`.  Override `on_serialized` / `on_unserialized` methods:
+
+```ruby
+class CustomAttributeSerializer < RavenDB::AttributeSerializer
+  def on_serialized(serialized)
+  end
+
+  def on_unserialized(serialized)
+  end
+end
+```
+
+Where `serialized` attribute is a hash wuth the following structure:
+
+```ruby
+{
+  :source => <source json hash / document model>,
+  :target => <target json hash / document model>,
+  :original_attribute => <original attribute name>,
+  :serialized_attribute => <target attribute name>,
+  :original_value => <original attribute value>,
+  :serialized_value => <target attribute value>,
+  :metadata => <document metadata hash>
+}
+```
+
+2. Store target attribute name/value into the `serialized_attribute`/`serialized_value` properties of `serialized` parameter:
+
+```ruby
+# serializers/custom.rb
+
+class CustomAttributeSerializer < RavenDB::AttributeSerializer
+  def on_serialized(serialized)
+    metadata = serialized[:metadata]
+
+    case metadata['Raven-Ruby-Type']
+    when TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
+
+      if serialized[:original_attribute] == 'item_options'
+        serialized[:serialized_value] = serialized[:original_value].join(",")
+      end
+    else
+      nil  
+    end
+  end
+
+  def on_unserialized(serialized)
+    metadata = serialized[:metadata]
+
+    case metadata['Raven-Ruby-Type']
+    when TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].underscore
+
+      if serialized[:original_attribute] == 'itemOptions'
+        serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
+      end
+    else
+      nil  
+    end
+  end
+end
+```
+
+3. Pass your serializer object to `conventions.add_attribute_serializer`:
+
+```ruby
+require 'ravendb'
+require './serializers/custom'
+
+store.conventions.add_attribute_serializer(serializer)
+
+sesssion = store.open_session()
+
+session.store(Item.new(nil, 'First Item', [1, 2, 3]))
+session.save_changes
+
+session = store.open_session
+item = session.load('Items/1-A')
+
+puts item.item_id # Items/1-A
+puts item.item_title # First Item
+puts item.item_options.inspect # [1, 2, 3]
+
+response = store.get_request_executor.execute(RavenDB::GetDocumentCommand.new('Items/1-A'))
+raw_document = response['Results'].first
+
+puts raw_document['@metadata']['@id'] # Items/1-A
+puts raw_document['itemTitle'] # First Item
+puts raw_document['itemOptions'] # "1,2,3"
+```
+
 ## Running tests
 
 ```bash
