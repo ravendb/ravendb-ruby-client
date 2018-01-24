@@ -1,7 +1,7 @@
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentSerializingTest < TestBase
+class DocumentSerializingTest < RavenTest
   def setup
     super
 
@@ -64,7 +64,7 @@ class DocumentSerializingTest < TestBase
     }
 
     @document = SerializingTest.new
-    RavenDB::JsonSerializer::from_json(@document, @json, {}, @nested_object_types)
+    RavenDB::JsonSerializer::from_json(@document, @json, {}, @nested_object_types, @_store.conventions)
   end
 
   def test_should_parse_scalars
@@ -180,7 +180,7 @@ class DocumentSerializingTest < TestBase
   end
 
   def test_should_serialize_back_to_source_json
-    serialized = RavenDB::JsonSerializer::to_json(@document)
+    serialized = RavenDB::JsonSerializer::to_json(@document, @_store.conventions)
 
     assert_equal(serialized, @json)
   end

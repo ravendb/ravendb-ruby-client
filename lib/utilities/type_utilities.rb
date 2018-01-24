@@ -56,5 +56,9 @@ module RavenDB
 
       copy
     end
+
+    def self.is_nil_or_whitespace?(string)
+      return string.nil? || string.strip.empty?
+    end
   end
 end

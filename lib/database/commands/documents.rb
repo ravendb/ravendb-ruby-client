@@ -68,7 +68,7 @@ module RavenDB
 
       if multi_load
         if @metadata_only
-          add_params("metadata-only", "True")
+          add_params("metadataOnly", "True")
         end
 
         if (ids.map { |id| id.size }).sum > 1024

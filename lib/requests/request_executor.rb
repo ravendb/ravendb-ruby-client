@@ -48,7 +48,7 @@ module RavenDB
 
         raise ArgumentError,
           "Invalid auth options provided" unless
-          @_auth_options.is_a?(RequestAuthOptions) || @_auth_options.nil?
+          @_auth_options.nil? || @_auth_options.is_a?(RequestAuthOptions)
       end
 
       if !@_without_topology && !urls.empty?
@@ -122,7 +122,7 @@ module RavenDB
         end
       end  
 
-      if !is_fulfilled
+      unless is_fulfilled
         if @_first_topology_update_exception.is_a?(AuthorizationException)
           raise @_first_topology_update_exception
         elsif is_first_topology_update_tries_expired?
@@ -170,7 +170,7 @@ module RavenDB
       begin
         response = http_client(server_node).request(request)
       rescue OpenSSL::SSL::SSLError => ssl_exception
-        request_exception = unauthorized_error(server_node, request)
+        request_exception = unauthorized_error(server_node, request, ssl_exception)
       rescue Net::OpenTimeout => timeout_exception
         request_exception = timeout_exception
       end
@@ -182,7 +182,7 @@ module RavenDB
           message = "HTTP #{response.code}: #{response.message}"
           request_exception = UnsuccessfulRequestException.new(message)
         elsif response.is_a?(Net::HTTPForbidden)
-          request_exception = unauthorized_error(server_node, request)
+          request_exception = unauthorized_error(server_node, request, response)
         else
           if response.is_a?(Net::HTTPNotFound)
             response.body = nil
@@ -363,8 +363,9 @@ module RavenDB
       @_http_clients[url]
     end
 
-    def unauthorized_error(server_node, request)
+    def unauthorized_error(server_node, request, response_or_exception = nil)
       message = nil
+      ssl_exception = nil
 
       if !!server_node.database
         message = "database #{server_node.database} on "
@@ -376,6 +377,20 @@ module RavenDB
         message = "#{message}a certificate is required."
       else
         message = "#{message}certificate does not have permission to access it or is unknown."
+      end
+
+      if response_or_exception.is_a?(Exception)
+        ssl_exception = response_or_exception.message
+      elsif response_or_exception.is_a?(Net::HTTPResponse)
+        body = response_or_exception.json(false)
+
+        if !body.nil? && body.key?("Message")
+          ssl_exception = body["Message"];
+        end
+      end     
+
+      unless ssl_exception.nil?
+        message = "#{message} SSL Exception: #{ssl_exception]}"
       end
 
       message = "#{message} #{request.method} #{request.path}"

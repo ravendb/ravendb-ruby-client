@@ -2,7 +2,7 @@ require 'date'
 require 'ravendb'
 require 'spec_helper'
 
-class DocumentStoreTest < TestBase
+class DocumentStoreTest < RavenDatabaseTest
   def test_should_store_without_id
     foo = nil
 

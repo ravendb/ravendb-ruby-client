@@ -30,7 +30,7 @@ module RavenDB
       db_name = @database_document.database_id.gsub("Raven/Databases/", "")
       assert_node(server_node)
 
-      @params = {"name" => db_name, "replication-factor" => @replication_factor}
+      @params = {"name" => db_name, "replicationFactor" => @replication_factor}
       @end_point = "/admin/databases"
       @payload = @database_document.to_json
     end

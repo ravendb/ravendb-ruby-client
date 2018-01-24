@@ -24,7 +24,7 @@ module RavenDB
       @_conventions = nil
       @_request_executors = nil
       @_operations = nil
-      @_admin = nil
+      @_maintenance = nil
       @_initialized = false
       @_database = database
       @_disposed = false
@@ -96,9 +96,9 @@ module RavenDB
       @_operations ||= OperationExecutor.new(self, @_database)
     end
 
-    def admin
+    def maintenance
       assert_configure
-      @_admin ||= AdminOperationExecutor.new(self, @_database)      
+      @_maintenance ||= AdminOperationExecutor.new(self, @_database)      
     end
 
     def conventions
@@ -173,7 +173,7 @@ module RavenDB
 
         assert_configure
         @_generator.return_unused_range rescue nil
-        admin.server.dispose
+        maintenance.server.dispose
 
         if @_request_executors.is_a?(Hash)
           @_request_executors.each_value do |executors|

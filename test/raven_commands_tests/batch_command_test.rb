@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class BatchCommandTest < TestBase
+class BatchCommandTest < RavenDatabaseIndexesTest
   @_put_command1 = nil
   @_put_command2 = nil
   @_delete_command = nil

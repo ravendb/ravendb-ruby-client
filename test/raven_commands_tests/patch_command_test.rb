@@ -3,7 +3,7 @@ require 'securerandom'
 require 'minitest/autorun'
 require 'spec_helper'
 
-class PatchCommandTest < TestBase
+class PatchCommandTest < RavenDatabaseIndexesTest
   ID = "Products/10"
   @_change_vector = nil
   

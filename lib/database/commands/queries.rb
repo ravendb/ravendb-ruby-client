@@ -46,10 +46,10 @@ module RavenDB
       assert_node(server_node)
 
       @end_point = "/databases/#{server_node.database}/queries"
-      @params = {"query-hash" => @index_query.query_hash}
+      @params = {"queryHash" => @index_query.query_hash}
 
       if @metadata_only
-        add_params('metadata-only', 'true')
+        add_params('metadataOnly', 'true')
       end
 
       if @index_entries_only

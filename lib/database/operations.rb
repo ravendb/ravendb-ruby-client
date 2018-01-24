@@ -40,3 +40,4 @@ end
 require_relative './operations/databases'
 require_relative './operations/indexes'
 require_relative './operations/queries'
+require_relative './operations/attachments'

@@ -2,6 +2,7 @@ require 'ravendb'
 require 'date'
 require 'securerandom'
 require 'minitest/autorun'
+require 'active_support/inflector'
 
 module MiniTest
   module Assertions
@@ -25,7 +26,7 @@ module MiniTest
   end
 end
 
-class TestBase < Minitest::Test  
+class RavenTest < Minitest::Test
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
   CERT_FILE = ENV["CERTIFICATE"] || nil
@@ -40,31 +41,52 @@ class TestBase < Minitest::Test
       end
     end
 
-    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
-    @_store.admin.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
-  
-    @_index_map = 
+    @_store.conventions.disable_topology_updates = true
+  end
+
+  def teardown
+    @_store.dispose
+    @_store = nil
+    @_current_database = nil
+  end
+end
+
+class RavenDatabaseTest < RavenTest
+  def setup
+    super
+    @_store.conventions.disable_topology_updates = false
+    @_index_map =
       "from doc in docs "\
       "select new{"\
       "Tag = doc[\"@metadata\"][\"@collection\"],"\
       "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\
-      "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"    
-  
-    @_index = RavenDB::IndexDefinition.new("Testing", @_index_map)
-    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    @_request_executor = @_store.get_request_executor    
-  end  
+      "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
+
+    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
+    @_store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
+    @_request_executor = @_store.get_request_executor
+  end
 
   def teardown
-    @_store.admin.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
-    @_store.dispose
-    
-    @_index_map = nil
-    @_index = nil
+    @_store.maintenance.server.send(RavenDB::DeleteDatabaseOperation.new(@_current_database, true))
     @_request_executor = nil
-    @_store = nil
-    @_current_database = nil    
-  end  
+    @_index_map = nil
+    super
+  end
+end
+
+class RavenDatabaseIndexesTest < RavenDatabaseTest
+  def setup
+    super
+
+    @_index = RavenDB::IndexDefinition.new("Testing", @_index_map)
+    @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
+  end
+
+  def teardown
+    super
+    @_index = nil
+  end
 end
 
 class SerializingTest
@@ -72,7 +94,6 @@ class SerializingTest
                 :boolean_prop, :nil_prop, :hash_prop, :array_prop,
                 :deep_hash_prop, :deep_array_prop, :deep_array_hash_prop,
                 :date_prop, :deep_foo_prop, :deep_array_foo_prop
-
 end
 
 class Foo
@@ -147,10 +168,10 @@ class Order
   attr_accessor :id, :name, :uid, :product_id
 
   def initialize(
-      id = nil,
-      name = "",
-      uid = nil,
-      product_id = nil
+    id = nil,
+    name = "",
+    uid = nil,
+    product_id = nil
   )
     @id = id
     @name = name
@@ -177,6 +198,31 @@ class LastFm
     @title = title
     @datetime_time = datetime_time
     @tags = tags
+  end
+end
+
+class TestCustomDocumentId
+  attr_accessor :item_id, :item_title
+  
+  def initialize(
+    item_id = nil,
+    item_title = nil
+  )
+    @item_id = item_id
+    @item_title = item_title
+  end
+end
+
+class TestCustomSerializer < TestCustomDocumentId
+  attr_accessor :item_options
+
+  def initialize(
+    item_id = nil,
+    item_title = nil,
+    item_options = []
+  )
+    super(item_id, item_title)
+    @item_options = item_options
   end
 end
 
@@ -243,5 +289,31 @@ class ProductsTestingSort
 
   def execute
     @store.operations.send(RavenDB::PutIndexesOperation.new(@index_definition))
+  end
+end
+
+class CustomAttributeSerializer < RavenDB::AttributeSerializer
+  def on_serialized(serialized)
+    metadata = serialized[:metadata]
+
+    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
+
+      if serialized[:original_attribute] == 'item_options'
+        serialized[:serialized_value] = serialized[:original_value].join(",")
+      end
+    end
+  end
+
+  def on_unserialized(serialized)
+    metadata = serialized[:metadata]
+
+    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+      serialized[:serialized_attribute] = serialized[:original_attribute].underscore
+
+      if serialized[:original_attribute] == 'itemOptions'
+        serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
+      end
+    end
   end
 end
