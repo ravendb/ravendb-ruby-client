@@ -417,7 +417,7 @@ require 'ravendb'
 file_name = 'iphone-x.png'
 
 store.operations.send(
-  RavenDB::DeleteAttachmentOperation(
+  RavenDB::DeleteAttachmentOperation.new(
     'Products/1-A', 
     file_name
   )
@@ -490,7 +490,7 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
 end
 ```
 
-Where `serialized` attribute is a hash wuth the following structure:
+Where `serialized` attribute is a hash with the following structure:
 
 ```ruby
 {
