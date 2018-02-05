@@ -1,5 +1,6 @@
 require 'optparse'
 require 'rake/testtask'
+require 'ci/reporter/rake/minitest'
 
 Rake::TestTask.new do |task|
   task.libs << "test"
@@ -9,3 +10,4 @@ end
 
 desc "Run unit tests"
 task :default => :test
+task :test_ci => ['ci:setup:minitest', :test]
