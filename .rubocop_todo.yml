@@ -22,22 +22,6 @@ Layout/AlignHash:
   Exclude:
     - 'test/session_tests/document_serializing_test.rb'
 
-# Offense count: 46
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_parameter, with_fixed_indentation
-Layout/AlignParameters:
-  Exclude:
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/type_utilities.rb'
-    - 'test/session_tests/document_attachments_test.rb'
-
 # Offense count: 21
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentOneStep, IndentationWidth.

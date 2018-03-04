@@ -47,8 +47,8 @@ module RavenDB
 
     def using_default_operator(operator)
       raise RuntimeError,
-        "Default operator can only be set "\
-        "before any where clause is added." unless
+            "Default operator can only be set "\
+            "before any where clause is added." unless
         @where_tokens.empty?
 
       @default_operator = operator
@@ -59,8 +59,8 @@ module RavenDB
       unless [@group_by_tokens, @order_by_tokens,
         @select_tokens, @where_tokens].all? {|tokens| tokens.empty?}
         raise RuntimeError,
-          "You can only use RawQuery on a new query, "\
-          "without applying any operations (such as Where, Select, OrderBy, GroupBy, etc)"
+              "You can only use RawQuery on a new query, "\
+              "without applying any operations (such as Where, Select, OrderBy, GroupBy, etc)"
       end
 
       @query_raw = query
@@ -404,7 +404,7 @@ module RavenDB
       @last_token = @where_tokens.last
 
       raise RuntimeError,
-        "Cannot add INTERSECT at this point." unless
+            "Cannot add INTERSECT at this point." unless
         (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
 
       @is_intersect = true
@@ -426,7 +426,7 @@ module RavenDB
 
     def group_by(field_name, *field_names)
       raise RuntimeError,
-        "GroupBy only works with dynamic queries." unless
+            "GroupBy only works with dynamic queries." unless
         @from_token.is_dynamic
 
       assert_no_raw_query
@@ -492,8 +492,8 @@ module RavenDB
     end
 
     def within_radiusof(field_name, radius_parameter_name, latitude_parameter_name,
-      longitude_parameter_name, radius_units = SpatialUnits::Kilometers,
-      dist_error_percent = SpatialConstants::DefaultDistanceErrorPct
+                        longitude_parameter_name, radius_units = SpatialUnits::Kilometers,
+                        dist_error_percent = SpatialConstants::DefaultDistanceErrorPct
     )
       field_name = ensure_valid_field_name(field_name)
 
@@ -513,7 +513,7 @@ module RavenDB
     end
 
     def spatial(field_name, shape_wkt_parameter_name_or_criteria,
-      relation = nil, dist_error_percent = nil
+                relation = nil, dist_error_percent = nil
     )
       criteria = shape_wkt_parameter_name_or_criteria
       field_name = ensure_valid_field_name(field_name)
@@ -552,8 +552,8 @@ module RavenDB
       end
 
       raise RuntimeError,
-        "A clause was not closed correctly within this query, current clause "\
-        "depth = #{@current_clause_depth}" unless
+            "A clause was not closed correctly within this query, current clause "\
+            "depth = #{@current_clause_depth}" unless
         @current_clause_depth == 0
 
       query_text = StringBuilder.new
@@ -646,7 +646,7 @@ module RavenDB
       end
 
       raise RuntimeError,
-        "Missing where clause" unless
+            "Missing where clause" unless
         where_token.is_a?(WhereToken)
 
       where_token
@@ -682,8 +682,8 @@ module RavenDB
 
     def assert_no_raw_query
       raise RuntimeError,
-        "RawQuery was called, cannot modify this query by calling on operations that "\
-        "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)" unless
+            "RawQuery was called, cannot modify this query by calling on operations that "\
+            "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)" unless
         @query_raw.nil?
     end
 

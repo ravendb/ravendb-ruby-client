@@ -69,12 +69,12 @@ module RavenDB
       super()
 
       raise ArgumentError,
-        "Fields list can't be empty" if
+            "Fields list can't be empty" if
         fields_to_fetch.empty?
 
       raise ArgumentError,
-        "Length of projections must be the "\
-        "same as length of fields to fetch." if
+            "Length of projections must be the "\
+            "same as length of fields to fetch." if
         (projections.empty? && projections.size != fields_to_fetch.size)
 
       @fields_to_fetch = fields_to_fetch
@@ -123,7 +123,7 @@ module RavenDB
 
     def write_to(writer)
       raise NotSupportedException,
-        "Either IndexName or CollectionName must be specified" if
+            "Either IndexName or CollectionName must be specified" if
         (@collection_name.nil? && @index_name.nil?)
 
       if @is_dynamic
@@ -133,7 +133,7 @@ module RavenDB
 
         if WhiteSpaceChars.any? {|char| @collection_name.include?(char)}
           raise NotSupportedException,
-            "Collection name cannot contain a quote, but was: #{@collection_name}" if
+                "Collection name cannot contain a quote, but was: #{@collection_name}" if
             @collection_name.include?('"')
 
           writer.append('"').append(@collection_name).append('"')
@@ -211,7 +211,7 @@ module RavenDB
       super(field_name, projected_name)
 
       raise ArgumentError,
-        "Field name can't be null" if
+            "Field name can't be null" if
         field_name.nil?
     end
 
@@ -238,7 +238,7 @@ module RavenDB
       super(field_name)
 
       raise ArgumentError,
-        "Field name can't be null" if
+            "Field name can't be null" if
         field_name.nil?
     end
 
@@ -299,7 +299,7 @@ module RavenDB
 
     def self.create_random(seed)
       raise ArgumentError,
-        "Seed can't be null" if
+            "Seed can't be null" if
         seed.nil?
 
       self.new("random('#{seed.gsub("'", "''")}')")

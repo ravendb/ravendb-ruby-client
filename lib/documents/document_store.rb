@@ -61,7 +61,7 @@ module RavenDB
         end
 
         raise ArgumentError,
-          "Invalid auth options provided" unless
+              "Invalid auth options provided" unless
           @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
 
         if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?("https") }

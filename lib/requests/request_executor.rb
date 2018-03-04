@@ -47,7 +47,7 @@ module RavenDB
         @_auth_options = options[:auth_options]
 
         raise ArgumentError,
-          "Invalid auth options provided" unless
+              "Invalid auth options provided" unless
           @_auth_options.nil? || @_auth_options.is_a?(RequestAuthOptions)
       end
 
@@ -60,19 +60,19 @@ module RavenDB
 
     def self.create(urls, database = nil, auth_options = nil)
       return self.new(database,
-        without_topology: false,
-        first_topology_update_urls: urls.clone,
-        auth_options: auth_options)
+                      without_topology: false,
+                      first_topology_update_urls: urls.clone,
+                      auth_options: auth_options)
     end
 
     def self.create_for_single_node(url, database = nil, auth_options = nil)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       return self.new(database,
-        without_topology: true,
-        single_node_topology: topology,
-        topology_etag: -2,
-        auth_options: auth_options)
+                      without_topology: true,
+                      single_node_topology: topology,
+                      topology_etag: -2,
+                      auth_options: auth_options)
     end
 
     def execute(command)
@@ -347,7 +347,7 @@ module RavenDB
 
         if uri.is_a?(URI::HTTPS)
           raise NotSupportedException,
-            "Access to secured servers requires RequestAuthOptions to be set" unless
+                "Access to secured servers requires RequestAuthOptions to be set" unless
             @_auth_options.is_a?(RequestAuthOptions)
 
           client.use_ssl = true

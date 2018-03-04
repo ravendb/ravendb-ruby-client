@@ -14,7 +14,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       refute_raises do
         @_store.operations.send(
           RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-          [ATTACHMENT].pack("H*"), "image/gif"
+                                              [ATTACHMENT].pack("H*"), "image/gif"
           )
         )
       end
@@ -31,13 +31,13 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-        attachment_raw, "image/gif"
+                                            attachment_raw, "image/gif"
         )
       )
 
       attachment_result = @_store.operations.send(
         RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
-        RavenDB::AttachmentType::Document
+                                            RavenDB::AttachmentType::Document
         )
       )
 
@@ -58,7 +58,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-        [ATTACHMENT].pack("H*"), "image/gif"
+                                            [ATTACHMENT].pack("H*"), "image/gif"
         )
       )
 
@@ -69,7 +69,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       assert_raises(RavenDB::DocumentDoesNotExistException) do
         @_store.operations.send(
           RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
-          RavenDB::AttachmentType::Document
+                                              RavenDB::AttachmentType::Document
           )
         )
       end

@@ -37,7 +37,7 @@ module RavenDB
     end
 
     def initialize(session, request_executor, collection = nil, index_name = nil, document_type_or_class = nil?,
-      nested_object_types = nil, with_statistics = false, index_query_options = {})
+                   nested_object_types = nil, with_statistics = false, index_query_options = {})
       document_type = nil
 
       @session = session
@@ -722,8 +722,8 @@ module RavenDB
       end
 
       raise ArgumentError,
-        "Invalid value passed to query condition. "\
-        "Only integer / number / string / dates / bools and nil values are supported" unless
+            "Invalid value passed to query condition. "\
+            "Only integer / number / string / dates / bools and nil values are supported" unless
         ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
           value.is_a?(Date) || value.is_a?(DateTime)
         )

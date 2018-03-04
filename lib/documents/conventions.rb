@@ -33,7 +33,7 @@ module RavenDB
 
     def add_attribute_serializer(serializer)
       raise ArgumentError,
-        "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer" unless
+            "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer" unless
         serializer.is_a?(AttributeSerializer)
 
       @serializers.push(serializer)
@@ -57,7 +57,7 @@ module RavenDB
 
     def get_document_type(document_class)
       raise RuntimeError,
-        "Invalid argument passed. Should be an document class constructor" unless
+            "Invalid argument passed. Should be an document class constructor" unless
         document_class.is_a?(Class)
 
       document_class.name.to_s
@@ -65,7 +65,7 @@ module RavenDB
 
     def get_document_constructor(document_type)
       raise RuntimeError,
-        "Invalid argument passed. Should be an string" unless
+            "Invalid argument passed. Should be an string" unless
         document_type.is_a?(String)
 
       Object.const_get(document_type)
@@ -91,7 +91,7 @@ module RavenDB
       end
 
       raise RuntimeError,
-        "Invalid argument passed. Should be an document, class constructor or document type name" if
+            "Invalid argument passed. Should be an document, class constructor or document type name" if
         document_type.nil?
 
       if @_id_properties_names_cache.key?(document_type)
@@ -124,7 +124,7 @@ module RavenDB
 
     def convert_to_document(raw_entity, document_type = nil, nested_object_types = {})
       raise RuntimeError,
-        "Invalid raw_entity passed. Should be an hash" unless
+            "Invalid raw_entity passed. Should be an hash" unless
           raw_entity.is_a?(Hash)
 
       metadata = raw_entity.fetch("@metadata", {})
@@ -168,7 +168,7 @@ module RavenDB
 
     def try_fetch_results(command_response)
       raise RuntimeError,
-        "Invalid command_response passed. Should be an hash" unless
+            "Invalid command_response passed. Should be an hash" unless
         command_response.is_a?(Hash)
 
       response_results = []
@@ -182,7 +182,7 @@ module RavenDB
 
     def try_fetch_includes(command_response)
       raise RuntimeError,
-        "Invalid command_response passed. Should be an hash" unless
+            "Invalid command_response passed. Should be an hash" unless
         command_response.is_a?(Hash)
 
       response_includes = []
@@ -200,7 +200,7 @@ module RavenDB
 
     def check_is_projection?(response_item)
       raise RuntimeError,
-        "Invalid command_response passed. Should be an hash" unless
+            "Invalid command_response passed. Should be an hash" unless
           response_item.is_a?(Hash)
 
       if response_item.key?("@metadata")
@@ -249,7 +249,7 @@ module RavenDB
 
     def get_type_from_document(document)
       raise RuntimeError,
-        "Invalid argument passed. Should be an document" unless
+            "Invalid argument passed. Should be an document" unless
         TypeUtilities::is_document?(document)
 
       metadata = {}
@@ -274,7 +274,7 @@ module RavenDB
       nested_types = {}
 
       raise RuntimeError,
-        "Invalid argument passed. Should be an document" unless
+            "Invalid argument passed. Should be an document" unless
         TypeUtilities::is_document?(document)
 
       if document.instance_variable_defined?("@metadata")

@@ -116,7 +116,7 @@ module RavenDB
       expected_change_vector = nil
 
       raise RuntimeError,
-        "Invalid argument passed. Should be document model instance or document id string" unless
+            "Invalid argument passed. Should be document model instance or document id string" unless
         (document_or_id.is_a?(String) || TypeUtilities::is_document?(document_or_id))
 
       if options.is_a?(Hash)
@@ -128,7 +128,7 @@ module RavenDB
 
         if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
           raise RuntimeError,
-            "Can't delete changed document using identifier. Pass document instance instead"
+                "Can't delete changed document using identifier. Pass document instance instead"
         end
       else
         document = document_or_id
@@ -140,14 +140,14 @@ module RavenDB
         @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
       else
         raise RuntimeError,
-          "Document is not associated with the session, cannot delete unknown document instance" unless
+              "Document is not associated with the session, cannot delete unknown document instance" unless
           @raw_entities_and_metadata.key?(document)
 
         id = info[:id]
         original_metadata = info[:original_metadata]
 
         raise RuntimeError,
-          "Document is marked as read only and cannot be deleted" if
+              "Document is marked as read only and cannot be deleted" if
           original_metadata.key?("Raven-Read-Only")
 
         unless expected_change_vector.nil?
@@ -182,14 +182,14 @@ module RavenDB
         id = conventions.get_id_from_document(document)
 
         @defer_commands.each {|command| raise RuntimeError,
-          "Can't store document, there is a deferred command registered "\
-          "for this document in the session. Document id: #{id}" if
+                                              "Can't store document, there is a deferred command registered "\
+                                              "for this document in the session. Document id: #{id}" if
           id == command.document_id
         }
 
         raise RuntimeError,
-          "Can't store object, it was already deleted in this "\
-          "session. Document id: #{id}" if
+              "Can't store object, it was already deleted in this "\
+              "session. Document id: #{id}" if
           @deleted_documents.include?(document)
 
         on_document_fetched(
@@ -258,14 +258,14 @@ module RavenDB
       @number_of_requests_in_session = @number_of_requests_in_session + 1
 
       raise RuntimeError,
-          "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
-"of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
-"be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
-"You can increase the limit by setting RavenDB::DocumentConventions::"\
-"MaxNumberOfRequestPerSession, but it is advisable "\
-"that you'll look into reducing the number of remote calls first, "\
-"since that will speed up your application significantly and result in a"\
-"more responsive application." unless @number_of_requests_in_session <= max_requests
+            "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
+  "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
+  "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
+  "You can increase the limit by setting RavenDB::DocumentConventions::"\
+  "MaxNumberOfRequestPerSession, but it is advisable "\
+  "that you'll look into reducing the number of remote calls first, "\
+  "since that will speed up your application significantly and result in a"\
+  "more responsive application." unless @number_of_requests_in_session <= max_requests
     end
 
     def fetch_documents(ids, includes = nil, nested_object_types = {})
