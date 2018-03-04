@@ -264,7 +264,7 @@ module RavenDB
       end
 
       if metadata.key?("@collection") && empty_collection != metadata["@collection"]
-        return (metadata["@collection"].singularize).capitalize
+        return metadata["@collection"].singularize.capitalize
       end
 
       get_document_type(document.class)
@@ -294,7 +294,7 @@ module RavenDB
           value_for_check = value_for_check.first
         end
 
-        unless (nested_type = (find_nested_type(value_for_check))).nil?
+        unless (nested_type = find_nested_type(value_for_check)).nil?
           nested_types[instance_variable.to_s.delete("@")] = nested_type
         end
       end

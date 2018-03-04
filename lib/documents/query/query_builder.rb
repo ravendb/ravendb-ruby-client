@@ -670,7 +670,7 @@ module RavenDB
       found = false
 
       tokens.each do |item|
-        if !found && (item.value.is_a?(FieldsToFetchToken))
+        if !found && item.value.is_a?(FieldsToFetchToken)
           found = true
           result = item
         end
