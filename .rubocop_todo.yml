@@ -408,14 +408,6 @@ Style/CaseEquality:
   Exclude:
     - 'lib/documents/query/query_tokens.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: nested, compact
-Style/ClassAndModuleChildren:
-  Exclude:
-    - 'lib/utilities/json.rb'
-
 # Offense count: 74
 # Cop supports --auto-correct.
 Style/ColonMethodCall:

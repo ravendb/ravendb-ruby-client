@@ -3,24 +3,26 @@ require "net/http"
 require "database/exceptions"
 require "utilities/type_utilities"
 
-class Net::HTTPResponse
-  def json(raise_when_invalid = true)
-    json = body
-    parsed = nil
+module Net
+  class HTTPResponse
+    def json(raise_when_invalid = true)
+      json = body
+      parsed = nil
 
-    if !json.is_a? Hash
-      begin
-        if json.is_a?(String) && !json.empty?
-          parsed = JSON.parse(json)
-        end
-      rescue
-        if raise_when_invalid
-          raise RavenDB::ErrorResponseException, "Not a valid JSON"
+      if !json.is_a? Hash
+        begin
+          if json.is_a?(String) && !json.empty?
+            parsed = JSON.parse(json)
+          end
+        rescue
+          if raise_when_invalid
+            raise RavenDB::ErrorResponseException, "Not a valid JSON"
+          end
         end
       end
-    end
 
-    parsed
+      parsed
+    end
   end
 end
 
@@ -46,7 +48,7 @@ module RavenDB
       end
 
       if metadata.key?("@nested_object_types") &&
-        metadata["@nested_object_types"].is_a?(Hash)
+          metadata["@nested_object_types"].is_a?(Hash)
         mappings = mappings.merge(metadata["@nested_object_types"])
       end
 
@@ -166,15 +168,15 @@ module RavenDB
           documents = []
 
           if json_value.all? {|json_value_item|
-            document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
-            was_converted = !document.nil?
+               document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
+               was_converted = !document.nil?
 
-            if !document.nil?
-              documents.push(document)
-            end
+               if !document.nil?
+                 documents.push(document)
+               end
 
-            was_converted
-          }
+               was_converted
+             }
             return documents
           end
         end
