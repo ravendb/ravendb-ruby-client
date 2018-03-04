@@ -118,7 +118,7 @@ module RavenDB
         tag = nil
       end
 
-      get_generator_for_tag(tag).generate_document_id()
+      get_generator_for_tag(tag).generate_document_id
     end
 
     protected

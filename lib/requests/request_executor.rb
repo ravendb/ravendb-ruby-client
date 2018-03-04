@@ -329,7 +329,7 @@ module RavenDB
       end
 
       if (is_still_failed == false) && @_failed_nodes_statuses.key?(server_node)
-        @_failed_nodes_statuses[server_node].retry_update()
+        @_failed_nodes_statuses[server_node].retry_update
       end
     end
 
