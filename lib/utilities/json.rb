@@ -118,7 +118,7 @@ module RavenDB
         json_value = variable_value
 
         if "@metadata" != variable_name
-          json_property = json_property.gsub("@", "")
+          json_property = json_property.delete("@")
 
           serialized = {
             original_attribute: json_property,

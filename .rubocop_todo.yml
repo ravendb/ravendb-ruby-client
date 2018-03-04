@@ -306,13 +306,6 @@ Performance/RedundantBlockCall:
   Exclude:
     - 'lib/documents/query/spatial.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-Performance/StringReplacement:
-  Exclude:
-    - 'lib/documents/conventions.rb'
-    - 'lib/utilities/json.rb'
-
 # Offense count: 1
 Style/CaseEquality:
   Exclude:

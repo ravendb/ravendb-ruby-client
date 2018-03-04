@@ -295,7 +295,7 @@ module RavenDB
         end
 
         unless (nested_type = (find_nested_type(value_for_check))).nil?
-          nested_types[instance_variable.to_s.gsub("@", "")] = nested_type
+          nested_types[instance_variable.to_s.delete("@")] = nested_type
         end
       end
 
