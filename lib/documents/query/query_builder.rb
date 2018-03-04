@@ -57,7 +57,7 @@ module RavenDB
 
     def raw_query(query)
       unless [@group_by_tokens, @order_by_tokens,
-        @select_tokens, @where_tokens].all? {|tokens| tokens.empty?}
+        @select_tokens, @where_tokens].all? { |tokens| tokens.empty? }
         raise "You can only use RawQuery on a new query, "\
               "without applying any operations (such as Where, Select, OrderBy, GroupBy, etc)"
       end
@@ -594,7 +594,7 @@ module RavenDB
 
       last_token = tokens.last.value
 
-      unless [WhereToken, CloseSubclauseToken].any? {|token_type| last_token.is_a?(token_type)}
+      unless [WhereToken, CloseSubclauseToken].any? { |token_type| last_token.is_a?(token_type) }
         return
       end
 

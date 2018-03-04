@@ -93,7 +93,7 @@ class DocumentQueryTest < RavenDatabaseTest
       assert_equal(results.size, 4)
 
       results.each do |result|
-        assert(names.any? {|name| result.name == name})
+        assert(names.any? { |name| result.name == name })
       end
     end
   end
@@ -124,7 +124,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(results.size, 2)
-      assert(results.all? {|result| result.name = "test107"})
+      assert(results.all? { |result| result.name = "test107" })
     end
   end
 
@@ -139,7 +139,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(results.size, 3)
-      assert(results.all? {|result| (2..4).to_a.include?(result.uid) })
+      assert(results.all? { |result| (2..4).to_a.include?(result.uid) })
     end
   end
 
@@ -151,7 +151,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.all? {|result| result.instance_variable_defined?("@ordering") })
+      assert(results.all? { |result| result.instance_variable_defined?("@ordering") })
     end
   end
 
@@ -184,7 +184,7 @@ class DocumentQueryTest < RavenDatabaseTest
       assert_equal(results.size, 3)
 
       results.each do |result|
-        assert(uids.any? {|uid| result.uid == uid})
+        assert(uids.any? { |uid| result.uid == uid })
       end
     end
   end
@@ -280,7 +280,7 @@ class DocumentQueryTest < RavenDatabaseTest
                    .all
 
         assert(products.size <= page_size)
-        products.each_index {|index| assert_equal(products[index].uid, expected_uids[page - 1][index])}
+        products.each_index { |index| assert_equal(products[index].uid, expected_uids[page - 1][index]) }
       end
     end
   end
@@ -297,7 +297,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.all?{|result| result.instance_variable_defined?("@doc_id")})
+      assert(results.all?{ |result| result.instance_variable_defined?("@doc_id") })
     end
   end
 
@@ -313,7 +313,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(results.size, 2)
-      results.each{|last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"])}
+      results.each{ |last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"]) }
     end
   end
 

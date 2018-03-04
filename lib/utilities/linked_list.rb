@@ -65,7 +65,7 @@ module RavenDB
       @items = []
 
       if items.size
-        items.each {|item| add_last(item)}
+        items.each { |item| add_last(item) }
       end
     end
 
@@ -87,7 +87,7 @@ module RavenDB
 
     def each
       if block_given?
-        @items.each {|linked_list_item| yield(linked_list_item)}
+        @items.each { |linked_list_item| yield(linked_list_item) }
       end
     end
   end

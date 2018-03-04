@@ -108,7 +108,7 @@ class DocumentStoreTest < RavenDatabaseTest
     @_store.open_session do |session|
       session.delete(key)
 
-      assert_raises(RuntimeError) {session.store(foo)}
+      assert_raises(RuntimeError) { session.store(foo) }
     end
   end
 
@@ -153,7 +153,7 @@ class DocumentStoreTest < RavenDatabaseTest
       foo.name = "name changed"
       foo.order = 10
 
-      refute_raises(RuntimeError) {session.save_changes}
+      refute_raises(RuntimeError) { session.save_changes }
     end
 
     @_store.open_session do |session|

@@ -52,7 +52,7 @@ module RavenDB
       end
 
       copy = hash.deep_dup
-      copy.delete_if {|key| keys.include?(key)}
+      copy.delete_if { |key| keys.include?(key) }
 
       copy
     end

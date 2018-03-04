@@ -161,7 +161,7 @@ module RavenDB
       raw_entity = JsonSerializer.to_json(document, self)
 
       if raw_entity.key?(id_property)
-        raw_entity.delete_if {|key| id_property == key}
+        raw_entity.delete_if { |key| id_property == key }
       end
 
       raw_entity

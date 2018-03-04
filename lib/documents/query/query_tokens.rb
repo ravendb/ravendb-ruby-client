@@ -134,7 +134,7 @@ module RavenDB
           .append(QueryKeyword::From)
           .append(" ")
 
-        if WhiteSpaceChars.any? {|char| @collection_name.include?(char)}
+        if WhiteSpaceChars.any? { |char| @collection_name.include?(char) }
           if @collection_name.include?('"')
             raise NotSupportedException,
                   "Collection name cannot contain a quote, but was: #{@collection_name}"

@@ -9,15 +9,15 @@ class DocumentDeleteTest < RavenDatabaseTest
     products = nil
 
     @_store.open_session do |session|
-      IDS.each {|id| session.store(Product.new("Products/#{id}", "test"))}
+      IDS.each { |id| session.store(Product.new("Products/#{id}", "test")) }
       session.save_changes
     end
 
     @_store.open_session do |session|
-      products = session.load(IDS.map{|id| "Products/#{id}"})
+      products = session.load(IDS.map{ |id| "Products/#{id}" })
     end
 
-    @change_vectors = products.map{|product| product.instance_variable_get("@metadata")["@change-vector"]}
+    @change_vectors = products.map{ |product| product.instance_variable_get("@metadata")["@change-vector"] }
   end
 
   def test_should_delete_with_key_with_save_session
@@ -65,7 +65,7 @@ class DocumentDeleteTest < RavenDatabaseTest
       product = session.load(id)
       product.name = "Testing"
 
-      assert_raises(RuntimeError) {session.delete(id)}
+      assert_raises(RuntimeError) { session.delete(id) }
     end
   end
 

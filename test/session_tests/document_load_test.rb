@@ -48,7 +48,7 @@ class DocumentLoadTest < RavenDatabaseTest
       products = session.load(["Products/101", "Products/10", "Products/101"])
 
       assert_equal(products.size, 3)
-      products.each {|product| refute(product.nil?)}
+      products.each { |product| refute(product.nil?) }
     end
   end
 

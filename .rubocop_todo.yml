@@ -181,14 +181,6 @@ Layout/SpaceBeforeBlockBraces:
     - 'test/session_tests/document_delete_test.rb'
     - 'test/session_tests/document_query_test.rb'
 
-# Offense count: 70
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceInsideBlockBraces:
-  Enabled: false
-
 # Offense count: 126
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.

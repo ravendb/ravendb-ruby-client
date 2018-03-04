@@ -65,7 +65,7 @@ module RavenDB
                 "Invalid auth options provided"
         end
 
-        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?("https") }
+        if @_auth_options.nil? && @_urls.any? { |url| url.downcase.start_with?("https") }
           raise NotSupportedException, "Access to secured servers requires StoreAuthOptions to be set"
         end
 
@@ -182,7 +182,7 @@ module RavenDB
 
         if @_request_executors.is_a?(Hash)
           @_request_executors.each_value do |executors|
-            executors.each_value {|executor| executor.dispose}
+            executors.each_value { |executor| executor.dispose }
           end
         end
       end

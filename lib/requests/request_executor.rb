@@ -335,7 +335,7 @@ module RavenDB
     end
 
     def cancel_failing_nodes_timers
-      @_failed_nodes_statuses.each_value {|status| status.dispose}
+      @_failed_nodes_statuses.each_value { |status| status.dispose }
       @_failed_nodes_statuses.clear
     end
 

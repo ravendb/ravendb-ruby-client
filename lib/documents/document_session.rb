@@ -77,7 +77,7 @@ module RavenDB
       if includes.nil?
         ids_of_non_existing_documents
           .to_a
-          .keep_if{|id| @included_raw_entities_by_id.key?(id)}
+          .keep_if{ |id| @included_raw_entities_by_id.key?(id) }
           .each do |id|
           make_document(@included_raw_entities_by_id[id], nil, nested_object_types)
           @included_raw_entities_by_id.delete(id)
@@ -85,13 +85,13 @@ module RavenDB
 
         ids_of_non_existing_documents = Set.new(
           ids.deep_dup
-          .delete_if{|id| @documents_by_id.key?(id)}
+          .delete_if{ |id| @documents_by_id.key?(id) }
         )
       end
 
       ids_of_non_existing_documents = Set.new(
         ids_of_non_existing_documents.to_a
-        .delete_if{|id| @known_missing_ids.include?(id)}
+        .delete_if{ |id| @known_missing_ids.include?(id) }
       )
 
       unless ids_of_non_existing_documents.empty?
@@ -520,7 +520,7 @@ module RavenDB
       document_query.raw_query(query)
 
       if params.is_a?(Hash) && !params.empty?
-        params.each {|param, value| document_query.add_parameter(param, value)}
+        params.each { |param, value| document_query.add_parameter(param, value) }
       end
 
       emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)

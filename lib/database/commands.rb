@@ -110,7 +110,7 @@ module RavenDB
         remove = remove.concat(other_params)
       end
 
-      remove.each {|param| @params.delete(param)}
+      remove.each { |param| @params.delete(param) }
     end
   end
 
