@@ -53,8 +53,8 @@ module RavenDB
         end_point = "#{end_point}?#{encoded_params}"
       end
 
-      requestCtor = Object.const_get("Net::HTTP::#{@method.capitalize}")
-      request = requestCtor.new(end_point)
+      request_ctor = Object.const_get("Net::HTTP::#{@method.capitalize}")
+      request = request_ctor.new(end_point)
 
       if !@payload.nil? && !@payload.empty?
         begin
