@@ -16,7 +16,7 @@ class QueryOperationsTest < RavenDatabaseTest
     index_sort = RavenDB::IndexDefinition.new("Testing_Sort", index_map)
     @_store.operations.send(RavenDB::PutIndexesOperation.new(index_sort))
 
-    for i in 0..99 do
+    (0..99).each do |i|
       @_request_executor.execute(RavenDB::PutDocumentCommand.new("Testings/#{i}",
                                                                  "Name" => "test#{i}", "DocNumber" => i,
                                                                  "@metadata": {"@collection" => "Testings"}))

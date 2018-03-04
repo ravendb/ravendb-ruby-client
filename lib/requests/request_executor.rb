@@ -216,7 +216,7 @@ module RavenDB
       @_first_topology_update = Thread.new do
         updated = false
 
-         for url in urls do
+         urls.each do |url|
            begin
              update_topology(ServerNode.new(url, @initial_database))
              @_first_topology_update_exception = nil
