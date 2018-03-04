@@ -32,16 +32,16 @@ module RavenDB
 
         if @timeout && ((Time.now.to_f - start_time) > @timeout)
           return {
-            :status => OperationStatus::Faulted,
-            :exception => DatabaseLoadTimeoutException.new("The operation did not finish before the timeout end")
+            status: OperationStatus::Faulted,
+            exception: DatabaseLoadTimeoutException.new("The operation did not finish before the timeout end")
           }
         end
 
         case response["Status"]
         when OperationStatus::Completed
           return {
-            :status => response["Status"],
-            :response => response
+            status: response["Status"],
+            response: response
           }
         when OperationStatus::Faulted
           exception = ExceptionsFactory.create_from(response["Result"])
@@ -51,19 +51,19 @@ module RavenDB
           end
 
           return {
-            :status => response["Status"],
-            :exception => exception
+            status: response["Status"],
+            exception: exception
           }
         else
           return {
-            :status => OperationStatus::Running
+            status: OperationStatus::Running
           }
         end
 
       rescue => exception
         return {
-          :status => OperationStatus::Faulted,
-          :exception => exception
+          status: OperationStatus::Faulted,
+          exception: exception
         }
       end
     end
@@ -171,11 +171,11 @@ module RavenDB
         case command.server_response
         when Net::HTTPNotModified
           patch_result = {
-            :Status => PatchStatus::NotModified
+            Status: PatchStatus::NotModified
           }
         when Net::HTTPNotFound
           patch_result = {
-            :Status => PatchStatus::DocumentDoesNotExist
+            Status: PatchStatus::DocumentDoesNotExist
           }
         else
           document = nil
@@ -186,8 +186,8 @@ module RavenDB
           end
 
           patch_result = {
-            :Status => json["Status"],
-            :Document => document
+            Status: json["Status"],
+            Document: document
           }
         end
 

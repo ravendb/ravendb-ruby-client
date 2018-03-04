@@ -71,15 +71,15 @@ module RavenDB
 
         if "@metadata" != key
           serialized = {
-            :original_attribute => key,
-            :serialized_attribute => key,
-            :original_value => value,
-            :serialized_value => json_to_variable(value, key, mappings, conventions, parent_path),
-            :attribute_path => build_path(key, parent_path),
-            :source => source,
-            :target => target,
-            :metadata => current_metadata,
-            :nested_object_types => nested_object_types
+            original_attribute: key,
+            serialized_attribute: key,
+            original_value: value,
+            serialized_value: json_to_variable(value, key, mappings, conventions, parent_path),
+            attribute_path: build_path(key, parent_path),
+            source: source,
+            target: target,
+            metadata: current_metadata,
+            nested_object_types: nested_object_types
           }
 
           unless conventions.nil?
@@ -121,13 +121,13 @@ module RavenDB
           json_property = json_property.gsub("@", "")
 
           serialized = {
-            :original_attribute => json_property,
-            :serialized_attribute => json_property,
-            :original_value => variable_value,
-            :serialized_value => variable_to_json(variable_value, json_property, conventions, parent_path),
-            :attribute_path => build_path(json_property, parent_path),
-            :source => source,
-            :metadata => current_metadata
+            original_attribute: json_property,
+            serialized_attribute: json_property,
+            original_value: variable_value,
+            serialized_value: variable_to_json(variable_value, json_property, conventions, parent_path),
+            attribute_path: build_path(json_property, parent_path),
+            source: source,
+            metadata: current_metadata
           }
 
           unless conventions.nil?

@@ -28,8 +28,8 @@ class PatchCommandTest < RavenDatabaseIndexesTest
   def test_should_patch_success_not_ignoring_missing
     result = @_store.operations.send(
       RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
-                                  :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
-                                  :skip_patch_if_change_vector_mismatch => true
+                                  change_vector: "#{@_change_vector}_BROKEN_VECTOR",
+                                  skip_patch_if_change_vector_mismatch: true
                                  ))
 
     assert(result.key?(:Status))
@@ -41,8 +41,8 @@ class PatchCommandTest < RavenDatabaseIndexesTest
     assert_raises(RavenDB::RavenException) do
       @_store.operations.send(
         RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
-                                    :change_vector => "#{@_change_vector}_BROKEN_VECTOR",
-                                    :skip_patch_if_change_vector_mismatch => false
+                                    change_vector: "#{@_change_vector}_BROKEN_VECTOR",
+                                    skip_patch_if_change_vector_mismatch: false
                                    ))
     end
   end

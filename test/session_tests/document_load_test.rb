@@ -73,7 +73,7 @@ class DocumentLoadTest < RavenDatabaseTest
 
   def test_should_load_with_includes
     @_store.open_session do |session|
-      session.load("Orders/105", :includes => ["product_id"])
+      session.load("Orders/105", includes: ["product_id"])
       session.load("Products/101")
 
       assert_equal(session.number_of_requests_in_session, 1)

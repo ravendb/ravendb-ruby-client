@@ -557,13 +557,6 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 265
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
-# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
-Style/HashSyntax:
-  Enabled: false
-
 # Offense count: 251
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:

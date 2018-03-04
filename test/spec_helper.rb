@@ -62,7 +62,7 @@ class RavenDatabaseTest < RavenTest
       "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\
       "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
 
-    db_doc = RavenDB::DatabaseDocument.new(@_current_database, :'Raven/DataDir' => "test")
+    db_doc = RavenDB::DatabaseDocument.new(@_current_database, 'Raven/DataDir': "test")
     @_store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
     @_request_executor = @_store.get_request_executor
   end
@@ -241,7 +241,7 @@ class LastFmAnalyzed
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
       self.class.name, index_map, nil,
-      :fields => {
+      fields: {
         "query" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::Search)
       }
     )
@@ -259,8 +259,8 @@ class LastFmAnalyzed
 
     fields.each {|field| query.each {|keyword|
       search_in.push(
-        :keyword => keyword,
-        :sample => last_fm.instance_variable_get("@#{field}")
+        keyword: keyword,
+        sample: last_fm.instance_variable_get("@#{field}")
       )
     }}
 
@@ -281,7 +281,7 @@ class ProductsTestingSort
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
       "Testing_Sort", index_map, nil,
-      :fields => {
+      fields: {
         "doc_id" => RavenDB::IndexFieldOptions.new(nil, true)
       }
     )

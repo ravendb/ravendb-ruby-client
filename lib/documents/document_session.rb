@@ -193,10 +193,10 @@ module RavenDB
           @deleted_documents.include?(document)
 
         on_document_fetched(
-          :document => document,
-          :metadata => document.instance_variable_get("@metadata"),
-          :original_metadata => original_metadata,
-          :raw_entity => conventions.convert_to_raw_entity(document)
+          document: document,
+          metadata: document.instance_variable_get("@metadata"),
+          original_metadata: original_metadata,
+          raw_entity: conventions.convert_to_raw_entity(document)
         )
       end
 
@@ -333,7 +333,7 @@ module RavenDB
         @raw_entities_and_metadata[document] = info
       end
 
-      {:document => document, :is_new => is_new}
+      {document: document, is_new: is_new}
     end
 
     def prepare_document_id_before_store(document, id = nil)
@@ -428,10 +428,10 @@ module RavenDB
             info = @raw_entities_and_metadata[document]
 
             info = info.merge(
-              :change_vector => command_result["@change-vector"],
-              :metadata => metadata,
-              :original_value => conventions.convert_to_raw_entity(document).deep_dup,
-              :original_metadata => metadata.deep_dup
+              change_vector: command_result["@change-vector"],
+              metadata: metadata,
+              original_value: conventions.convert_to_raw_entity(document).deep_dup,
+              original_metadata: metadata.deep_dup
             )
 
             @documents_by_id[command_result["@id"]] = document
@@ -497,13 +497,13 @@ module RavenDB
 
       @documents_by_id[document_id] = document
       @raw_entities_and_metadata[document] = {
-        :original_value => original_value_source.deep_dup,
-        :original_metadata => conversion_result[:original_metadata],
-        :metadata => conversion_result[:metadata],
-        :change_vector => conversion_result[:metadata]["@change-vector"] || nil,
-        :id => document_id,
-        :concurrency_check_mode => ConcurrencyCheckMode::Auto,
-        :document_type => conversion_result[:document_type]
+        original_value: original_value_source.deep_dup,
+        original_metadata: conversion_result[:original_metadata],
+        metadata: conversion_result[:metadata],
+        change_vector: conversion_result[:metadata]["@change-vector"] || nil,
+        id: document_id,
+        concurrency_check_mode: ConcurrencyCheckMode::Auto,
+        document_type: conversion_result[:document_type]
       }
     end
   end

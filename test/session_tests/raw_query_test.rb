@@ -16,7 +16,7 @@ class RawQueryTest < RavenDatabaseTest
       results = session.advanced.raw_query(
         "FROM Products "\
         "WHERE name = $name",
-        :name => "test101"
+        name: "test101"
       )
       .wait_for_non_stale_results
       .all

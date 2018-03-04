@@ -9,5 +9,5 @@ Rake::TestTask.new do |task|
 end
 
 desc "Run unit tests"
-task :default => :test
-task :test_ci => ["ci:setup:minitest", :test]
+task default: :test
+task test_ci: ["ci:setup:minitest", :test]

@@ -115,14 +115,14 @@ module RavenDB
       end
 
       {
-        :stream => attachment,
-        :attachment_details => {
-          :content_type => content_type,
-          :name => @_name,
-          :hash => hash,
-          :size => size,
-          :change_vector => change_vector,
-          :document_id => @_document_id
+        stream: attachment,
+        attachment_details: {
+          content_type: content_type,
+          name: @_name,
+          hash: hash,
+          size: size,
+          change_vector: change_vector,
+          document_id: @_document_id
         }
       }
     end

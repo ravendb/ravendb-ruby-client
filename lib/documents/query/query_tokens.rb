@@ -395,158 +395,158 @@ module RavenDB
 
     def self.equals(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::Equals
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::Equals
       )
     end
 
     def self.not_equals(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::NotEquals
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::NotEquals
       )
     end
 
     def self.starts_with(field_name, parameter_name)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::StartsWith
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::StartsWith
       )
     end
 
     def self.ends_with(field_name, parameter_name)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::EndsWith
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::EndsWith
       )
     end
 
     def self.greater_than(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::GreaterThan
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::GreaterThan
       )
     end
 
     def self.greater_than_or_equal(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::GreaterThanOrEqual
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::GreaterThanOrEqual
       )
     end
 
     def self.less_than(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::LessThan
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::LessThan
       )
     end
 
     def self.less_than_or_equal(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::LessThanOrEqual
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::LessThanOrEqual
       )
     end
 
     def self.in(field_name, parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::In
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::In
       )
     end
 
     def self.all_in(field_name, parameter_name)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::AllIn
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::AllIn
       )
     end
 
     def self.between(field_name, from_parameter_name, to_parameter_name, exact = false)
       self.new(
-        :field_name => field_name,
-        :from_parameter_name => from_parameter_name,
-        :to_parameter_name => to_parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::Between
+        field_name: field_name,
+        from_parameter_name: from_parameter_name,
+        to_parameter_name: to_parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::Between
       )
     end
 
     def self.search(field_name, parameter_name, op = SearchOperator::And)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :search_operator => op,
-        :where_operator => WhereOperator::Search
+        field_name: field_name,
+        parameter_name: parameter_name,
+        search_operator: op,
+        where_operator: WhereOperator::Search
       )
     end
 
     def self.lucene(field_name, parameter_name)
       self.new(
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::Lucene
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::Lucene
       )
     end
 
     def self.exists(field_name)
       self.new(
-        :field_name => field_name,
-        :where_operator => WhereOperator::Exists
+        field_name: field_name,
+        where_operator: WhereOperator::Exists
       )
     end
 
     def self.within(field_name, shape, distance_error_pct)
       self.new(
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Within
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Within
       )
     end
 
     def self.contains(field_name, shape, distance_error_pct)
       self.new(
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Contains
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Contains
       )
     end
 
     def self.disjoint(field_name, shape, distance_error_pct)
       self.new(
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Disjoint
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Disjoint
       )
     end
 
     def self.intersects(field_name, shape, distance_error_pct)
       self.new(
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Intersects
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Intersects
       )
     end
 

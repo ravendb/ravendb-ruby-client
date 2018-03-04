@@ -22,12 +22,12 @@ class QueryOperationsTest < RavenDatabaseTest
                                                                  "@metadata": {"@collection" => "Testings"}))
     end
 
-    @_request_executor.execute(RavenDB::QueryCommand.new(@_store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, :wait_for_non_stale_results => true)))
+    @_request_executor.execute(RavenDB::QueryCommand.new(@_store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, wait_for_non_stale_results: true)))
   end
 
   def test_update_by_index_success
     query = "from index 'Testing_Sort' where exists(Name) update { this.Name = args.name; }"
-    index_query = RavenDB::IndexQuery.new(query, {:name => "Patched"}, nil, nil, :wait_for_non_stale_results => true)
+    index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
     patch_by_index_operation = RavenDB::PatchByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
 
     response = @_store.operations.send(patch_by_index_operation)
@@ -36,7 +36,7 @@ class QueryOperationsTest < RavenDatabaseTest
     refute(response["Result"]["Total"] < 100)
 
     query = "from index 'Testing_Sort' where Name = $name"
-    index_query = RavenDB::IndexQuery.new(query, {:name => "Patched"}, nil, nil, :wait_for_non_stale_results => true)
+    index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
 
     response = @_request_executor.execute(RavenDB::QueryCommand.new(@_store.conventions, index_query))
     assert(response.key?("Results"))
@@ -46,7 +46,7 @@ class QueryOperationsTest < RavenDatabaseTest
 
   def test_update_by_index_fail_on_unexisting_index
     query = "from index 'unexisting_index_1' where Name = $name update { this.Name = args.newName; }"
-    index_query = RavenDB::IndexQuery.new(query, {:newName => "Patched"}, nil, nil, :wait_for_non_stale_results => true)
+    index_query = RavenDB::IndexQuery.new(query, {newName: "Patched"}, nil, nil, wait_for_non_stale_results: true)
     patch_by_index_operation = RavenDB::PatchByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
 
     assert_raises(RavenDB::IndexDoesNotExistException) do
@@ -56,7 +56,7 @@ class QueryOperationsTest < RavenDatabaseTest
 
   def test_delete_by_index_success
     query = "from index 'Testing_Sort' where DocNumber between $min AND $max"
-    index_query = RavenDB::IndexQuery.new(query, {:min => 0, :max => 49}, nil, nil, :wait_for_non_stale_results => true)
+    index_query = RavenDB::IndexQuery.new(query, {min: 0, max: 49}, nil, nil, wait_for_non_stale_results: true)
     delete_by_index_operation = RavenDB::DeleteByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
 
     response = @_store.operations.send(delete_by_index_operation)
@@ -71,7 +71,7 @@ class QueryOperationsTest < RavenDatabaseTest
 
   def test_delete_by_index_fail_on_unexisting_index
     query = "from index 'unexisting_index_2' where Name = $name"
-    index_query = RavenDB::IndexQuery.new(query, {:name => "test1"}, nil, nil, :wait_for_non_stale_results => true)
+    index_query = RavenDB::IndexQuery.new(query, {name: "test1"}, nil, nil, wait_for_non_stale_results: true)
     delete_by_index_operation = RavenDB::DeleteByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
 
     assert_raises(RavenDB::IndexDoesNotExistException) do

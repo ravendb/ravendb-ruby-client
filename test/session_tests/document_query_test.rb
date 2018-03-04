@@ -32,7 +32,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_single_condition
     @_store.open_session do |session|
       results = session.query(
-        :collection => "Products"
+        collection: "Products"
       )
       .where_equals("name", "test101")
       .wait_for_non_stale_results
@@ -47,7 +47,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_equals("name", "test101")
         .where_equals("uid", 4)
@@ -64,7 +64,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .using_default_operator(RavenDB::QueryOperator::And)
         .where_equals("name", "test107")
@@ -84,7 +84,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_in("name", names)
         .wait_for_non_stale_results
@@ -102,7 +102,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_starts_with("name", "n")
         .wait_for_non_stale_results
@@ -117,7 +117,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_ends_with("name", "7")
         .wait_for_non_stale_results
@@ -132,7 +132,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_between("uid", 2, 4)
         .wait_for_non_stale_results
@@ -160,7 +160,7 @@ class DocumentQueryTest < RavenDatabaseTest
       assert_raises(RavenDB::IndexDoesNotExistException) do
         session
           .query(
-            :index_name => "s"
+            index_name: "s"
           )
           .wait_for_non_stale_results
           .all
@@ -174,8 +174,8 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :index_name => "Testing_Sort",
-          :document_type => Product
+          index_name: "Testing_Sort",
+          document_type: Product
         )
         .where_in("uid", uids)
         .wait_for_non_stale_results
@@ -219,7 +219,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       session
         .query(
-          :collection => "Orders"
+          collection: "Orders"
         )
         .where_equals("uid", 92)
         .include("product_id")
@@ -235,7 +235,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :collection => "Companies"
+          collection: "Companies"
         )
         .where_equals("name", "withNesting")
         .wait_for_non_stale_results
@@ -254,7 +254,7 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       total_count = session
         .query(
-          :collection => "Products"
+          collection: "Products"
         )
         .where_exists("uid")
         .wait_for_non_stale_results
@@ -270,7 +270,7 @@ class DocumentQueryTest < RavenDatabaseTest
       @_store.open_session do |session|
         products = session
           .query(
-            :collection => "Products"
+            collection: "Products"
           )
           .where_exists("uid")
           .order_by("uid")
@@ -289,8 +289,8 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :index_name => "Testing_Sort",
-          :document_type => Product
+          index_name: "Testing_Sort",
+          document_type: Product
         )
         .select_fields(["doc_id"])
         .where_between("uid", 2, 4, true)
@@ -305,8 +305,8 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :index_name => LastFmAnalyzed.name,
-          :document_type => LastFm
+          index_name: LastFmAnalyzed.name,
+          document_type: LastFm
         )
         .search("query", "Me")
         .wait_for_non_stale_results
@@ -321,8 +321,8 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :index_name => LastFmAnalyzed.name,
-          :document_type => LastFm
+          index_name: LastFmAnalyzed.name,
+          document_type: LastFm
         )
         .search("query", "Me Bobo")
         .wait_for_non_stale_results
@@ -340,8 +340,8 @@ class DocumentQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       results = session
         .query(
-          :index_name => LastFmAnalyzed.name,
-          :document_type => LastFm
+          index_name: LastFmAnalyzed.name,
+          document_type: LastFm
         )
         .search("query", "Me")
         .boost(10)

@@ -116,9 +116,9 @@ module RavenDB
 
       unless field_or_params.is_a?(Hash)
         return where_equals(
-          :parameter_name => parameter_name,
-          :field_name => field_name,
-          :exact => exact
+          parameter_name: parameter_name,
+          field_name: field_name,
+          exact: exact
         )
       end
 
@@ -141,9 +141,9 @@ module RavenDB
 
       unless field_or_params.is_a?(Hash)
         return where_not_equals(
-          :parameter_name => parameter_name,
-          :field_name => field_name,
-          :exact => exact
+          parameter_name: parameter_name,
+          field_name: field_name,
+          exact: exact
         )
       end
 
@@ -571,8 +571,8 @@ module RavenDB
     protected
     def ensure_valid_field_name(field_name, is_nested_path = false)
       result = {
-        :original_field_name => field_name,
-        :escaped_field_name => StringUtilities::escape_if_necessary(field_name)
+        original_field_name: field_name,
+        escaped_field_name: StringUtilities::escape_if_necessary(field_name)
       }
 
       if @is_group_by && !is_nested_path

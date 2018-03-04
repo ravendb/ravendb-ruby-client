@@ -102,9 +102,9 @@ module RavenDB
         @_document_id_resolvers.each do |resolver|
           begin
             found_id_property = resolver.call(
-              :document_type => document_type,
-              :document_class => document_class,
-              :document => document_instance
+              document_type: document_type,
+              document_class: document_class,
+              document: document_instance
             ) || nil
           rescue
             found_id_property = nil
@@ -147,11 +147,11 @@ module RavenDB
       set_id_on_document(document, metadata["@id"] || nil)
 
       {
-        :raw_entity => raw_entity,
-        :document => document,
-        :metadata => metadata,
-        :original_metadata => original_metadata,
-        :document_type => doc_type
+        raw_entity: raw_entity,
+        document: document,
+        metadata: metadata,
+        original_metadata: original_metadata,
+        document_type: doc_type
       }
     end
 

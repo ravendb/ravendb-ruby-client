@@ -60,19 +60,19 @@ module RavenDB
 
     def self.create(urls, database = nil, auth_options = nil)
       return self.new(database,
-        :without_topology => false,
-        :first_topology_update_urls => urls.clone,
-        :auth_options => auth_options)
+        without_topology: false,
+        first_topology_update_urls: urls.clone,
+        auth_options: auth_options)
     end
 
     def self.create_for_single_node(url, database = nil, auth_options = nil)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       return self.new(database,
-        :without_topology => true,
-        :single_node_topology => topology,
-        :topology_etag => -2,
-        :auth_options => auth_options)
+        without_topology: true,
+        single_node_topology: topology,
+        topology_etag: -2,
+        auth_options: auth_options)
     end
 
     def execute(command)
@@ -244,10 +244,10 @@ module RavenDB
 
         if @_node_selector
           event_data = {
-            :topology_json => response,
-            :server_node_url => server_node.url,
-            :requested_database => server_node.database,
-            :force_update => false
+            topology_json: response,
+            server_node_url: server_node.url,
+            requested_database: server_node.database,
+            force_update: false
           }
 
           emit(RavenServerEvent::TOPOLOGY_UPDATED, event_data)
