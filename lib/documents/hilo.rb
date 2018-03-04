@@ -36,7 +36,7 @@ module RavenDB
       @generators.each_value do |generator|
         begin
           generator.return_unused_range
-        rescue
+        rescue StandardError
           nil
         end
       end

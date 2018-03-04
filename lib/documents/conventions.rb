@@ -107,7 +107,7 @@ module RavenDB
               document_class: document_class,
               document: document_instance
             ) || nil
-          rescue
+          rescue StandardError
             found_id_property = nil
           end
 

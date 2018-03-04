@@ -29,7 +29,7 @@ module RavenDB
           else
             begin
               exception_ctor = Object.const_get("RavenDB::#{exception_type}")
-            rescue
+            rescue StandardError
               exception_ctor = RavenException
             end
         end

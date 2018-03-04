@@ -106,7 +106,7 @@ module RavenDB
 
       begin
         size = Integer(size || "")
-      rescue
+      rescue StandardError
         size = 0
       end
 

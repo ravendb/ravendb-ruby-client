@@ -14,7 +14,7 @@ module Net
           if json.is_a?(String) && !json.empty?
             parsed = JSON.parse(json)
           end
-        rescue
+        rescue StandardError
           if raise_when_invalid
             raise RavenDB::ErrorResponseException, "Not a valid JSON"
           end

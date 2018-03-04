@@ -224,7 +224,7 @@ module RavenDB
              break
            rescue AuthorizationException => exception
              @_first_topology_update_exception = exception
-           rescue
+           rescue StandardError
              next
            end
          end
@@ -325,7 +325,7 @@ module RavenDB
             @_failed_nodes_statuses.delete(server_node)
           end
         end
-      rescue
+      rescue StandardError
         is_still_failed = true
       end
 

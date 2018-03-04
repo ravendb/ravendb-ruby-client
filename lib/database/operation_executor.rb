@@ -60,7 +60,7 @@ module RavenDB
           }
         end
 
-      rescue => exception
+      rescue StandardError => exception
         return {
           status: OperationStatus::Faulted,
           exception: exception
@@ -99,7 +99,7 @@ module RavenDB
           command = operation.is_a?(Operation) ?
             operation.get_command(conventions, store) :
             operation.get_command(conventions)
-        rescue => exception
+        rescue StandardError => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}"
         end
       end

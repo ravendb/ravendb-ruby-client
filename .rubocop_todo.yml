@@ -566,20 +566,6 @@ Style/RegexpLiteral:
 
 # Offense count: 9
 # Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: implicit, explicit
-Style/RescueStandardError:
-  Exclude:
-    - 'lib/database/commands/attachments.rb'
-    - 'lib/database/exceptions.rb'
-    - 'lib/database/operation_executor.rb'
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/hilo.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/json.rb'
-
-# Offense count: 9
-# Cop supports --auto-correct.
 Style/SelfAssignment:
   Exclude:
     - 'lib/documents/document_session.rb'
