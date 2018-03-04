@@ -188,14 +188,6 @@ Layout/MultilineOperationIndentation:
     - 'lib/documents/query/query_builder.rb'
     - 'lib/utilities/json.rb'
 
-# Offense count: 8
-# Cop supports --auto-correct.
-Layout/SpaceAfterComma:
-  Exclude:
-    - 'lib/requests/request_helpers.rb'
-    - 'test/session_tests/document_query_test.rb'
-    - 'test/session_tests/document_serializing_test.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment.

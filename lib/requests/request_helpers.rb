@@ -53,7 +53,7 @@ module RavenDB
       end
 
       if json["Topology"] && json["Topology"]["AllNodes"]
-        json["Topology"]["AllNodes"].each do |tag,url|
+        json["Topology"]["AllNodes"].each do |tag, url|
           nodes.push("Url" => url, "ClusterTag" => tag)
         end
       elsif json["Nodes"]

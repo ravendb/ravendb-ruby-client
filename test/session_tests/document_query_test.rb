@@ -247,7 +247,7 @@ class DocumentQueryTest < RavenDatabaseTest
   end
 
   def test_should_paginate
-    expected_uids = [[2,3],[4,5],[6,90],[95]]
+    expected_uids = [[2, 3], [4, 5], [6, 90], [95]]
     page_size = 2
     total_pages = nil
 

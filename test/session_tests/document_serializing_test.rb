@@ -49,7 +49,7 @@ class DocumentSerializingTest < RavenTest
          "id" => "foo2",
          "name" => "Foo #2",
          "order" => 2
-      },{
+      }, {
         "@metadata" => {},
          "id" => "foo3",
          "name" => "Foo #3",
