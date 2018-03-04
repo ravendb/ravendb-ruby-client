@@ -192,12 +192,12 @@ module RavenDB
           "session. Document id: #{id}" if
           @deleted_documents.include?(document)
 
-        on_document_fetched({
+        on_document_fetched(
           :document => document,
           :metadata => document.instance_variable_get("@metadata"),
           :original_metadata => original_metadata,
           :raw_entity => conventions.convert_to_raw_entity(document)
-        })
+        )
       end
 
       document
@@ -427,12 +427,12 @@ module RavenDB
             metadata = TypeUtilities::omit_keys(command_result, ["Type"])
             info = @raw_entities_and_metadata[document]
 
-            info = info.merge({
+            info = info.merge(
               :change_vector => command_result["@change-vector"],
               :metadata => metadata,
               :original_value => conventions.convert_to_raw_entity(document).deep_dup,
               :original_metadata => metadata.deep_dup
-            })
+            )
 
             @documents_by_id[command_result["@id"]] = document
             @raw_entities_and_metadata[document] = info

@@ -47,10 +47,10 @@ module RavenDB
     end
 
     def to_json
-      json = super().merge({
+      json = super().merge(
         "Patch" => @scripted_patch.to_json,
         "DebugMode" => @debug_mode
-      })
+      )
 
       if !@patch_if_missing.nil?
         json["PatchIfMissing"] = @patch_if_missing.to_json

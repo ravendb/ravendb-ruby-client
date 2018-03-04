@@ -10,11 +10,11 @@ class DeleteCommandTest < RavenDatabaseTest
   def setup
     super()
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new("Products/101", {"Name" => "test", "@metadata" => {}}))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new("Products/101", "Name" => "test", "@metadata" => {}))
     response = @_request_executor.execute(RavenDB::GetDocumentCommand.new("Products/101"))
     @_change_vector = response["Results"].first["@metadata"]["@change-vector"]
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new("Products/102", {"Name" => "test", "@metadata" => {}}))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new("Products/102", "Name" => "test", "@metadata" => {}))
     response = @_request_executor.execute(RavenDB::GetDocumentCommand.new("Products/102"))
     @_other_change_vector = response["Results"].first["@metadata"]["@change-vector"]
   end

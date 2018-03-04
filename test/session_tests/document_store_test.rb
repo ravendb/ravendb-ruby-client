@@ -79,7 +79,7 @@ class DocumentStoreTest < RavenDatabaseTest
     expiration = DateTime.now.next_day.iso8601
 
     order = Order.new(nil, "New Order")
-    order.instance_variable_set("@metadata", {"@expires" => expiration})
+    order.instance_variable_set("@metadata", "@expires" => expiration)
 
     @_store.open_session do |session|
       order = session.store(order)

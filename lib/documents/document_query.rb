@@ -81,32 +81,32 @@ module RavenDB
     end
 
     def wait_for_non_stale_results
-      @index_query_options = @index_query_options.merge({
+      @index_query_options = @index_query_options.merge(
         :cut_off_etag => nil,
         :wait_for_non_stale_results => true,
         :wait_for_non_stale_results_timeout => IndexQuery::DefaultTimeout
-      })
+      )
 
       self
     end
 
     def wait_for_non_stale_results_as_of(cut_off_etag, wait_timeout = nil)
-      @index_query_options = @index_query_options.merge({
+      @index_query_options = @index_query_options.merge(
         :cut_off_etag => cut_off_etag,
         :wait_for_non_stale_results => true,
         :wait_for_non_stale_results_timeout => wait_timeout || IndexQuery::DefaultTimeout
-      })
+      )
 
       self
     end
 
     def wait_for_non_stale_results_as_of_now(wait_timeout = nil)
-      @index_query_options = @index_query_options.merge({
+      @index_query_options = @index_query_options.merge(
         :cut_off_etag => nil,
         :wait_for_non_stale_results => true,
         :wait_for_non_stale_results_as_of_now => true,
         :wait_for_non_stale_results_timeout => wait_timeout || IndexQuery::DefaultTimeout
-      })
+      )
 
       self
     end
@@ -349,11 +349,11 @@ module RavenDB
       field_name = where_params_or_field_name
 
       if field_name.is_a?(String)
-        return where_equals({
+        return where_equals(
           :field_name => field_name,
           :value => value,
           :exact => exact
-        })
+        )
       end
 
       transformed_value = transform_value(where_params)
@@ -367,11 +367,11 @@ module RavenDB
       field_name = where_params_or_field_name
 
       if field_name.is_a?(String)
-        return where_not_equals({
-            :field_name => field_name,
-            :value => value,
-            :exact => exact
-        })
+        return where_not_equals(
+          :field_name => field_name,
+          :value => value,
+          :exact => exact
+        )
       end
 
       transformed_value = transform_value(where_params)
@@ -406,22 +406,22 @@ module RavenDB
     end
 
     def where_starts_with(field_name, value)
-      transformed_value = transform_value({
+      transformed_value = transform_value(
         :field_name => field_name,
         :value => value,
         :allow_wildcards => true
-      })
+      )
 
       @builder.where_starts_with(field_name, add_query_parameter(transformed_value))
       self
     end
 
     def where_ends_with(field_name, value)
-      transformed_value = transform_value({
+      transformed_value = transform_value(
         :field_name => field_name,
         :value => value,
         :allow_wildcards => true
-      })
+      )
 
       @builder.where_ends_with(field_name, add_query_parameter(transformed_value))
       self
@@ -432,19 +432,19 @@ module RavenDB
       transformed_to = "NULL"
 
       unless from.nil?
-        transformed_from = transform_value({
+        transformed_from = transform_value(
           :field_name => field_name,
           :value => from,
           :exact => exact
-        })
+        )
       end
 
       unless to.nil?
-        transformed_to = transform_value({
+        transformed_to = transform_value(
           :field_name => field_name,
           :value => to,
           :exact => exact
-        })
+        )
       end
 
       @builder.where_between(
@@ -459,11 +459,11 @@ module RavenDB
       transformed_value = "*"
 
       unless value.nil?
-        transformed_value = transform_value({
+        transformed_value = transform_value(
           :field_name => field_name,
           :value => value,
           :exact => exact
-        })
+        )
       end
 
       @builder.where_greater_than(field_name, add_query_parameter(transformed_value), exact)
@@ -474,11 +474,11 @@ module RavenDB
       transformed_value = "*"
 
       unless value.nil?
-        transformed_value = transform_value({
+        transformed_value = transform_value(
           :field_name => field_name,
           :value => value,
           :exact => exact
-        })
+        )
       end
 
       @builder.where_greater_than_or_equal(field_name, add_query_parameter(transformed_value), exact)
@@ -489,11 +489,11 @@ module RavenDB
       transformed_value = "NULL"
 
       unless value.nil?
-        transformed_value = transform_value({
+        transformed_value = transform_value(
           :field_name => field_name,
           :value => value,
           :exact => exact
-        })
+        )
       end
 
       @builder.where_less_than(field_name, add_query_parameter(transformed_value), exact)
@@ -504,11 +504,11 @@ module RavenDB
       transformed_value = "NULL"
 
       unless value.nil?
-        transformed_value = transform_value({
+        transformed_value = transform_value(
           :field_name => field_name,
           :value => value,
           :exact => exact
-        })
+        )
       end
 
       @builder.where_less_than_or_equal(field_name, add_query_parameter(transformed_value), exact)

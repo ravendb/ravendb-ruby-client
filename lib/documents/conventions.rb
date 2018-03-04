@@ -101,11 +101,11 @@ module RavenDB
 
         @_document_id_resolvers.each do |resolver|
           begin
-            found_id_property = resolver.call({
+            found_id_property = resolver.call(
               :document_type => document_type,
               :document_class => document_class,
               :document => document_instance
-            }) || nil
+            ) || nil
           rescue
             found_id_property = nil
           end
@@ -281,10 +281,10 @@ module RavenDB
         metadata = document.instance_variable_get("@metadata")
       end
 
-      metadata = metadata.merge({
+      metadata = metadata.merge(
         "Raven-Ruby-Type" => get_type_from_document(document),
         "@collection" => get_collection_name(document.class)
-      })
+      )
 
       document.instance_variables.each do |instance_variable|
         value_for_check = document.instance_variable_get(instance_variable)

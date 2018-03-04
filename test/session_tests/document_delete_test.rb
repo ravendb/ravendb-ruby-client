@@ -73,7 +73,7 @@ class DocumentDeleteTest < RavenDatabaseTest
     @_store.open_session do |session|
       refute_raises do
         IDS.each_index do |index|
-          session.delete("Products/#{IDS[index]}", {:expected_change_vector => @change_vectors[index]})
+          session.delete("Products/#{IDS[index]}", :expected_change_vector => @change_vectors[index])
         end
 
         session.save_changes
@@ -85,7 +85,7 @@ class DocumentDeleteTest < RavenDatabaseTest
     @_store.open_session do |session|
       assert_raises do
         IDS.each_index do |index|
-          session.delete("Products/#{IDS[index]}", {:expected_change_vector => "#{@change_vectors[index]}:BROKEN:VECTOR"})
+          session.delete("Products/#{IDS[index]}", :expected_change_vector => "#{@change_vectors[index]}:BROKEN:VECTOR")
         end
 
         session.save_changes

@@ -115,11 +115,11 @@ module RavenDB
       params = field_or_params
 
       unless field_or_params.is_a?(Hash)
-        return where_equals({
+        return where_equals(
           :parameter_name => parameter_name,
           :field_name => field_name,
           :exact => exact
-        })
+        )
       end
 
       if @negate
@@ -140,11 +140,11 @@ module RavenDB
       params = field_or_params
 
       unless field_or_params.is_a?(Hash)
-        return where_not_equals({
+        return where_not_equals(
           :parameter_name => parameter_name,
           :field_name => field_name,
           :exact => exact
-        })
+        )
       end
 
       if @negate

@@ -448,13 +448,6 @@ Style/BlockDelimiters:
     - 'lib/utilities/type_utilities.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 108
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: braces, no_braces, context_dependent
-Style/BracesAroundHashParameters:
-  Enabled: false
-
 # Offense count: 1
 Style/CaseEquality:
   Exclude:

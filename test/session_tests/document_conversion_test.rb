@@ -39,9 +39,9 @@ class DocumentConversionTest < RavenDatabaseTest
 
   def test_should_convert_on_query
     @_store.open_session do |session|
-      results = session.query({
+      results = session.query(
         :collection => "TestConversions"
-      })
+      )
       .where_greater_than("date", NOW)
       .wait_for_non_stale_results
       .all
