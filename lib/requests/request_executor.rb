@@ -24,7 +24,7 @@ module RavenDB
 
       @headers = {
         "Accept" => "application/json",
-        "Raven-Client-Version" => "4.0.0-beta",
+        "Raven-Client-Version" => "4.0.0-beta"
       }
 
       @_disposed = false

@@ -19,7 +19,7 @@ module RavenDB
       super(server_node)
 
       @payload = {
-        "Query" => @query.to_json,
+        "Query" => @query.to_json
       }
     end
   end
