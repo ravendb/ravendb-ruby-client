@@ -11,3 +11,6 @@ Style/IfUnlessModifier:
 
 Layout/IndentHash:
   EnforcedStyle: consistent
+
+Style/Documentation:
+  Enabled: false

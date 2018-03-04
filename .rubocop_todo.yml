@@ -433,10 +433,6 @@ Style/DefWithParentheses:
     - 'lib/database/commands.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 118
-Style/Documentation:
-  Enabled: false
-
 # Offense count: 9
 Style/DoubleNegation:
   Exclude:
