@@ -27,7 +27,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @end_point = "/databases/#{server_node.database}/indexes"
-      @params = { "start" => @start, "page_size" => @page_size }
+      @params = {"start" => @start, "page_size" => @page_size}
     end
 
     def set_response(response)

@@ -20,3 +20,6 @@ Style/FrozenStringLiteralComment:
 
 Layout/MultilineMethodCallBraceLayout:
   Enabled: false
+
+Layout/SpaceInsideHashLiteralBraces:
+  EnforcedStyle: no_space
