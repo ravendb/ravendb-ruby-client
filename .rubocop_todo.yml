@@ -336,16 +336,6 @@ Style/DefWithParentheses:
     - 'lib/database/commands.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 9
-Style/DoubleNegation:
-  Exclude:
-    - 'lib/documents/document_query.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/json.rb'
-    - 'lib/utilities/string_utility.rb'
-    - 'lib/utilities/type_utilities.rb'
-    - 'test/session_tests/document_serializing_test.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

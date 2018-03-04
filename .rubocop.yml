@@ -23,3 +23,6 @@ Layout/MultilineMethodCallBraceLayout:
 
 Layout/SpaceInsideHashLiteralBraces:
   EnforcedStyle: no_space
+
+Style/DoubleNegation:
+  Enabled: false

@@ -366,7 +366,7 @@ module RavenDB
       message = nil
       ssl_exception = nil
 
-      if !!server_node.database
+      if server_node.database
         message = "database #{server_node.database} on "
       end
 
