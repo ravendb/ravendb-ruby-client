@@ -227,7 +227,7 @@ module RavenDB
         .append(")")
 
       if @projected_name.nil?
-          return
+        return
       end
 
       writer

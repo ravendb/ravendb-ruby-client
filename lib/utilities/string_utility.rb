@@ -34,7 +34,7 @@ module RavenDB
   class StringUtilities
     def self.escape_if_necessary(string)
       if string.nil? || string.empty?
-          return string
+        return string
       end
 
       escape = false

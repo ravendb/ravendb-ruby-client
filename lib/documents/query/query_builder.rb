@@ -293,7 +293,7 @@ module RavenDB
 
     def and_also
       if @where_tokens.last.nil?
-          return self
+        return self
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
@@ -307,7 +307,7 @@ module RavenDB
 
     def or_else
       if @where_tokens.last.nil?
-          return self
+        return self
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
@@ -575,9 +575,9 @@ module RavenDB
       }
 
       if @is_group_by && !is_nested_path
-          if !@id_property_name.nil? && (field_name == @id_property_name)
-            result[:escaped_field_name] = FieldConstants::DocumentIdFieldName
-          end
+        if !@id_property_name.nil? && (field_name == @id_property_name)
+          result[:escaped_field_name] = FieldConstants::DocumentIdFieldName
+        end
 
         emit(RavenServerEvent::EVENT_QUERY_FIELD_VALIDATED, result)
       end
@@ -589,7 +589,7 @@ module RavenDB
       assert_no_raw_query
 
       if tokens.empty?
-          return
+        return
       end
 
       last_token = tokens.last.value

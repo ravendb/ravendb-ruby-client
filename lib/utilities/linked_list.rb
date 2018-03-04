@@ -11,12 +11,12 @@ module RavenDB
     end
 
     def last
-       (index < 0) || (index >= (@list_items.size - 1))
+      (index < 0) || (index >= (@list_items.size - 1))
     end
 
     def previous
       if first
-         return nil
+        return nil
       end
 
       @list_items[index - 1]

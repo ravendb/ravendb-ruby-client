@@ -180,10 +180,11 @@ module RavenDB
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
-        @defer_commands.each do |command| if id == command.document_id
-                                          raise "Can't store document, there is a deferred command registered "\
-                                                "for this document in the session. Document id: #{id}"
-                                          end
+        @defer_commands.each do |command|
+          if id == command.document_id
+            raise "Can't store document, there is a deferred command registered "\
+                  "for this document in the session. Document id: #{id}"
+          end
         end
 
         if @deleted_documents.include?(document)
@@ -282,8 +283,8 @@ module RavenDB
 
       response_results.map.with_index do |result, index|
         unless result
-            @known_missing_ids.add(ids[index])
-            return nil
+          @known_missing_ids.add(ids[index])
+          return nil
         end
 
         make_document(result, nil, nested_object_types)

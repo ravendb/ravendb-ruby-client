@@ -61,7 +61,7 @@ module RavenDB
       end
 
       nodes.each do |node|
-         @nodes.push(ServerNode.from_json(node))
+        @nodes.push(ServerNode.from_json(node))
       end
     end
   end

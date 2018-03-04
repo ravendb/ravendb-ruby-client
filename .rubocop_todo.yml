@@ -121,18 +121,6 @@ Layout/IndentationConsistency:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: Width, IgnoredPatterns.
-Layout/IndentationWidth:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_helpers.rb'
-    - 'lib/utilities/linked_list.rb'
-    - 'lib/utilities/string_utility.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
