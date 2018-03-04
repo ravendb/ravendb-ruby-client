@@ -137,19 +137,6 @@ Layout/MultilineBlockLayout:
     - 'lib/documents/document_session.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 15
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: symmetrical, new_line, same_line
-Layout/MultilineMethodCallBraceLayout:
-  Exclude:
-    - 'lib/documents/query/query_builder.rb'
-    - 'test/raven_commands_tests/patch_command_test.rb'
-    - 'test/session_tests/document_attachments_test.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-    - 'test/session_tests/raw_query_test.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

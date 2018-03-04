@@ -17,3 +17,6 @@ Style/Documentation:
 
 Style/FrozenStringLiteralComment:
   EnforcedStyle: never
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: false
