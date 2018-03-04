@@ -47,8 +47,7 @@ module RavenDB
 
     def using_default_operator(operator)
       unless @where_tokens.empty?
-        raise RuntimeError,
-              "Default operator can only be set "\
+        raise "Default operator can only be set "\
               "before any where clause is added."
       end
 
@@ -59,8 +58,7 @@ module RavenDB
     def raw_query(query)
       unless [@group_by_tokens, @order_by_tokens,
         @select_tokens, @where_tokens].all? {|tokens| tokens.empty?}
-        raise RuntimeError,
-              "You can only use RawQuery on a new query, "\
+        raise "You can only use RawQuery on a new query, "\
               "without applying any operations (such as Where, Select, OrderBy, GroupBy, etc)"
       end
 
@@ -299,7 +297,7 @@ module RavenDB
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
-        raise RuntimeError, "Cannot add AND, previous token was already an operator token."
+        raise "Cannot add AND, previous token was already an operator token."
       end
 
       @where_tokens.add_last(QueryOperatorToken.and)
@@ -313,7 +311,7 @@ module RavenDB
       end
 
       if @where_tokens.last.value.is_a?(QueryOperatorToken)
-        raise RuntimeError, "Cannot add OR, previous token was already an operator token."
+        raise "Cannot add OR, previous token was already an operator token."
       end
 
       @where_tokens.add_last(QueryOperatorToken.or)
@@ -405,8 +403,7 @@ module RavenDB
       @last_token = @where_tokens.last
 
       unless (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
-        raise RuntimeError,
-              "Cannot add INTERSECT at this point."
+        raise "Cannot add INTERSECT at this point."
       end
 
       @is_intersect = true
@@ -417,7 +414,7 @@ module RavenDB
 
     def distinct
       if @is_distinct
-        raise RuntimeError, "This is already a distinct query."
+        raise "This is already a distinct query."
       end
 
       @is_distinct = true
@@ -428,8 +425,7 @@ module RavenDB
 
     def group_by(field_name, *field_names)
       unless @from_token.is_dynamic
-        raise RuntimeError,
-              "GroupBy only works with dynamic queries."
+        raise "GroupBy only works with dynamic queries."
       end
 
       assert_no_raw_query
@@ -555,8 +551,7 @@ module RavenDB
       end
 
       unless @current_clause_depth == 0
-        raise RuntimeError,
-              "A clause was not closed correctly within this query, current clause "\
+        raise "A clause was not closed correctly within this query, current clause "\
               "depth = #{@current_clause_depth}"
       end
 
@@ -650,8 +645,7 @@ module RavenDB
       end
 
       unless where_token.is_a?(WhereToken)
-        raise RuntimeError,
-              "Missing where clause"
+        raise "Missing where clause"
       end
 
       where_token
@@ -687,8 +681,7 @@ module RavenDB
 
     def assert_no_raw_query
       unless @query_raw.nil?
-        raise RuntimeError,
-              "RawQuery was called, cannot modify this query by calling on operations that "\
+        raise "RawQuery was called, cannot modify this query by calling on operations that "\
               "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)"
       end
     end

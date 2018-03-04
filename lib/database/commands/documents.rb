@@ -11,11 +11,11 @@ module RavenDB
       assert_node(server_node)
 
       unless @id
-        raise RuntimeError, "Nil Id is not valid"
+        raise "Nil Id is not valid"
       end
 
       unless @id.is_a?(String)
-        raise RuntimeError, "Id must be a string"
+        raise "Id must be a string"
       end
 
       if @change_vector
@@ -34,7 +34,7 @@ module RavenDB
     protected
     def check_response(response)
       unless response.is_a?(Net::HTTPNoContent)
-        raise RuntimeError, "Could not delete document #{@id}"
+        raise "Could not delete document #{@id}"
       end
     end
   end
@@ -52,7 +52,7 @@ module RavenDB
       assert_node(server_node)
 
       unless @id_or_ids
-        raise RuntimeError, "nil ID is not valid"
+        raise "nil ID is not valid"
       end
 
       ids = @id_or_ids.is_a?(Array) ? @id_or_ids : [@id_or_ids]
@@ -115,15 +115,15 @@ module RavenDB
       assert_node(server_node)
 
       if @id.nil?
-        raise RuntimeError, "Empty ID is invalid"
+        raise "Empty ID is invalid"
       end
 
       if @patch.nil?
-        raise RuntimeError, "Empty patch is invalid"
+        raise "Empty patch is invalid"
       end
 
       if @patch_if_missing && !@patch_if_missing.script
-        raise RuntimeError, "Empty script is invalid"
+        raise "Empty script is invalid"
       end
 
       @params = {"id" => @id}
@@ -151,7 +151,7 @@ module RavenDB
       result = super(response)
 
       if !response.is_a?(Net::HTTPOK) && !response.is_a?(Net::HTTPNotModified)
-        raise RuntimeError, "Could not patch document #{@id}"
+        raise "Could not patch document #{@id}"
       end
 
       if response.body
@@ -170,7 +170,7 @@ module RavenDB
 
     def create_request(server_node)
       unless @document
-        raise RuntimeError, "Document must be an object"
+        raise "Document must be an object"
       end
 
       @payload = @document

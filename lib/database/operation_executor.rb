@@ -105,7 +105,7 @@ module RavenDB
       end
 
       unless command
-        raise RuntimeError, error_message
+        raise error_message
       end
 
       result = executor.execute(command)
@@ -200,7 +200,7 @@ module RavenDB
 
   class ServerOperationExecutor < AbstractOperationExecutor
     def send(operation)
-      raise RuntimeError, "Invalid operation passed. It should be derived from ServerOperation" unless operation.is_a?(ServerOperation)
+      raise "Invalid operation passed. It should be derived from ServerOperation" unless operation.is_a?(ServerOperation)
 
       super(operation)
     end
@@ -239,7 +239,7 @@ module RavenDB
     end
 
     def send(operation)
-      raise RuntimeError, "Invalid operation passed. It should be derived from AdminOperation" unless operation.is_a?(AdminOperation)
+      raise "Invalid operation passed. It should be derived from AdminOperation" unless operation.is_a?(AdminOperation)
 
       super(operation)
     end

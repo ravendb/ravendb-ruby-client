@@ -154,11 +154,11 @@ module RavenDB
       end
 
       unless command.is_a?(RavenCommand)
-        raise RuntimeError, "Not a valid command"
+        raise "Not a valid command"
       end
 
       unless server_node.is_a?(ServerNode)
-        raise RuntimeError, "Not a valid server node"
+        raise "Not a valid server node"
       end
 
       response = nil

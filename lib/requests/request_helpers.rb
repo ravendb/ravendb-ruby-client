@@ -221,7 +221,7 @@ module RavenDB
 
     def assert_topology
       if !@topology || !@topology.nodes || @topology.nodes.empty?
-        raise RuntimeError, "Empty database topology, this shouldn't happen."
+        raise "Empty database topology, this shouldn't happen."
       end
     end
   end

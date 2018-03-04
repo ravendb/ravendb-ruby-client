@@ -40,11 +40,11 @@ module RavenDB
       mappings = {}
 
       unless TypeUtilities.is_document?(target)
-        raise RuntimeError, "Invalid target passed. Should be a user-defined class instance"
+        raise "Invalid target passed. Should be a user-defined class instance"
       end
 
       unless source.is_a?(Hash)
-        raise RuntimeError, "Invalid source passed. Should be a Hash object"
+        raise "Invalid source passed. Should be a Hash object"
       end
 
       if metadata.key?("@nested_object_types") &&
@@ -104,7 +104,7 @@ module RavenDB
       json = {}
 
       unless TypeUtilities.is_document?(source)
-        raise RuntimeError, "Invalid source passed. Should be a user-defined class instance"
+        raise "Invalid source passed. Should be a user-defined class instance"
       end
 
       current_metadata = {}

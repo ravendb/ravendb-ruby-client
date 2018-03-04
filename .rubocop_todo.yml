@@ -538,26 +538,6 @@ Style/RedundantBegin:
   Exclude:
     - 'lib/documents/hilo.rb'
 
-# Offense count: 63
-# Cop supports --auto-correct.
-Style/RedundantException:
-  Exclude:
-    - 'lib/database/commands.rb'
-    - 'lib/database/commands/batch.rb'
-    - 'lib/database/commands/documents.rb'
-    - 'lib/database/commands/indexes.rb'
-    - 'lib/database/commands/queries.rb'
-    - 'lib/database/operation_executor.rb'
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/requests/request_helpers.rb'
-    - 'lib/utilities/json.rb'
-    - 'lib/utilities/type_utilities.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 Style/RedundantParentheses:

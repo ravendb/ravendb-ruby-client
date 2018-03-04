@@ -161,7 +161,7 @@ module RavenDB
           "There's more than one result corresponding to given query criteria." :
           "There's no results corresponding to given query criteria."
 
-        raise RuntimeError, error_message
+        raise error_message
       end
 
       @take = take

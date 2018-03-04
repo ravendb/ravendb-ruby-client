@@ -116,8 +116,7 @@ module RavenDB
       expected_change_vector = nil
 
       unless (document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id))
-        raise RuntimeError,
-              "Invalid argument passed. Should be document model instance or document id string"
+        raise "Invalid argument passed. Should be document model instance or document id string"
       end
 
       if options.is_a?(Hash)
@@ -128,8 +127,7 @@ module RavenDB
         id = document_or_id
 
         if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
-          raise RuntimeError,
-                "Can't delete changed document using identifier. Pass document instance instead"
+          raise "Can't delete changed document using identifier. Pass document instance instead"
         end
       else
         document = document_or_id
@@ -141,16 +139,14 @@ module RavenDB
         @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
       else
         unless @raw_entities_and_metadata.key?(document)
-          raise RuntimeError,
-                "Document is not associated with the session, cannot delete unknown document instance"
+          raise "Document is not associated with the session, cannot delete unknown document instance"
         end
 
         id = info[:id]
         original_metadata = info[:original_metadata]
 
         if original_metadata.key?("Raven-Read-Only")
-          raise RuntimeError,
-                "Document is marked as read only and cannot be deleted"
+          raise "Document is marked as read only and cannot be deleted"
         end
 
         unless expected_change_vector.nil?
@@ -185,15 +181,13 @@ module RavenDB
         id = conventions.get_id_from_document(document)
 
         @defer_commands.each do |command| if id == command.document_id
-                                          raise RuntimeError,
-                                                "Can't store document, there is a deferred command registered "\
+                                          raise "Can't store document, there is a deferred command registered "\
                                                 "for this document in the session. Document id: #{id}"
                                           end
         end
 
         if @deleted_documents.include?(document)
-          raise RuntimeError,
-                "Can't store object, it was already deleted in this "\
+          raise "Can't store object, it was already deleted in this "\
                 "session. Document id: #{id}"
         end
 
@@ -239,7 +233,7 @@ module RavenDB
     protected
     def attach_query(query)
       if @attached_queries.key?(query)
-        raise RuntimeError, "Query is already attached to session"
+        raise "Query is already attached to session"
       end
 
       query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) do
@@ -263,8 +257,7 @@ module RavenDB
       @number_of_requests_in_session = @number_of_requests_in_session + 1
 
       unless @number_of_requests_in_session <= max_requests
-        raise RuntimeError,
-              "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
+        raise "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
   "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
   "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
   "You can increase the limit by setting RavenDB::DocumentConventions::"\
@@ -303,7 +296,7 @@ module RavenDB
 
     def check_document_and_metadata_before_store(document = nil)
       unless TypeUtilities.is_document?(document)
-        raise RuntimeError, "Invalid argument passed. Should be an document"
+        raise "Invalid argument passed. Should be an document"
       end
 
       unless @raw_entities_and_metadata.key?(document)

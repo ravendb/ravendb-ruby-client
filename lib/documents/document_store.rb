@@ -57,7 +57,7 @@ module RavenDB
         end
 
         unless @_database
-          raise RuntimeError, "Default database isn't set."
+          raise "Default database isn't set."
         end
 
         unless @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
@@ -197,7 +197,7 @@ module RavenDB
 
     def assert_configure
       unless @_initialized
-        raise RuntimeError, "You cannot open a session or access the database commands"\
+        raise "You cannot open a session or access the database commands"\
   " before initializing the document store. Did you forget calling configure ?"
       end
     end
