@@ -302,7 +302,7 @@ Metrics/BlockNesting:
 # Offense count: 14
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 618
+  Max: 624
 
 # Offense count: 37
 Metrics/CyclomaticComplexity:
@@ -506,19 +506,6 @@ Style/MethodCallWithoutArgsParentheses:
 Style/MethodDefParentheses:
   Exclude:
     - 'test/spec_helper.rb'
-
-# Offense count: 35
-# Cop supports --auto-correct.
-Style/MultilineIfModifier:
-  Exclude:
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/type_utilities.rb'
 
 # Offense count: 11
 Style/MultilineTernaryOperator:

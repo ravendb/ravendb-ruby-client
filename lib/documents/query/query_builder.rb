@@ -46,10 +46,11 @@ module RavenDB
     end
 
     def using_default_operator(operator)
-      raise RuntimeError,
-            "Default operator can only be set "\
-            "before any where clause is added." unless
-        @where_tokens.empty?
+      unless @where_tokens.empty?
+        raise RuntimeError,
+              "Default operator can only be set "\
+              "before any where clause is added."
+      end
 
       @default_operator = operator
       self
@@ -403,9 +404,10 @@ module RavenDB
     def intersect
       @last_token = @where_tokens.last
 
-      raise RuntimeError,
-            "Cannot add INTERSECT at this point." unless
-        (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
+      unless (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
+        raise RuntimeError,
+              "Cannot add INTERSECT at this point."
+      end
 
       @is_intersect = true
       @where_tokens.add_last(IntersectMarkerToken.instance)
@@ -425,9 +427,10 @@ module RavenDB
     end
 
     def group_by(field_name, *field_names)
-      raise RuntimeError,
-            "GroupBy only works with dynamic queries." unless
-        @from_token.is_dynamic
+      unless @from_token.is_dynamic
+        raise RuntimeError,
+              "GroupBy only works with dynamic queries."
+      end
 
       assert_no_raw_query
       @is_group_by = true
@@ -551,10 +554,11 @@ module RavenDB
         return @query_raw
       end
 
-      raise RuntimeError,
-            "A clause was not closed correctly within this query, current clause "\
-            "depth = #{@current_clause_depth}" unless
-        @current_clause_depth == 0
+      unless @current_clause_depth == 0
+        raise RuntimeError,
+              "A clause was not closed correctly within this query, current clause "\
+              "depth = #{@current_clause_depth}"
+      end
 
       query_text = StringBuilder.new
 
@@ -645,9 +649,10 @@ module RavenDB
         where_token = last_token.value
       end
 
-      raise RuntimeError,
-            "Missing where clause" unless
-        where_token.is_a?(WhereToken)
+      unless where_token.is_a?(WhereToken)
+        raise RuntimeError,
+              "Missing where clause"
+      end
 
       where_token
     end
@@ -681,10 +686,11 @@ module RavenDB
     end
 
     def assert_no_raw_query
-      raise RuntimeError,
-            "RawQuery was called, cannot modify this query by calling on operations that "\
-            "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)" unless
-        @query_raw.nil?
+      unless @query_raw.nil?
+        raise RuntimeError,
+              "RawQuery was called, cannot modify this query by calling on operations that "\
+              "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)"
+      end
     end
 
     def build_from(writer)

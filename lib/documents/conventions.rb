@@ -32,9 +32,10 @@ module RavenDB
     end
 
     def add_attribute_serializer(serializer)
-      raise ArgumentError,
-            "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer" unless
-        serializer.is_a?(AttributeSerializer)
+      unless serializer.is_a?(AttributeSerializer)
+        raise ArgumentError,
+              "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer"
+      end
 
       @serializers.push(serializer)
     end
@@ -56,17 +57,19 @@ module RavenDB
     end
 
     def get_document_type(document_class)
-      raise RuntimeError,
-            "Invalid argument passed. Should be an document class constructor" unless
-        document_class.is_a?(Class)
+      unless document_class.is_a?(Class)
+        raise RuntimeError,
+              "Invalid argument passed. Should be an document class constructor"
+      end
 
       document_class.name.to_s
     end
 
     def get_document_constructor(document_type)
-      raise RuntimeError,
-            "Invalid argument passed. Should be an string" unless
-        document_type.is_a?(String)
+      unless document_type.is_a?(String)
+        raise RuntimeError,
+              "Invalid argument passed. Should be an string"
+      end
 
       Object.const_get(document_type)
     end
@@ -90,9 +93,10 @@ module RavenDB
         document_type = document_class.name
       end
 
-      raise RuntimeError,
-            "Invalid argument passed. Should be an document, class constructor or document type name" if
-        document_type.nil?
+      if document_type.nil?
+        raise RuntimeError,
+              "Invalid argument passed. Should be an document, class constructor or document type name"
+      end
 
       if @_id_properties_names_cache.key?(document_type)
         id_property = @_id_properties_names_cache[document_type]
@@ -123,9 +127,10 @@ module RavenDB
     end
 
     def convert_to_document(raw_entity, document_type = nil, nested_object_types = {})
-      raise RuntimeError,
-            "Invalid raw_entity passed. Should be an hash" unless
-          raw_entity.is_a?(Hash)
+      unless raw_entity.is_a?(Hash)
+        raise RuntimeError,
+              "Invalid raw_entity passed. Should be an hash"
+      end
 
       metadata = raw_entity.fetch("@metadata", {})
       doc_type = document_type || metadata["Raven-Ruby-Type"]
@@ -167,9 +172,10 @@ module RavenDB
     end
 
     def try_fetch_results(command_response)
-      raise RuntimeError,
-            "Invalid command_response passed. Should be an hash" unless
-        command_response.is_a?(Hash)
+      unless command_response.is_a?(Hash)
+        raise RuntimeError,
+              "Invalid command_response passed. Should be an hash"
+      end
 
       response_results = []
 
@@ -181,9 +187,10 @@ module RavenDB
     end
 
     def try_fetch_includes(command_response)
-      raise RuntimeError,
-            "Invalid command_response passed. Should be an hash" unless
-        command_response.is_a?(Hash)
+      unless command_response.is_a?(Hash)
+        raise RuntimeError,
+              "Invalid command_response passed. Should be an hash"
+      end
 
       response_includes = []
 
@@ -199,9 +206,10 @@ module RavenDB
     end
 
     def check_is_projection?(response_item)
-      raise RuntimeError,
-            "Invalid command_response passed. Should be an hash" unless
-          response_item.is_a?(Hash)
+      unless response_item.is_a?(Hash)
+        raise RuntimeError,
+              "Invalid command_response passed. Should be an hash"
+      end
 
       if response_item.key?("@metadata")
         metadata = response_item["@metadata"]
@@ -248,9 +256,10 @@ module RavenDB
     end
 
     def get_type_from_document(document)
-      raise RuntimeError,
-            "Invalid argument passed. Should be an document" unless
-        TypeUtilities.is_document?(document)
+      unless TypeUtilities.is_document?(document)
+        raise RuntimeError,
+              "Invalid argument passed. Should be an document"
+      end
 
       metadata = {}
 
@@ -273,9 +282,10 @@ module RavenDB
       metadata = {}
       nested_types = {}
 
-      raise RuntimeError,
-            "Invalid argument passed. Should be an document" unless
-        TypeUtilities.is_document?(document)
+      unless TypeUtilities.is_document?(document)
+        raise RuntimeError,
+              "Invalid argument passed. Should be an document"
+      end
 
       if document.instance_variable_defined?("@metadata")
         metadata = document.instance_variable_get("@metadata")

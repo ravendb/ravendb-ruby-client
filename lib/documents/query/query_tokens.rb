@@ -68,14 +68,16 @@ module RavenDB
     def initialize(fields_to_fetch, projections = [])
       super()
 
-      raise ArgumentError,
-            "Fields list can't be empty" if
-        fields_to_fetch.empty?
+      if fields_to_fetch.empty?
+        raise ArgumentError,
+              "Fields list can't be empty"
+      end
 
-      raise ArgumentError,
-            "Length of projections must be the "\
-            "same as length of fields to fetch." if
-        (projections.empty? && projections.size != fields_to_fetch.size)
+      if (projections.empty? && projections.size != fields_to_fetch.size)
+        raise ArgumentError,
+              "Length of projections must be the "\
+              "same as length of fields to fetch."
+      end
 
       @fields_to_fetch = fields_to_fetch
       @projections = projections
@@ -122,9 +124,10 @@ module RavenDB
     end
 
     def write_to(writer)
-      raise NotSupportedException,
-            "Either IndexName or CollectionName must be specified" if
-        (@collection_name.nil? && @index_name.nil?)
+      if (@collection_name.nil? && @index_name.nil?)
+        raise NotSupportedException,
+              "Either IndexName or CollectionName must be specified"
+      end
 
       if @is_dynamic
         writer
@@ -132,9 +135,10 @@ module RavenDB
           .append(" ")
 
         if WhiteSpaceChars.any? {|char| @collection_name.include?(char)}
-          raise NotSupportedException,
-                "Collection name cannot contain a quote, but was: #{@collection_name}" if
-            @collection_name.include?('"')
+          if @collection_name.include?('"')
+            raise NotSupportedException,
+                  "Collection name cannot contain a quote, but was: #{@collection_name}"
+          end
 
           writer.append('"').append(@collection_name).append('"')
         else
@@ -210,9 +214,10 @@ module RavenDB
     def initialize(field_name = nil, projected_name = nil)
       super(field_name, projected_name)
 
-      raise ArgumentError,
-            "Field name can't be null" if
-        field_name.nil?
+      if field_name.nil?
+        raise ArgumentError,
+              "Field name can't be null"
+      end
     end
 
     def write_to(writer)
@@ -237,9 +242,10 @@ module RavenDB
     def initialize(field_name = nil)
       super(field_name)
 
-      raise ArgumentError,
-            "Field name can't be null" if
-        field_name.nil?
+      if field_name.nil?
+        raise ArgumentError,
+              "Field name can't be null"
+      end
     end
 
     def write_to(writer)
@@ -298,9 +304,10 @@ module RavenDB
     end
 
     def self.create_random(seed)
-      raise ArgumentError,
-            "Seed can't be null" if
-        seed.nil?
+      if seed.nil?
+        raise ArgumentError,
+              "Seed can't be null"
+      end
 
       self.new("random('#{seed.gsub("'", "''")}')")
     end

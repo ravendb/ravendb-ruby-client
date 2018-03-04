@@ -115,9 +115,10 @@ module RavenDB
       document = nil
       expected_change_vector = nil
 
-      raise RuntimeError,
-            "Invalid argument passed. Should be document model instance or document id string" unless
-        (document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id))
+      unless (document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id))
+        raise RuntimeError,
+              "Invalid argument passed. Should be document model instance or document id string"
+      end
 
       if options.is_a?(Hash)
         expected_change_vector = options[:expected_change_vector] || nil
@@ -139,16 +140,18 @@ module RavenDB
       if document.nil?
         @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
       else
-        raise RuntimeError,
-              "Document is not associated with the session, cannot delete unknown document instance" unless
-          @raw_entities_and_metadata.key?(document)
+        unless @raw_entities_and_metadata.key?(document)
+          raise RuntimeError,
+                "Document is not associated with the session, cannot delete unknown document instance"
+        end
 
         id = info[:id]
         original_metadata = info[:original_metadata]
 
-        raise RuntimeError,
-              "Document is marked as read only and cannot be deleted" if
-          original_metadata.key?("Raven-Read-Only")
+        if original_metadata.key?("Raven-Read-Only")
+          raise RuntimeError,
+                "Document is marked as read only and cannot be deleted"
+        end
 
         unless expected_change_vector.nil?
           info[:expected_change_vector] = expected_change_vector
@@ -181,16 +184,18 @@ module RavenDB
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
-        @defer_commands.each {|command| raise RuntimeError,
-                                              "Can't store document, there is a deferred command registered "\
-                                              "for this document in the session. Document id: #{id}" if
-          id == command.document_id
+        @defer_commands.each {|command| if id == command.document_id
+                                          raise RuntimeError,
+                                                "Can't store document, there is a deferred command registered "\
+                                                "for this document in the session. Document id: #{id}"
+                                        end
         }
 
-        raise RuntimeError,
-              "Can't store object, it was already deleted in this "\
-              "session. Document id: #{id}" if
-          @deleted_documents.include?(document)
+        if @deleted_documents.include?(document)
+          raise RuntimeError,
+                "Can't store object, it was already deleted in this "\
+                "session. Document id: #{id}"
+        end
 
         on_document_fetched(
           document: document,
@@ -257,15 +262,17 @@ module RavenDB
 
       @number_of_requests_in_session = @number_of_requests_in_session + 1
 
-      raise RuntimeError,
-            "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
+      unless @number_of_requests_in_session <= max_requests
+        raise RuntimeError,
+              "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
   "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
   "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
   "You can increase the limit by setting RavenDB::DocumentConventions::"\
   "MaxNumberOfRequestPerSession, but it is advisable "\
   "that you'll look into reducing the number of remote calls first, "\
   "since that will speed up your application significantly and result in a"\
-  "more responsive application." unless @number_of_requests_in_session <= max_requests
+  "more responsive application."
+      end
     end
 
     def fetch_documents(ids, includes = nil, nested_object_types = {})

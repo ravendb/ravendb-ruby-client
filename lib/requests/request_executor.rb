@@ -46,9 +46,10 @@ module RavenDB
       if options.key?(:auth_options)
         @_auth_options = options[:auth_options]
 
-        raise ArgumentError,
-              "Invalid auth options provided" unless
-          @_auth_options.nil? || @_auth_options.is_a?(RequestAuthOptions)
+        unless @_auth_options.nil? || @_auth_options.is_a?(RequestAuthOptions)
+          raise ArgumentError,
+                "Invalid auth options provided"
+        end
       end
 
       if !@_without_topology && !urls.empty?
@@ -346,9 +347,10 @@ module RavenDB
         client = Net::HTTP.new(uri.host, uri.port)
 
         if uri.is_a?(URI::HTTPS)
-          raise NotSupportedException,
-                "Access to secured servers requires RequestAuthOptions to be set" unless
-            @_auth_options.is_a?(RequestAuthOptions)
+          unless @_auth_options.is_a?(RequestAuthOptions)
+            raise NotSupportedException,
+                  "Access to secured servers requires RequestAuthOptions to be set"
+          end
 
           client.use_ssl = true
           client.key = @_auth_options.get_rsa_key

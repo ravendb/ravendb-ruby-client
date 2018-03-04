@@ -721,12 +721,13 @@ module RavenDB
         return TypeUtilities.stringify_date(value)
       end
 
-      raise ArgumentError,
-            "Invalid value passed to query condition. "\
-            "Only integer / number / string / dates / bools and nil values are supported" unless
-        ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
+      unless ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
           value.is_a?(Date) || value.is_a?(DateTime)
-        )
+             )
+        raise ArgumentError,
+              "Invalid value passed to query condition. "\
+              "Only integer / number / string / dates / bools and nil values are supported"
+      end
 
       value
     end

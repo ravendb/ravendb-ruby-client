@@ -43,13 +43,15 @@ module RavenDB
     end
 
     def self.omit_keys(hash, keys = [])
-      raise RuntimeError,
-            "Invalid hash argument passed. Should be an Hash" unless
-        hash.is_a?(Hash)
+      unless hash.is_a?(Hash)
+        raise RuntimeError,
+              "Invalid hash argument passed. Should be an Hash"
+      end
 
-      raise RuntimeError,
-            "Invalid keys argument passed. Should be an Array" unless
-        keys.is_a?(Array)
+      unless keys.is_a?(Array)
+        raise RuntimeError,
+              "Invalid keys argument passed. Should be an Array"
+      end
 
       copy = hash.deep_dup
       copy.delete_if {|key| keys.include?(key)}
