@@ -11,7 +11,7 @@ module RavenDB
     RequestTimeout = 30
     DefaultUseOptimisticConcurrency = true
     MaxLengthOfQueryUsingGetUrl = 1024 + 512
-    IdentityPartsSeparator = "/"
+    IdentityPartsSeparator = "/".freeze
 
     attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
 

@@ -4,14 +4,14 @@ require "database/exceptions"
 
 module RavenDB
   class TypeUtilities
-    DATE_PARSE_FORMAT = "%Y-%m-%dT%H:%M:%S.%N"
-    DATE_STRINGIFY_FORMAT = "%Y-%m-%dT%H:%M:%S.%6N0"
+    DATE_PARSE_FORMAT = "%Y-%m-%dT%H:%M:%S.%N".freeze
+    DATE_STRINGIFY_FORMAT = "%Y-%m-%dT%H:%M:%S.%6N0".freeze
 
     BASIC_TYPES = [
         String, Integer, Numeric, Float,
         Numeric, NilClass, Hash, Symbol,
         Array, Range, Date, DateTime
-    ]
+    ].freeze
 
     def self.is_document?(object)
       object.is_a?(Object) && (!!object != object)

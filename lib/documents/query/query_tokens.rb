@@ -13,7 +13,7 @@ module RavenDB
       QueryKeyword::Group,
       QueryKeyword::Order,
       QueryKeyword::Include
-    ]
+    ].freeze
 
     def write_to(writer)
       raise NotImplementedError, "You should implement write_to method"
@@ -107,7 +107,7 @@ module RavenDB
 
     WhiteSpaceChars = [
       " ", "\t", "\r", "\n", "\v"
-    ]
+    ].freeze
 
     def self.create(index_name = nil, collection_name = nil)
       self.new(index_name, collection_name)

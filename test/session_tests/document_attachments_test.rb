@@ -2,7 +2,7 @@ require "ravendb"
 require "spec_helper"
 
 class DocumentAttachmentsTest < RavenDatabaseTest
-  ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b"
+  ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b".freeze
 
   def test_should_put_attachment
     @_store.open_session do |session|

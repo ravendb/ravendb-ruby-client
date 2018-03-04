@@ -4,7 +4,7 @@ require "minitest/autorun"
 require "spec_helper"
 
 class PatchCommandTest < RavenDatabaseIndexesTest
-  ID = "Products/10"
+  ID = "Products/10".freeze
   @_change_vector = nil
 
   def setup

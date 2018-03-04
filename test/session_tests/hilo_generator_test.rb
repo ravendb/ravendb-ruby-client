@@ -2,7 +2,7 @@ require "ravendb"
 require "spec_helper"
 
 class HiloGeneratorTest < RavenDatabaseTest
-  COLLECTION = "Products"
+  COLLECTION = "Products".freeze
 
   def setup
     super
