@@ -99,7 +99,7 @@ module RavenDB
       prefix = @prefix || ""
       document_id = "#{prefix}#{current_range_value}"
 
-      if !@server_tag.nil? && !(@server_tag == "")
+      if !@server_tag.nil? && @server_tag != ""
         document_id = "#{document_id}-#{@server_tag}"
       end
 

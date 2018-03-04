@@ -357,13 +357,6 @@ Style/EmptyMethod:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: InverseMethods, InverseBlocks.
-Style/InverseMethods:
-  Exclude:
-    - 'lib/documents/hilo.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/MethodCallWithoutArgsParentheses:
