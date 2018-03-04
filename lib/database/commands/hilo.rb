@@ -11,11 +11,11 @@ module RavenDB
 
     def create_request(server_node)
       @params = {
-          "tag" => @tag,
-          "lastMax" => @last_range_max,
-          "lastBatchSize" => @last_batch_size,
-          "lastRangeAt" => TypeUtilities::stringify_date(@last_range_at),
-          "identityPartsSeparator" => @identity_parts_separator
+        "tag" => @tag,
+        "lastMax" => @last_range_max,
+        "lastBatchSize" => @last_batch_size,
+        "lastRangeAt" => TypeUtilities::stringify_date(@last_range_at),
+        "identityPartsSeparator" => @identity_parts_separator
       }
 
       @end_point = "/databases/#{server_node.database}/hilo/next"

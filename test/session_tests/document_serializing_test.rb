@@ -32,11 +32,11 @@ class DocumentSerializingTest < RavenTest
       ],
       "deep_array_hash_prop" => [
         1, 2, {
-        "some_prop" => "someValue",
+          "some_prop" => "someValue",
         "some_array" => [3, 4]
-      }, [5, 6], [7, 8, {
-        "some_prop" => "someValue",
-      }]],
+        }, [5, 6], [7, 8, {
+          "some_prop" => "someValue",
+        }]],
       "date_prop" => "2017-06-04T18:39:05.1230000",
       "deep_foo_prop" => {
         "@metadata" => {},
@@ -45,7 +45,7 @@ class DocumentSerializingTest < RavenTest
         "order" => 1
       },
       "deep_array_foo_prop" => [{
-         "@metadata" => {},
+        "@metadata" => {},
          "id" => "foo2",
          "name" => "Foo #2",
          "order" => 2

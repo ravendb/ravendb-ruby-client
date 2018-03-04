@@ -43,8 +43,8 @@ module RavenDB
 
     def to_json
       json = {
-          "Query" => @query,
-          "QueryParameters" => @query_parameters,
+        "Query" => @query,
+        "QueryParameters" => @query_parameters,
       }
 
       if !@start.nil?

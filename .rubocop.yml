@@ -8,3 +8,6 @@ Style/StringLiterals:
 
 Style/IfUnlessModifier:
   Enabled: false
+
+Layout/IndentHash:
+  EnforcedStyle: consistent
