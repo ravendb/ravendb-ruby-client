@@ -557,11 +557,6 @@ Style/FrozenStringLiteralComment:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 251
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Enabled: false
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: InverseMethods, InverseBlocks.
