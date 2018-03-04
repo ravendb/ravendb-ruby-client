@@ -15,9 +15,9 @@ module RavenDB
 
     def self.is_document?(object)
       object.is_a?(Object) && (!!object != object)
-          BASIC_TYPES.all? {|basic_type|
+          BASIC_TYPES.all? do |basic_type|
             !object.is_a?(basic_type)
-          }
+          end
     end
 
     def self.stringify_date(datetime)

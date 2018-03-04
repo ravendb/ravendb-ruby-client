@@ -140,17 +140,17 @@ module RavenDB
       @topology = topology
       @_lock = Mutex.new
 
-      request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) do |data|
         on_topology_updated(data)
-      }
+      end
 
-      request_executor.on(RavenServerEvent::REQUEST_FAILED) { |data|
+      request_executor.on(RavenServerEvent::REQUEST_FAILED) do |data|
         on_request_failed(data)
-      }
+      end
 
-      request_executor.on(RavenServerEvent::NODE_STATUS_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::NODE_STATUS_UPDATED) do |data|
         on_node_restored(data)
-      }
+      end
     end
 
     def nodes

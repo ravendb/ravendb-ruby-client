@@ -381,21 +381,6 @@ Performance/StringReplacement:
     - 'lib/documents/conventions.rb'
     - 'lib/utilities/json.rb'
 
-# Offense count: 15
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods.
-# SupportedStyles: line_count_based, semantic, braces_for_chaining
-# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
-# FunctionalMethods: let, let!, subject, watch
-# IgnoredMethods: lambda, proc, it
-Style/BlockDelimiters:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/requests/request_helpers.rb'
-    - 'lib/utilities/json.rb'
-    - 'lib/utilities/type_utilities.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 1
 Style/CaseEquality:
   Exclude:

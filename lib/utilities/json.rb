@@ -167,7 +167,7 @@ module RavenDB
         if json_value.is_a?(Array)
           documents = []
 
-          if json_value.all? {|json_value_item|
+          if json_value.all? do |json_value_item|
                document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
                was_converted = !document.nil?
 
@@ -176,7 +176,7 @@ module RavenDB
                end
 
                was_converted
-             }
+             end
             return documents
           end
         end

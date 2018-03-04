@@ -29,9 +29,9 @@ module RavenDB
       @attached_queries = {}
       @number_of_requests_in_session = 0
 
-      on(RavenServerEvent::EVENT_QUERY_INITIALIZED) {|query|
+      on(RavenServerEvent::EVENT_QUERY_INITIALIZED) do |query|
         attach_query(query)
-      }
+      end
     end
 
     def conventions
@@ -41,9 +41,9 @@ module RavenDB
     def advanced
       if !@advanced
         @advanced = AdvancedSessionOperations.new(self, @request_executor)
-        @advanced.on(RavenServerEvent::EVENT_QUERY_INITIALIZED) {|query|
+        @advanced.on(RavenServerEvent::EVENT_QUERY_INITIALIZED) do |query|
           attach_query(query)
-        }
+        end
       end
 
       @advanced
@@ -98,9 +98,9 @@ module RavenDB
         fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
       end
 
-      results = ids.map {|id| (!@known_missing_ids.include?(id) &&
+      results = ids.map do |id| (!@known_missing_ids.include?(id) &&
           @documents_by_id.key?(id)) ? @documents_by_id[id] : nil
-      }
+      end
 
       if loading_one_doc
         return results.first
@@ -184,12 +184,12 @@ module RavenDB
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
-        @defer_commands.each {|command| if id == command.document_id
+        @defer_commands.each do |command| if id == command.document_id
                                           raise RuntimeError,
                                                 "Can't store document, there is a deferred command registered "\
                                                 "for this document in the session. Document id: #{id}"
-                                        end
-        }
+                                          end
+        end
 
         if @deleted_documents.include?(document)
           raise RuntimeError,
@@ -242,17 +242,17 @@ module RavenDB
         raise RuntimeError, "Query is already attached to session"
       end
 
-      query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) {
+      query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) do
         increment_requests_count
-      }
+      end
 
-      query.on(RavenServerEvent::EVENT_DOCUMENT_FETCHED) {|conversion_result|
+      query.on(RavenServerEvent::EVENT_DOCUMENT_FETCHED) do |conversion_result|
         on_document_fetched(conversion_result)
-      }
+      end
 
-      query.on(RavenServerEvent::EVENT_INCLUDES_FETCHED) {|includes|
+      query.on(RavenServerEvent::EVENT_INCLUDES_FETCHED) do |includes|
         on_includes_fetched(includes)
-      }
+      end
 
       @attached_queries[query] = true
     end
