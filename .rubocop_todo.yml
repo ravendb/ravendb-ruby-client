@@ -451,13 +451,6 @@ Style/For:
     - 'lib/requests/request_executor.rb'
     - 'test/raven_commands_tests/query_operations_test.rb'
 
-# Offense count: 60
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: when_needed, always, never
-Style/FrozenStringLiteralComment:
-  Enabled: false
-
 # Offense count: 41
 # Configuration parameters: MinBodyLength.
 Style/GuardClause:
