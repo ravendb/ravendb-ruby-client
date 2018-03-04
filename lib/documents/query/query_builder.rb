@@ -722,11 +722,11 @@ module RavenDB
       end
 
       writer
-          .append(" ")
-          .append(QueryKeyword::Group)
-          .append(" ")
-          .append(QueryKeyword::By)
-          .append(" ")
+        .append(" ")
+        .append(QueryKeyword::Group)
+        .append(" ")
+        .append(QueryKeyword::By)
+        .append(" ")
 
       tokens.each do |item|
         unless item.first

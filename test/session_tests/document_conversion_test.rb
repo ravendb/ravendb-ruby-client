@@ -42,9 +42,9 @@ class DocumentConversionTest < RavenDatabaseTest
       results = session.query(
         collection: "TestConversions"
       )
-      .where_greater_than("date", NOW)
-      .wait_for_non_stale_results
-      .all
+                       .where_greater_than("date", NOW)
+                       .wait_for_non_stale_results
+                       .all
 
       assert_equal(results.size, 1)
       check_doc("TestConversions/2", results.first)

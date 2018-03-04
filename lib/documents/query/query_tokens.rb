@@ -217,19 +217,19 @@ module RavenDB
 
     def write_to(writer)
       writer
-          .append("sum(")
-          .append(@field_name)
-          .append(")")
+        .append("sum(")
+        .append(@field_name)
+        .append(")")
 
       if @projected_name.nil?
           return
       end
 
       writer
-          .append(" ")
-          .append(QueryKeyword::As)
-          .append(" ")
-          .append(@projected_name)
+        .append(" ")
+        .append(QueryKeyword::As)
+        .append(" ")
+        .append(@projected_name)
     end
   end
 

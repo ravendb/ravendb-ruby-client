@@ -34,9 +34,9 @@ class DocumentQueryTest < RavenDatabaseTest
       results = session.query(
         collection: "Products"
       )
-      .where_equals("name", "test101")
-      .wait_for_non_stale_results
-      .all
+                       .where_equals("name", "test101")
+                       .wait_for_non_stale_results
+                       .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, "test101")
@@ -46,13 +46,13 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_few_conditions_joined_by_or
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .where_equals("name", "test101")
-        .where_equals("uid", 4)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .where_equals("name", "test101")
+                .where_equals("uid", 4)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 2)
       assert(results.first.name.include?("test101") || results.last.name.include?("test101"))
@@ -63,14 +63,14 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_few_conditions_joined_by_and
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .using_default_operator(RavenDB::QueryOperator::And)
-        .where_equals("name", "test107")
-        .where_equals("uid", 5)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .using_default_operator(RavenDB::QueryOperator::And)
+                .where_equals("name", "test107")
+                .where_equals("uid", 5)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, "test107")
@@ -83,12 +83,12 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .where_in("name", names)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .where_in("name", names)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 4)
 
@@ -101,12 +101,12 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_starts_with
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .where_starts_with("name", "n")
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .where_starts_with("name", "n")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, "new_testing")
@@ -116,12 +116,12 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_ends_with
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .where_ends_with("name", "7")
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .where_ends_with("name", "7")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 2)
       assert(results.all? {|result| result.name = "test107"})
@@ -131,12 +131,12 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_between
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Products"
-        )
-        .where_between("uid", 2, 4)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Products"
+                )
+                .where_between("uid", 2, 4)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 3)
       assert(results.all? {|result| (2..4).to_a.include?(result.uid) })
@@ -146,10 +146,10 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_exists
     @_store.open_session do |session|
       results = session
-        .query
-        .where_exists("ordering")
-        .wait_for_non_stale_results
-        .all
+                .query
+                .where_exists("ordering")
+                .wait_for_non_stale_results
+                .all
 
       assert(results.all? {|result| result.instance_variable_defined?("@ordering") })
     end
@@ -173,13 +173,13 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       results = session
-        .query(
-          index_name: "Testing_Sort",
-          document_type: Product
-        )
-        .where_in("uid", uids)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  index_name: "Testing_Sort",
+                  document_type: Product
+                )
+                .where_in("uid", uids)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 3)
 
@@ -192,11 +192,11 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_with_ordering
     @_store.open_session do |session|
       results = session
-        .query
-        .where_exists("ordering")
-        .order_by("ordering")
-        .wait_for_non_stale_results
-        .all
+                .query
+                .where_exists("ordering")
+                .order_by("ordering")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.first.ordering, "a")
     end
@@ -205,11 +205,11 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_with_descending_ordering
     @_store.open_session do |session|
       results = session
-        .query
-        .where_exists("ordering")
-        .order_by_descending("ordering")
-        .wait_for_non_stale_results
-        .all
+                .query
+                .where_exists("ordering")
+                .order_by_descending("ordering")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.first.ordering, "d")
     end
@@ -234,12 +234,12 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_with_nested_objects
     @_store.open_session do |session|
       results = session
-        .query(
-          collection: "Companies"
-        )
-        .where_equals("name", "withNesting")
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  collection: "Companies"
+                )
+                .where_equals("name", "withNesting")
+                .wait_for_non_stale_results
+                .all
 
       assert(results.first.is_a?(Company))
       assert(results.first.product.is_a?(Product))
@@ -253,12 +253,12 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       total_count = session
-        .query(
-          collection: "Products"
-        )
-        .where_exists("uid")
-        .wait_for_non_stale_results
-        .count
+                    .query(
+                      collection: "Products"
+                    )
+                    .where_exists("uid")
+                    .wait_for_non_stale_results
+                    .count
 
       total_pages = (total_count.to_f / page_size).ceil
 
@@ -269,15 +269,15 @@ class DocumentQueryTest < RavenDatabaseTest
     (1..total_pages).to_a do |page|
       @_store.open_session do |session|
         products = session
-          .query(
-            collection: "Products"
-          )
-          .where_exists("uid")
-          .order_by("uid")
-          .wait_for_non_stale_results
-          .skip((page - 1) * page_size)
-          .take(page_size)
-          .all
+                   .query(
+                     collection: "Products"
+                   )
+                   .where_exists("uid")
+                   .order_by("uid")
+                   .wait_for_non_stale_results
+                   .skip((page - 1) * page_size)
+                   .take(page_size)
+                   .all
 
         assert(products.size <= page_size)
         products.each_index {|index| assert_equal(products[index].uid, expected_uids[page - 1][index])}
@@ -288,14 +288,14 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_select_fields
     @_store.open_session do |session|
       results = session
-        .query(
-          index_name: "Testing_Sort",
-          document_type: Product
-        )
-        .select_fields(["doc_id"])
-        .where_between("uid", 2, 4, true)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  index_name: "Testing_Sort",
+                  document_type: Product
+                )
+                .select_fields(["doc_id"])
+                .where_between("uid", 2, 4, true)
+                .wait_for_non_stale_results
+                .all
 
       assert(results.all?{|result| result.instance_variable_defined?("@doc_id")})
     end
@@ -304,13 +304,13 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_by_single_keyword
     @_store.open_session do |session|
       results = session
-        .query(
-          index_name: LastFmAnalyzed.name,
-          document_type: LastFm
-        )
-        .search("query", "Me")
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  index_name: LastFmAnalyzed.name,
+                  document_type: LastFm
+                )
+                .search("query", "Me")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 2)
       results.each{|last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"])}
@@ -320,13 +320,13 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_by_two_keywords
     @_store.open_session do |session|
       results = session
-        .query(
-          index_name: LastFmAnalyzed.name,
-          document_type: LastFm
-        )
-        .search("query", "Me Bobo")
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  index_name: LastFmAnalyzed.name,
+                  document_type: LastFm
+                )
+                .search("query", "Me Bobo")
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 3)
 
@@ -339,16 +339,16 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_full_text_with_boost
     @_store.open_session do |session|
       results = session
-        .query(
-          index_name: LastFmAnalyzed.name,
-          document_type: LastFm
-        )
-        .search("query", "Me")
-        .boost(10)
-        .search("query", "Bobo")
-        .boost(2)
-        .wait_for_non_stale_results
-        .all
+                .query(
+                  index_name: LastFmAnalyzed.name,
+                  document_type: LastFm
+                )
+                .search("query", "Me")
+                .boost(10)
+                .search("query", "Bobo")
+                .boost(2)
+                .wait_for_non_stale_results
+                .all
 
       assert_equal(results.size, 3)
       assert_equal(results.last.title, "Spanish Grease")

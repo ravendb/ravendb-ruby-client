@@ -18,8 +18,8 @@ class RawQueryTest < RavenDatabaseTest
         "WHERE name = $name",
         name: "test101"
       )
-      .wait_for_non_stale_results
-      .all
+                       .wait_for_non_stale_results
+                       .all
 
       assert_equal(results.size, 1)
       assert_equal(results.first.name, "test101")
@@ -32,9 +32,9 @@ class RawQueryTest < RavenDatabaseTest
     @_store.open_session do |session|
       assert_raises(RavenDB::ParseException) do
         session.advanced
-            .raw_query("FROM Products WHERE")
-            .wait_for_non_stale_results
-            .all
+               .raw_query("FROM Products WHERE")
+               .wait_for_non_stale_results
+               .all
       end
     end
   end

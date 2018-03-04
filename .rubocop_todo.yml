@@ -192,20 +192,6 @@ Layout/MultilineMethodCallBraceLayout:
     - 'test/session_tests/raw_query_test.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 177
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented, indented_relative_to_receiver
-Layout/MultilineMethodCallIndentation:
-  Exclude:
-    - 'lib/auth/auth_options.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-    - 'test/session_tests/document_query_test.rb'
-    - 'test/session_tests/query_builder_test.rb'
-    - 'test/session_tests/raw_query_test.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
