@@ -92,7 +92,7 @@ module RavenDB
       new_params = param_or_params
 
       unless new_params.is_a?(Hash)
-        new_params = Hash.new
+        new_params = {}
         new_params[param_or_params] = value
       end
 
