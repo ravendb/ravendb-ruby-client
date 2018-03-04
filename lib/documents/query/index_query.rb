@@ -17,7 +17,7 @@ module RavenDB
       @wait_for_non_stale_results_as_of_now = options[:wait_for_non_stale_results_as_of_now] || false
       @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
 
-      if !@page_size.is_a?(Numeric)
+      unless @page_size.is_a?(Numeric)
         @page_size = DefaultPageSize
       end
 
@@ -47,23 +47,23 @@ module RavenDB
         "QueryParameters" => @query_parameters,
       }
 
-      if !@start.nil?
+      unless @start.nil?
         json["Start"] = @start
       end
 
-      if !@page_size.nil?
+      unless @page_size.nil?
         json["PageSize"] = @page_size
       end
 
-      if !@cut_off_etag.nil?
+      unless @cut_off_etag.nil?
         json["CutoffEtag"] = @cut_off_etag
       end
 
-      if !@wait_for_non_stale_results.nil?
+      unless @wait_for_non_stale_results.nil?
         json["WaitForNonStaleResults"] = true
       end
 
-      if !@wait_for_non_stale_results_as_of_now.nil?
+      unless @wait_for_non_stale_results_as_of_now.nil?
         json["WaitForNonStaleResultsAsOfNow"] = true
       end
 

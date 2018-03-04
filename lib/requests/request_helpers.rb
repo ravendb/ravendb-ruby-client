@@ -171,7 +171,7 @@ module RavenDB
       old_topology = @topology
 
       @_lock.synchronize do
-        if !force_update
+        unless force_update
           @current_node_index = 0
         end
 
@@ -190,7 +190,7 @@ module RavenDB
       if topology_data[:topology_json]
         topology = Topology.from_json(topology_data[:topology_json])
 
-        if !topology.nodes.empty?
+        unless topology.nodes.empty?
           should_update = force_update || (@topology.etag < topology.etag)
         end
 

@@ -48,7 +48,7 @@ module RavenDB
     def to_request_options
       end_point = @end_point
 
-      if !@params.empty?
+      unless @params.empty?
         encoded_params = URI.encode_www_form(@params)
         end_point = "#{end_point}?#{encoded_params}"
       end
@@ -65,7 +65,7 @@ module RavenDB
         @headers["Content-Type"] = "application/json"
       end
 
-      if !@headers.empty?
+      unless @headers.empty?
         @headers.each do |header, value|
           request.add_field(header, value)
         end
@@ -91,7 +91,7 @@ module RavenDB
     def add_params(param_or_params, value)
       new_params = param_or_params
 
-      if !new_params.is_a?(Hash)
+      unless new_params.is_a?(Hash)
         new_params = Hash.new
         new_params[param_or_params] = value
       end
@@ -102,11 +102,11 @@ module RavenDB
     def remove_params(param_or_params, *other_params)
       remove = param_or_params
 
-      if !remove.is_a?(Array)
+      unless remove.is_a?(Array)
         remove = [remove]
       end
 
-      if !other_params.empty?
+      unless other_params.empty?
         remove = remove.concat(other_params)
       end
 
@@ -126,11 +126,11 @@ module RavenDB
       query = @query
       options = @options
 
-      if !query.is_a?(IndexQuery)
+      unless query.is_a?(IndexQuery)
         raise RuntimeError, "Query must be instance of IndexQuery class"
       end
 
-      if !options.is_a?(QueryOperationOptions)
+      unless options.is_a?(QueryOperationOptions)
         raise RuntimeError, "Options must be instance of QueryOperationOptions class"
       end
 

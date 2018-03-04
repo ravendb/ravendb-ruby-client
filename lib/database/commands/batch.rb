@@ -9,7 +9,7 @@ module RavenDB
       commands = @commands_array
       assert_node(server_node)
 
-      if !commands.all? { |data| data && data.is_a?(RavenCommandData) }
+      unless commands.all? { |data| data && data.is_a?(RavenCommandData) }
         raise RuntimeError, "Not a valid command"
       end
 
@@ -20,7 +20,7 @@ module RavenDB
     def set_response(response)
       result = super(response)
 
-      if !response.body
+      unless response.body
         raise RuntimeError, "Invalid response body received"
       end
 
@@ -52,7 +52,7 @@ module RavenDB
         "DebugMode" => @debug_mode
       )
 
-      if !@patch_if_missing.nil?
+      unless @patch_if_missing.nil?
         json["PatchIfMissing"] = @patch_if_missing.to_json
       end
 

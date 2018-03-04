@@ -37,7 +37,7 @@ module RavenDB
     end
 
     def configure
-      if !@_initialized
+      unless @_initialized
         config = Configuration.new
 
         if block_given?
@@ -56,7 +56,7 @@ module RavenDB
           set_urls(config.urls)
         end
 
-        if !@_database
+        unless @_database
           raise RuntimeError, "Default database isn't set."
         end
 
@@ -157,11 +157,11 @@ module RavenDB
       db_name = database || @_database
       for_single_node = conventions.disable_topology_updates
 
-      if !@_request_executors.key?(for_single_node)
+      unless @_request_executors.key?(for_single_node)
         @_request_executors[for_single_node] = {}
       end
 
-      if !@_request_executors[for_single_node].key?(db_name)
+      unless @_request_executors[for_single_node].key?(db_name)
         @_request_executors[for_single_node][db_name] = create_request_executor(db_name, for_single_node)
       end
 
@@ -186,17 +186,17 @@ module RavenDB
 
     protected
     def set_urls(url_or_urls)
-      if !url_or_urls.nil?
+      unless url_or_urls.nil?
         @_urls = url_or_urls
 
-        if !url_or_urls.is_a?(Array)
+        unless url_or_urls.is_a?(Array)
           @_urls = [@_urls]
         end
       end
     end
 
     def assert_configure
-      if !@_initialized
+      unless @_initialized
         raise RuntimeError, "You cannot open a session or access the database commands"\
   " before initializing the document store. Did you forget calling configure ?"
       end

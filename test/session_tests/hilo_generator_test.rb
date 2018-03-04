@@ -22,7 +22,7 @@ class HiloGeneratorTest < RavenDatabaseTest
     loop do
       id = @generator.generate_document_id
 
-      if !prev_id.nil?
+      unless prev_id.nil?
         assert_equal(range(id) - range(prev_id), 1)
       end
 

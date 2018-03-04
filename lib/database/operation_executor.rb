@@ -104,7 +104,7 @@ module RavenDB
         end
       end
 
-      if !command
+      unless command
         raise RuntimeError, error_message
       end
 
@@ -139,7 +139,7 @@ module RavenDB
         return self
       end
 
-      if !@executors_by_database.key?(database)
+      unless @executors_by_database.key?(database)
         @executors_by_database[database] = self.class.new(@store, database)
       end
 

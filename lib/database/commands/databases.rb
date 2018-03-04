@@ -38,7 +38,7 @@ module RavenDB
     def set_response(response)
       result = super(response)
 
-      if !response.body
+      unless response.body
         raise ErrorResponseException, "Response is invalid."
       end
 

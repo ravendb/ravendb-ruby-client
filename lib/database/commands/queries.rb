@@ -28,11 +28,11 @@ module RavenDB
     def initialize(conventions, index_query, metadata_only = false, index_entries_only = false)
       super("", Net::HTTP::Post::METHOD)
 
-      if !index_query.is_a?(IndexQuery)
+      unless index_query.is_a?(IndexQuery)
         raise RuntimeError, "Query must be an instance of IndexQuery class"
       end
 
-      if !conventions
+      unless conventions
         raise RuntimeError, "Document conventions cannot be empty"
       end
 

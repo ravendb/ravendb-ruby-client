@@ -10,11 +10,11 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if !@id
+      unless @id
         raise RuntimeError, "Nil Id is not valid"
       end
 
-      if !@id.is_a?(String)
+      unless @id.is_a?(String)
         raise RuntimeError, "Id must be a string"
       end
 
@@ -33,7 +33,7 @@ module RavenDB
 
     protected
     def check_response(response)
-      if !response.is_a?(Net::HTTPNoContent)
+      unless response.is_a?(Net::HTTPNoContent)
         raise RuntimeError, "Could not delete document #{@id}"
       end
     end
@@ -51,7 +51,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if !@id_or_ids
+      unless @id_or_ids
         raise RuntimeError, "nil ID is not valid"
       end
 
@@ -89,7 +89,7 @@ module RavenDB
         return
       end
 
-      if !response.body
+      unless response.body
         raise ErrorResponseException, "Failed to load document from the database "\
   "please check the connection to the server"
       end
@@ -137,7 +137,7 @@ module RavenDB
         add_params("debug", "true")
       end
 
-      if !@change_vector.nil?
+      unless @change_vector.nil?
         @headers = {"If-Match" => "\"#{@change_vector}\""}
       end
 
@@ -169,7 +169,7 @@ module RavenDB
     end
 
     def create_request(server_node)
-      if !@document
+      unless @document
         raise RuntimeError, "Document must be an object"
       end
 
@@ -184,7 +184,7 @@ module RavenDB
 
     protected
     def check_response(response)
-      if !response.body
+      unless response.body
         raise ErrorResponseException, "Failed to store document to the database "\
   "please check the connection to the server"
       end

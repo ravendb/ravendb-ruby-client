@@ -141,7 +141,7 @@ module RavenDB
         request.add_field(header, value)
       end
 
-      if !@_without_topology
+      unless @_without_topology
         request.add_field("Topology-Etag", @_topology_etag)
       end
 
@@ -153,11 +153,11 @@ module RavenDB
         return nil
       end
 
-      if !command.is_a?(RavenCommand)
+      unless command.is_a?(RavenCommand)
         raise RuntimeError, "Not a valid command"
       end
 
-      if !server_node.is_a?(ServerNode)
+      unless server_node.is_a?(ServerNode)
         raise RuntimeError, "Not a valid server node"
       end
 
@@ -174,7 +174,7 @@ module RavenDB
         request_exception = timeout_exception
       end
 
-      if !response.nil?
+      unless response.nil?
         if [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
             Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable
         ].any? { |response_type| response.is_a?(response_type) }
@@ -317,7 +317,7 @@ module RavenDB
         response = http_client(server_node).request(request)
         is_still_failed = !response.is_a?(Net::HTTPOK)
 
-        if !is_still_failed
+        unless is_still_failed
           emit(RavenServerEvent::NODE_STATUS_UPDATED, server_node)
 
           if @_failed_nodes_statuses.key?(server_node)

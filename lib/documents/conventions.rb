@@ -303,12 +303,12 @@ module RavenDB
           value_for_check = value_for_check.first
         end
 
-        if !((nested_type = (find_nested_type(value_for_check))).nil?)
+        unless (nested_type = (find_nested_type(value_for_check))).nil?
           nested_types[instance_variable.to_s.gsub("@", "")] = nested_type
         end
       end
 
-      if !nested_types.empty?
+      unless nested_types.empty?
         metadata["@nested_object_types"] = nested_types
       end
 

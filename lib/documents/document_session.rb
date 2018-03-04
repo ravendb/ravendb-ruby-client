@@ -39,7 +39,7 @@ module RavenDB
     end
 
     def advanced
-      if !@advanced
+      unless @advanced
         @advanced = AdvancedSessionOperations.new(self, @request_executor)
         @advanced.on(RavenServerEvent::EVENT_QUERY_INITIALIZED) do |query|
           attach_query(query)
@@ -94,7 +94,7 @@ module RavenDB
         .delete_if{|id| @known_missing_ids.include?(id)}
       )
 
-      if !ids_of_non_existing_documents.empty?
+      unless ids_of_non_existing_documents.empty?
         fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
       end
 
@@ -215,13 +215,13 @@ module RavenDB
       prepare_delete_commands(changes)
       prepare_update_commands(changes)
 
-      if !changes.commands_count
+      unless changes.commands_count
         return nil
       end
 
       results = @request_executor.execute(changes.create_batch_command)
 
-      if !results
+      unless results
         raise RuntimeError.new, "Cannot call Save Changes after the document store was disposed."
       end
 
@@ -288,7 +288,7 @@ module RavenDB
       end
 
       response_results.map.with_index do |result, index|
-        if !result
+        unless result
             @known_missing_ids.add(ids[index])
             return nil
         end
@@ -296,17 +296,17 @@ module RavenDB
         make_document(result, nil, nested_object_types)
       end
 
-      if !response_includes.empty?
+      unless response_includes.empty?
         on_includes_fetched(response_includes)
       end
     end
 
     def check_document_and_metadata_before_store(document = nil)
-      if !TypeUtilities.is_document?(document)
+      unless TypeUtilities.is_document?(document)
         raise RuntimeError, "Invalid argument passed. Should be an document"
       end
 
-      if !@raw_entities_and_metadata.key?(document)
+      unless @raw_entities_and_metadata.key?(document)
         document.instance_variable_set("@metadata", conventions.build_default_metadata(document))
       end
 
@@ -316,7 +316,7 @@ module RavenDB
     def check_association_and_change_vectore_before_store(document, id = nil, change_vector = nil)
       is_new = !@raw_entities_and_metadata.key?(document)
 
-      if !is_new
+      unless is_new
         document_id = id
         info = @raw_entities_and_metadata[document]
         metadata = document.instance_variable_get("@metadata")
@@ -331,7 +331,7 @@ module RavenDB
         else
           info[:change_vector] = metadata["@change-vector"] = change_vector
 
-          if !document_id.nil?
+          unless document_id.nil?
             check_mode = ConcurrencyCheckMode::Auto
           end
         end
@@ -351,12 +351,12 @@ module RavenDB
         document_id = conventions.get_id_from_document(document)
       end
 
-      if !document_id.nil?
+      unless document_id.nil?
         conventions.set_id_on_document(document, document_id)
       end
 
       if !document_id.nil? && !document_id.end_with?("/") && @documents_by_id.key?(document_id)
-        if !@documents_by_id[document_id].eql?(document)
+        unless @documents_by_id[document_id].eql?(document)
           raise NonUniqueObjectException, "Attempted to associate a different object with id #{document_id}"
         end
       end
@@ -372,7 +372,7 @@ module RavenDB
 
     def prepare_update_commands(changes)
       @raw_entities_and_metadata.each do |document, info|
-        if !is_document_changed(document)
+        unless is_document_changed(document)
           return nil
         end
 
@@ -449,7 +449,7 @@ module RavenDB
     end
 
     def is_document_changed(document)
-      if !@raw_entities_and_metadata.key?(document)
+      unless @raw_entities_and_metadata.key?(document)
         return false
       end
 
@@ -470,7 +470,7 @@ module RavenDB
         includes.each do |include|
           document_id = include["@metadata"]["@id"]
 
-          if !@included_raw_entities_by_id.key?(document_id)
+          unless @included_raw_entities_by_id.key?(document_id)
             @included_raw_entities_by_id[document_id] = include
           end
         end
@@ -486,7 +486,7 @@ module RavenDB
       document_id = conventions.get_id_from_document(document) ||
         conversion_result[:original_metadata]["@id"] || conversion_result[:metadata]["@id"]
 
-      if !document_id
+      unless document_id
         return nil
       end
 
@@ -498,9 +498,7 @@ module RavenDB
 
       original_value_source = conversion_result[:raw_entity]
 
-      if !original_value_source
-        original_value_source = conventions.convert_to_raw_entity(document)
-      end
+      original_value_source ||= conventions.convert_to_raw_entity(document)
 
       @documents_by_id[document_id] = document
       @raw_entities_and_metadata[document] = {

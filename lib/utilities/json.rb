@@ -9,7 +9,7 @@ module Net
       json = body
       parsed = nil
 
-      if !json.is_a? Hash
+      unless json.is_a? Hash
         begin
           if json.is_a?(String) && !json.empty?
             parsed = JSON.parse(json)
@@ -39,11 +39,11 @@ module RavenDB
     def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil)
       mappings = {}
 
-      if !TypeUtilities.is_document?(target)
+      unless TypeUtilities.is_document?(target)
         raise RuntimeError, "Invalid target passed. Should be a user-defined class instance"
       end
 
-      if !source.is_a?(Hash)
+      unless source.is_a?(Hash)
         raise RuntimeError, "Invalid source passed. Should be a Hash object"
       end
 
@@ -103,7 +103,7 @@ module RavenDB
     def self.to_json(source, conventions = nil, parent_path = nil)
       json = {}
 
-      if !TypeUtilities.is_document?(source)
+      unless TypeUtilities.is_document?(source)
         raise RuntimeError, "Invalid source passed. Should be a user-defined class instance"
       end
 
@@ -159,7 +159,7 @@ module RavenDB
         if json_value.is_a?(Hash)
           document = json_to_document(json_value, nested_object_type, conventions, build_path(key, parent_path))
 
-          if !document.nil?
+          unless document.nil?
             return document
           end
         end
@@ -171,7 +171,7 @@ module RavenDB
                document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
                was_converted = !document.nil?
 
-               if !document.nil?
+               unless document.nil?
                  documents.push(document)
                end
 

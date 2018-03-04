@@ -495,13 +495,6 @@ Style/MultilineTernaryOperator:
     - 'lib/documents/query/query_builder.rb'
     - 'lib/documents/query/query_tokens.rb'
 
-# Offense count: 78
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: both, prefix, postfix
-Style/NegatedIf:
-  Enabled: false
-
 # Offense count: 1
 Style/NestedTernaryOperator:
   Exclude:
