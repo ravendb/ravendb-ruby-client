@@ -545,16 +545,6 @@ Style/RedundantParentheses:
     - 'lib/documents/conventions.rb'
     - 'lib/documents/query/query_builder.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleReturnValues.
-Style/RedundantReturn:
-  Exclude:
-    - 'lib/database/exceptions.rb'
-    - 'lib/database/operation_executor.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/type_utilities.rb'
-
 # Offense count: 42
 # Cop supports --auto-correct.
 Style/RedundantSelf:

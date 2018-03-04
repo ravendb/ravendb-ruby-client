@@ -65,7 +65,7 @@ module RavenDB
         end
       end
 
-      return nil
+      nil
     end
 
     def self.raise_exception(type_or_message, message = "", status_code = nil)

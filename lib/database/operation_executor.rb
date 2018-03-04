@@ -71,12 +71,12 @@ module RavenDB
     def on_next(result)
       case result[:status]
       when OperationStatus::Completed
-        return result[:response]
+        result[:response]
       when OperationStatus::Faulted
         raise result[:exception]
       else
         sleep 0.5
-        return on_next(fetch_operation_status)
+        on_next(fetch_operation_status)
       end
     end
   end
