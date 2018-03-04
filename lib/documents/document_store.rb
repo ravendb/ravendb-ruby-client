@@ -173,7 +173,11 @@ module RavenDB
         @_disposed = true
 
         assert_configure
-        @_generator.return_unused_range rescue nil
+        begin
+          @_generator.return_unused_range
+        rescue StandardError
+          nil
+        end
         maintenance.server.dispose
 
         if @_request_executors.is_a?(Hash)

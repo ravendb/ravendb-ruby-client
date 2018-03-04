@@ -564,12 +564,6 @@ Style/RegexpLiteral:
   Exclude:
     - 'test/session_tests/document_store_test.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RescueModifier:
-  Exclude:
-    - 'lib/documents/document_store.rb'
-
 # Offense count: 9
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
