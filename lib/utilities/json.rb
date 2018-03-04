@@ -84,10 +84,8 @@ module RavenDB
             nested_object_types: nested_object_types
           }
 
-          unless conventions.nil?
-            conventions.serializers.each do |serializer|
-              serializer.on_unserialized(serialized)
-            end
+          conventions&.serializers&.each do |serializer|
+            serializer.on_unserialized(serialized)
           end
 
           variable_name = "@#{serialized[:serialized_attribute]}"
@@ -132,10 +130,8 @@ module RavenDB
             metadata: current_metadata
           }
 
-          unless conventions.nil?
-            conventions.serializers.each do |serializer|
-              serializer.on_serialized(serialized)
-            end
+          conventions&.serializers&.each do |serializer|
+            serializer.on_serialized(serialized)
           end
 
           json_property = serialized[:serialized_attribute]

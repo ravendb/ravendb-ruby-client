@@ -22,7 +22,7 @@ module RavenDB
     def type
       result = "Map"
 
-      if @_name && @_name.start_with?("Auto/")
+      if @_name&.start_with?("Auto/")
         result = "Auto" + result
       end
 

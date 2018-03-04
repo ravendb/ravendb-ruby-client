@@ -50,7 +50,7 @@ module RavenDB
       else
         json = json_or_response
 
-        if json && json.key?("Type") && json.key?("Error")
+        if json&.key?("Type") && json&.key?("Error")
           type = json["Type"]
 
           if type && json["Error"]

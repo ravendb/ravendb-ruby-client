@@ -578,15 +578,6 @@ Style/RescueStandardError:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/json.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil.
-Style/SafeNavigation:
-  Exclude:
-    - 'lib/database/exceptions.rb'
-    - 'lib/documents/indexes.rb'
-    - 'lib/utilities/json.rb'
-
 # Offense count: 9
 # Cop supports --auto-correct.
 Style/SelfAssignment:
