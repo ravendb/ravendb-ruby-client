@@ -421,24 +421,22 @@ module RavenDB
       ((changes.deferred_commands_count)..(results.size - 1)).each do |index|
         command_result = results[index]
 
-        if Net::HTTP::Put::METHOD.capitalize == command_result["Type"]
-          document = changes.get_document(index - changes.deferred_commands_count)
+        next unless Net::HTTP::Put::METHOD.capitalize == command_result["Type"]
+        document = changes.get_document(index - changes.deferred_commands_count)
 
-          if @raw_entities_and_metadata.key?(document)
-            metadata = TypeUtilities.omit_keys(command_result, ["Type"])
-            info = @raw_entities_and_metadata[document]
+        next unless @raw_entities_and_metadata.key?(document)
+        metadata = TypeUtilities.omit_keys(command_result, ["Type"])
+        info = @raw_entities_and_metadata[document]
 
-            info = info.merge(
-              change_vector: command_result["@change-vector"],
-              metadata: metadata,
-              original_value: conventions.convert_to_raw_entity(document).deep_dup,
-              original_metadata: metadata.deep_dup
-            )
+        info = info.merge(
+          change_vector: command_result["@change-vector"],
+          metadata: metadata,
+          original_value: conventions.convert_to_raw_entity(document).deep_dup,
+          original_metadata: metadata.deep_dup
+        )
 
-            @documents_by_id[command_result["@id"]] = document
-            @raw_entities_and_metadata[document] = info
-          end
-        end
+        @documents_by_id[command_result["@id"]] = document
+        @raw_entities_and_metadata[document] = info
       end
     end
 

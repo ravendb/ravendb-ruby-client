@@ -94,12 +94,12 @@ module RavenDB
 
         write_field(writer, field)
 
-        unless projection.nil? || (projection == field)
-          writer.append(" ")
-          writer.append(QueryKeyword::As)
-          writer.append(" ")
-          writer.append(projection)
-        end
+        next if projection.nil? || (projection == field)
+
+        writer.append(" ")
+        writer.append(QueryKeyword::As)
+        writer.append(" ")
+        writer.append(projection)
       end
     end
   end

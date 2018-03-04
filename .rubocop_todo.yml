@@ -380,15 +380,6 @@ Style/NestedTernaryOperator:
   Exclude:
     - 'lib/documents/indexes.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, MinBodyLength.
-# SupportedStyles: skip_modifier_ifs, always
-Style/Next:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/query/query_tokens.rb'
-
 # Offense count: 13
 # Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, EnforcedStyle.
