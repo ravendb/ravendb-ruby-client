@@ -1,5 +1,5 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class HiloGeneratorTest < RavenDatabaseTest
   COLLECTION = "Products"

@@ -1,5 +1,5 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class DocumentLoadTest < RavenDatabaseTest
   def setup
@@ -57,7 +57,7 @@ class DocumentLoadTest < RavenDatabaseTest
       product = session.load("Products/101")
 
       assert(product.is_a?(Product))
-      assert_equal(product.instance_variable_get('@metadata')['Raven-Ruby-Type'], 'Product')
+      assert_equal(product.instance_variable_get("@metadata")["Raven-Ruby-Type"], "Product")
     end
   end
 

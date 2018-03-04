@@ -1,5 +1,5 @@
-require 'date'
-require 'active_support/core_ext/object/deep_dup'
+require "date"
+require "active_support/core_ext/object/deep_dup"
 require "database/exceptions"
 
 module RavenDB
@@ -21,8 +21,8 @@ module RavenDB
     end
 
     def self.stringify_date(datetime)
-      invalid_date_message = 'Invalid parameter passed to RavenDB'\
-        '::TypeUtilities::stringify_date. It should be instance of DateTime'
+      invalid_date_message = "Invalid parameter passed to RavenDB"\
+        "::TypeUtilities::stringify_date. It should be instance of DateTime"
 
       raise RuntimeError, invalid_date_message unless
           (datetime.is_a?(DateTime) || datetime.is_a?(Date))
@@ -44,11 +44,11 @@ module RavenDB
 
     def self.omit_keys(hash, keys = [])
       raise RuntimeError,
-        'Invalid hash argument passed. Should be an Hash' unless
+        "Invalid hash argument passed. Should be an Hash" unless
         hash.is_a?(Hash)
 
       raise RuntimeError,
-        'Invalid keys argument passed. Should be an Array' unless
+        "Invalid keys argument passed. Should be an Array" unless
         keys.is_a?(Array)
 
       copy = hash.deep_dup

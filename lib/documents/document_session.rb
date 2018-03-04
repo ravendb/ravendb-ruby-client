@@ -1,12 +1,12 @@
-require 'active_support/core_ext/object/deep_dup'
-require 'net/http'
-require 'database/exceptions'
-require 'documents/conventions'
-require 'constants/documents'
-require 'database/commands'
-require 'documents/document_query'
-require 'utilities/type_utilities'
-require 'utilities/observable'
+require "active_support/core_ext/object/deep_dup"
+require "net/http"
+require "database/exceptions"
+require "documents/conventions"
+require "constants/documents"
+require "database/commands"
+require "documents/document_query"
+require "utilities/type_utilities"
+require "utilities/observable"
 
 module RavenDB
   class DocumentSession
@@ -116,7 +116,7 @@ module RavenDB
       expected_change_vector = nil
 
       raise RuntimeError,
-        'Invalid argument passed. Should be document model instance or document id string' unless
+        "Invalid argument passed. Should be document model instance or document id string" unless
         (document_or_id.is_a?(String) || TypeUtilities::is_document?(document_or_id))
 
       if options.is_a?(Hash)
@@ -148,7 +148,7 @@ module RavenDB
 
         raise RuntimeError,
           "Document is marked as read only and cannot be deleted" if
-          original_metadata.key?('Raven-Read-Only')
+          original_metadata.key?("Raven-Read-Only")
 
         unless expected_change_vector.nil?
           info[:expected_change_vector] = expected_change_vector
@@ -177,7 +177,7 @@ module RavenDB
       is_new_document = check_result[:is_new]
 
       if is_new_document
-        original_metadata = document.instance_variable_get('@metadata').deep_dup
+        original_metadata = document.instance_variable_get("@metadata").deep_dup
         document = prepare_document_id_before_store(document, id)
         id = conventions.get_id_from_document(document)
 
@@ -194,7 +194,7 @@ module RavenDB
 
         on_document_fetched({
           :document => document,
-          :metadata => document.instance_variable_get('@metadata'),
+          :metadata => document.instance_variable_get("@metadata"),
           :original_metadata => original_metadata,
           :raw_entity => conventions.convert_to_raw_entity(document)
         })
@@ -234,7 +234,7 @@ module RavenDB
     protected
     def attach_query(query)
       if @attached_queries.key?(query)
-        raise RuntimeError, 'Query is already attached to session'
+        raise RuntimeError, "Query is already attached to session"
       end
 
       query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) {
@@ -296,11 +296,11 @@ module RavenDB
 
     def check_document_and_metadata_before_store(document = nil)
       if !TypeUtilities::is_document?(document)
-        raise RuntimeError, 'Invalid argument passed. Should be an document'
+        raise RuntimeError, "Invalid argument passed. Should be an document"
       end
 
       if !@raw_entities_and_metadata.key?(document)
-        document.instance_variable_set('@metadata', conventions.build_default_metadata(document))
+        document.instance_variable_set("@metadata", conventions.build_default_metadata(document))
       end
 
       document
@@ -312,7 +312,7 @@ module RavenDB
       if !is_new
         document_id = id
         info = @raw_entities_and_metadata[document]
-        metadata = document.instance_variable_get('@metadata')
+        metadata = document.instance_variable_get("@metadata")
         check_mode = ConcurrencyCheckMode::Forced
 
         if document_id.nil?
@@ -322,7 +322,7 @@ module RavenDB
         if change_vector.nil?
           check_mode = ConcurrencyCheckMode::Disabled
         else
-          info[:change_vector] = metadata['@change-vector'] = change_vector
+          info[:change_vector] = metadata["@change-vector"] = change_vector
 
           if !document_id.nil?
             check_mode = ConcurrencyCheckMode::Auto
@@ -348,13 +348,13 @@ module RavenDB
         conventions.set_id_on_document(document, document_id)
       end
 
-      if !document_id.nil? && !document_id.end_with?('/') && @documents_by_id.key?(document_id)
+      if !document_id.nil? && !document_id.end_with?("/") && @documents_by_id.key?(document_id)
         if !@documents_by_id[document_id].eql?(document)
           raise NonUniqueObjectException, "Attempted to associate a different object with id #{document_id}"
         end
       end
 
-      if document_id.nil? || document_id.end_with?('/')
+      if document_id.nil? || document_id.end_with?("/")
         document_type = conventions.get_type_from_document(document)
         document_id = store.generate_id(conventions.get_collection_name(document_type), @database)
         conventions.set_id_on_document(document, document_id)
@@ -377,7 +377,7 @@ module RavenDB
           (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
           (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
           change_vector = info[:change_vector] ||
-              info[:metadata]['@change-vector'] ||
+              info[:metadata]["@change-vector"] ||
               conventions.empty_change_vector
         end
 
@@ -428,7 +428,7 @@ module RavenDB
             info = @raw_entities_and_metadata[document]
 
             info = info.merge({
-              :change_vector => command_result['@change-vector'],
+              :change_vector => command_result["@change-vector"],
               :metadata => metadata,
               :original_value => conventions.convert_to_raw_entity(document).deep_dup,
               :original_metadata => metadata.deep_dup
@@ -461,7 +461,7 @@ module RavenDB
     def on_includes_fetched(includes)
       if includes.is_a?(Array) && !includes.empty?
         includes.each do |include|
-          document_id = include['@metadata']['@id']
+          document_id = include["@metadata"]["@id"]
 
           if !@included_raw_entities_by_id.key?(document_id)
             @included_raw_entities_by_id[document_id] = include
@@ -477,7 +477,7 @@ module RavenDB
 
       document = conversion_result[:document]
       document_id = conventions.get_id_from_document(document) ||
-        conversion_result[:original_metadata]['@id'] || conversion_result[:metadata]['@id']
+        conversion_result[:original_metadata]["@id"] || conversion_result[:metadata]["@id"]
 
       if !document_id
         return nil
@@ -500,7 +500,7 @@ module RavenDB
         :original_value => original_value_source.deep_dup,
         :original_metadata => conversion_result[:original_metadata],
         :metadata => conversion_result[:metadata],
-        :change_vector => conversion_result[:metadata]['@change-vector'] || nil,
+        :change_vector => conversion_result[:metadata]["@change-vector"] || nil,
         :id => document_id,
         :concurrency_check_mode => ConcurrencyCheckMode::Auto,
         :document_type => conversion_result[:document_type]

@@ -1,7 +1,7 @@
-require 'stringio'
-require 'constants/documents'
-require 'database/exceptions'
-require 'utilities/string_utility'
+require "stringio"
+require "constants/documents"
+require "database/exceptions"
+require "utilities/string_utility"
 
 module RavenDB
   class QueryToken
@@ -129,7 +129,7 @@ module RavenDB
       if @is_dynamic
         writer
           .append(QueryKeyword::From)
-          .append(' ')
+          .append(" ")
 
         if WhiteSpaceChars.any? {|char| @collection_name.include?(char)}
           raise NotSupportedException,
@@ -146,7 +146,7 @@ module RavenDB
 
       writer
         .append(QueryKeyword::From)
-        .append(' ')
+        .append(" ")
         .append(QueryKeyword::Index)
         .append(" '")
         .append(@index_name)

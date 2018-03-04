@@ -100,7 +100,7 @@ module RavenDB
 
   class PatchCommand < RavenCommand
     def initialize(id, patch, options = nil)
-      super('', Net::HTTP::Patch::METHOD)
+      super("", Net::HTTP::Patch::METHOD)
       opts = options || {}
 
       @id = id || nil
@@ -115,26 +115,26 @@ module RavenDB
       assert_node(server_node)
 
       if @id.nil?
-        raise RuntimeError, 'Empty ID is invalid'
+        raise RuntimeError, "Empty ID is invalid"
       end
 
       if @patch.nil?
-        raise RuntimeError, 'Empty patch is invalid'
+        raise RuntimeError, "Empty patch is invalid"
       end
 
       if @patch_if_missing && !@patch_if_missing.script
-        raise RuntimeError, 'Empty script is invalid'
+        raise RuntimeError, "Empty script is invalid"
       end
 
       @params = {"id" => @id}
       @end_point = "/databases/#{server_node.database}/docs"
 
       if @skip_patch_if_change_vector_mismatch
-        add_params('skipPatchIfChangeVectorMismatch', 'true')
+        add_params("skipPatchIfChangeVectorMismatch", "true")
       end
 
       if @return_debug_information
-        add_params('debug', 'true')
+        add_params("debug", "true")
       end
 
       if !@change_vector.nil?
@@ -170,7 +170,7 @@ module RavenDB
 
     def create_request(server_node)
       if !@document
-        raise RuntimeError, 'Document must be an object'
+        raise RuntimeError, "Document must be an object"
       end
 
       @payload = @document

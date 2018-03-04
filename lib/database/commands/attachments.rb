@@ -45,7 +45,7 @@ module RavenDB
 
       unless TypeUtilities::is_nil_or_whitespace?(@_content_type)
         @headers["Content-Type"] = @_content_type
-        @params['contentType'] = @_content_type
+        @params["contentType"] = @_content_type
       end      
     end
 
@@ -98,11 +98,11 @@ module RavenDB
         super.set_response(response)
       end  
 
-      attachment = response.body.force_encoding('ASCII-8BIT')
-      content_type = try_get_header('Content-Type')
-      hash = try_get_header('Attachment-Hash')  
-      change_vector = try_get_header('Etag')
-      size = try_get_header('Attachment-Size')
+      attachment = response.body.force_encoding("ASCII-8BIT")
+      content_type = try_get_header("Content-Type")
+      hash = try_get_header("Attachment-Hash")  
+      change_vector = try_get_header("Etag")
+      size = try_get_header("Attachment-Size")
 
       begin
         size = Integer(size || "")

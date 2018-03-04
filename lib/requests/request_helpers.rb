@@ -1,12 +1,12 @@
-require 'thread'
-require 'database/exceptions'
-require 'constants/documents'
+require "thread"
+require "database/exceptions"
+require "constants/documents"
 
 module RavenDB
   class ServerNode
     attr_reader :url, :database, :cluster_tag
 
-    def initialize(url = '', database = nil, cluster_tag = nil)
+    def initialize(url = "", database = nil, cluster_tag = nil)
       @url = url
       @database = database
       @cluster_tag = cluster_tag

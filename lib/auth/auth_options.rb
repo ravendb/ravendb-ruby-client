@@ -1,4 +1,4 @@
-require 'auth/certificate'
+require "auth/certificate"
 
 module RavenDB
   class AuthOptions

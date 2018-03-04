@@ -1,62 +1,62 @@
 module RavenDB
   class SearchOperator
-    Or = 'OR'
-    And = 'AND'
+    Or = "OR"
+    And = "AND"
   end
 
   class QueryOperator < SearchOperator
-    Not = 'NOT'
+    Not = "NOT"
   end
 
   class QueryKeyword
-    Select = 'SELECT'
-    Distinct = 'DISTINCT'
-    As = 'AS'
-    From = 'FROM'
-    Index = 'INDEX'
-    Include = 'INCLUDE'
-    Where = 'WHERE'
-    Group = 'GROUP'
-    Order = 'ORDER'
-    Load = 'LOAD'
-    By = 'BY'
-    Asc = 'ASC'
-    Desc = 'DESC'
-    In = 'IN'
-    Between = 'BETWEEN'
-    All = 'ALL'
-    Update = 'UPDATE'
+    Select = "SELECT"
+    Distinct = "DISTINCT"
+    As = "AS"
+    From = "FROM"
+    Index = "INDEX"
+    Include = "INCLUDE"
+    Where = "WHERE"
+    Group = "GROUP"
+    Order = "ORDER"
+    Load = "LOAD"
+    By = "BY"
+    Asc = "ASC"
+    Desc = "DESC"
+    In = "IN"
+    Between = "BETWEEN"
+    All = "ALL"
+    Update = "UPDATE"
   end
 
   class OrderingType
-    String = 'string'
-    Long = 'long'
-    Double = 'double'
-    AlphaNumeric = 'alphaNumeric'
+    String = "string"
+    Long = "long"
+    Double = "double"
+    AlphaNumeric = "alphaNumeric"
   end
 
   class SpatialRelation
-    Within = 'within'
-    Contains = 'contains'
-    Disjoint = 'disjoint'
-    Intersects = 'intersects'
+    Within = "within"
+    Contains = "contains"
+    Disjoint = "disjoint"
+    Intersects = "intersects"
   end
 
   class WhereOperator < SpatialRelation
-    Equals = 'equals'
-    NotEquals = 'notEquals'
-    GreaterThan = 'greaterThan'
-    GreaterThanOrEqual = 'greaterThanOrEqual'
-    LessThan = 'lessThan'
-    LessThanOrEqual = 'lessThanOrEqual'
-    In = 'in'
-    AllIn = 'allIn'
-    Between = 'between'
-    Search = 'search'
-    Lucene = 'lucene'
-    StartsWith = 'startsWith'
-    EndsWith = 'endsWith'
-    Exists = 'exists'
+    Equals = "equals"
+    NotEquals = "notEquals"
+    GreaterThan = "greaterThan"
+    GreaterThanOrEqual = "greaterThanOrEqual"
+    LessThan = "lessThan"
+    LessThanOrEqual = "lessThanOrEqual"
+    In = "in"
+    AllIn = "allIn"
+    Between = "between"
+    Search = "search"
+    Lucene = "lucene"
+    StartsWith = "startsWith"
+    EndsWith = "endsWith"
+    Exists = "exists"
   end
 
   class FieldConstants
@@ -81,8 +81,8 @@ module RavenDB
   end
 
   class SpatialUnit
-    Kilometers = 'Kilometers'
-    Miles = 'Miles'
+    Kilometers = "Kilometers"
+    Miles = "Miles"
   end
 
   class RavenServerEvent
@@ -105,14 +105,14 @@ module RavenDB
   end
 
   class ConcurrencyCheckMode
-    Auto = 'Auto'
-    Forced = 'Forced'
-    Disabled = 'Disabled'
+    Auto = "Auto"
+    Forced = "Forced"
+    Disabled = "Disabled"
   end
 
   class AttachmentType
-    Document = 'Document'
-    Revision = 'Revision'
+    Document = "Document"
+    Revision = "Revision"
     
     def self.is_document(type)
       type == Document

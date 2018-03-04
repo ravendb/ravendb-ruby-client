@@ -7,7 +7,7 @@ module RavenDB
     attr_reader :query, :query_parameters, :wait_for_non_stale_results,
                 :wait_for_non_stale_results_as_of_now, :wait_for_non_stale_results_timeout
 
-    def initialize(query = '', query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
+    def initialize(query = "", query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
       @query = query
       @query_parameters = query_parameters || {}
       @page_size = page_size || DefaultPageSize

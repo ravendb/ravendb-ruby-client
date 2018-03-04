@@ -1,8 +1,8 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class DocumentAttachmentsTest < RavenDatabaseTest
-  ATTACHMENT = '47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b'
+  ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b"
 
   def test_should_put_attachment
     @_store.open_session do |session|
@@ -14,7 +14,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       refute_raises do 
         @_store.operations.send(
           RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-          [ATTACHMENT].pack("H*"), 'image/gif'
+          [ATTACHMENT].pack("H*"), "image/gif"
           )
         )
       end
@@ -31,7 +31,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-        attachment_raw, 'image/gif'
+        attachment_raw, "image/gif"
         )
       )
 
@@ -43,8 +43,8 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       assert_equal(attachment_result[:stream], attachment_raw)
       assert_equal(attachment_result[:attachment_details][:document_id], product.id)
-      assert_equal(attachment_result[:attachment_details][:content_type], 'image/gif')
-      assert_equal(attachment_result[:attachment_details][:name], '1x1.gif')
+      assert_equal(attachment_result[:attachment_details][:content_type], "image/gif")
+      assert_equal(attachment_result[:attachment_details][:name], "1x1.gif")
       assert_equal(attachment_result[:attachment_details][:size], attachment_raw.size)
     end
   end
@@ -58,7 +58,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
-        [ATTACHMENT].pack("H*"), 'image/gif'
+        [ATTACHMENT].pack("H*"), "image/gif"
         )
       )
 

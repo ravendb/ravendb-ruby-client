@@ -1,9 +1,9 @@
-require 'date'
-require 'active_support/core_ext/object/deep_dup'
-require 'active_support/inflector'
-require 'database/exceptions'
-require 'utilities/type_utilities'
-require 'utilities/json'
+require "date"
+require "active_support/core_ext/object/deep_dup"
+require "active_support/inflector"
+require "database/exceptions"
+require "utilities/type_utilities"
+require "utilities/json"
 
 module RavenDB
   class DocumentConventions
@@ -24,7 +24,7 @@ module RavenDB
     end
 
     def empty_collection
-      '@empty'
+      "@empty"
     end
 
     def empty_change_vector
@@ -57,7 +57,7 @@ module RavenDB
 
     def get_document_type(document_class)
       raise RuntimeError,
-        'Invalid argument passed. Should be an document class constructor' unless
+        "Invalid argument passed. Should be an document class constructor" unless
         document_class.is_a?(Class)
 
       document_class.name.to_s
@@ -65,14 +65,14 @@ module RavenDB
 
     def get_document_constructor(document_type)
       raise RuntimeError,
-        'Invalid argument passed. Should be an string' unless
+        "Invalid argument passed. Should be an string" unless
         document_type.is_a?(String)
 
       Object.const_get(document_type)
     end
 
     def get_id_property_name(document_or_class, document = nil)
-      id_property = 'id'
+      id_property = "id"
       document_type = nil
       document_class = nil
       document_instance = document
@@ -91,7 +91,7 @@ module RavenDB
       end
 
       raise RuntimeError,
-        'Invalid argument passed. Should be an document, class constructor or document type name' if
+        "Invalid argument passed. Should be an document, class constructor or document type name" if
         document_type.nil?
 
       if @_id_properties_names_cache.key?(document_type)
@@ -124,27 +124,27 @@ module RavenDB
 
     def convert_to_document(raw_entity, document_type = nil, nested_object_types = {})
       raise RuntimeError,
-        'Invalid raw_entity passed. Should be an hash' unless
+        "Invalid raw_entity passed. Should be an hash" unless
           raw_entity.is_a?(Hash)
 
-      metadata = raw_entity.fetch('@metadata', {})
-      doc_type = document_type || metadata['Raven-Ruby-Type']
+      metadata = raw_entity.fetch("@metadata", {})
+      doc_type = document_type || metadata["Raven-Ruby-Type"]
 
       if document_type.is_a?(Class)
         doc_type = document_type.name
       end
 
       if doc_type.nil?
-        doc_type = 'Object'
+        doc_type = "Object"
       end
 
-      metadata = raw_entity.fetch('@metadata', {})
+      metadata = raw_entity.fetch("@metadata", {})
       original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
-      attributes = TypeUtilities::omit_keys(raw_entity, ['@metadata'])
+      attributes = TypeUtilities::omit_keys(raw_entity, ["@metadata"])
       document = JsonSerializer::from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
-      set_id_on_document(document, metadata['@id'] || nil)
+      set_id_on_document(document, metadata["@id"] || nil)
 
       {
         :raw_entity => raw_entity,
@@ -168,13 +168,13 @@ module RavenDB
 
     def try_fetch_results(command_response)
       raise RuntimeError,
-        'Invalid command_response passed. Should be an hash' unless
+        "Invalid command_response passed. Should be an hash" unless
         command_response.is_a?(Hash)
 
       response_results = []
 
-      if command_response.key?('Results') && command_response['Results'].is_a?(Array)
-        response_results = command_response['Results']
+      if command_response.key?("Results") && command_response["Results"].is_a?(Array)
+        response_results = command_response["Results"]
       end
 
       response_results
@@ -182,16 +182,16 @@ module RavenDB
 
     def try_fetch_includes(command_response)
       raise RuntimeError,
-        'Invalid command_response passed. Should be an hash' unless
+        "Invalid command_response passed. Should be an hash" unless
         command_response.is_a?(Hash)
 
       response_includes = []
 
-      if command_response.key?('Includes')
-        if command_response['Includes'].is_a?(Array)
-          response_includes = command_response['Includes']
-        elsif command_response['Includes'].is_a?(Hash)
-          response_includes = command_response['Includes'].values
+      if command_response.key?("Includes")
+        if command_response["Includes"].is_a?(Array)
+          response_includes = command_response["Includes"]
+        elsif command_response["Includes"].is_a?(Hash)
+          response_includes = command_response["Includes"].values
         end
       end
 
@@ -200,14 +200,14 @@ module RavenDB
 
     def check_is_projection?(response_item)
       raise RuntimeError,
-        'Invalid command_response passed. Should be an hash' unless
+        "Invalid command_response passed. Should be an hash" unless
           response_item.is_a?(Hash)
 
-      if response_item.key?('@metadata')
-        metadata = response_item['@metadata']
+      if response_item.key?("@metadata")
+        metadata = response_item["@metadata"]
 
-        if metadata.is_a?(Hash) && metadata.key?('@projection')
-          return metadata['@projection'] || false
+        if metadata.is_a?(Hash) && metadata.key?("@projection")
+          return metadata["@projection"] || false
         end
       end
 
@@ -222,12 +222,12 @@ module RavenDB
         document.instance_variable_set(id_property, id)
       end
 
-      if document.instance_variable_defined?('@metadata')
-        metadata = document.instance_variable_get('@metadata')
+      if document.instance_variable_defined?("@metadata")
+        metadata = document.instance_variable_get("@metadata")
       end
 
-      metadata['@id'] = id
-      document.instance_variable_set('@metadata', metadata)
+      metadata["@id"] = id
+      document.instance_variable_set("@metadata", metadata)
       document
     end
 
@@ -239,9 +239,9 @@ module RavenDB
         id = document.instance_variable_get(id_property)
       end
 
-      if id.nil? && document.instance_variable_defined?('@metadata')
-        metadata = document.instance_variable_get('@metadata')
-        id = metadata['@id']
+      if id.nil? && document.instance_variable_defined?("@metadata")
+        metadata = document.instance_variable_get("@metadata")
+        id = metadata["@id"]
       end
 
       id || nil
@@ -249,21 +249,21 @@ module RavenDB
 
     def get_type_from_document(document)
       raise RuntimeError,
-        'Invalid argument passed. Should be an document' unless
+        "Invalid argument passed. Should be an document" unless
         TypeUtilities::is_document?(document)
 
       metadata = {}
 
-      if document.instance_variable_defined?('@metadata')
-        metadata = document.instance_variable_get('@metadata')
+      if document.instance_variable_defined?("@metadata")
+        metadata = document.instance_variable_get("@metadata")
       end
 
-      if metadata.key?('Raven-Ruby-Type')
-        return metadata['Raven-Ruby-Type']
+      if metadata.key?("Raven-Ruby-Type")
+        return metadata["Raven-Ruby-Type"]
       end
 
-      if metadata.key?('@collection') && empty_collection != metadata['@collection']
-        return (metadata['@collection'].singularize).capitalize
+      if metadata.key?("@collection") && empty_collection != metadata["@collection"]
+        return (metadata["@collection"].singularize).capitalize
       end
 
       get_document_type(document.class)
@@ -274,16 +274,16 @@ module RavenDB
       nested_types = {}
 
       raise RuntimeError,
-        'Invalid argument passed. Should be an document' unless
+        "Invalid argument passed. Should be an document" unless
         TypeUtilities::is_document?(document)
 
-      if document.instance_variable_defined?('@metadata')
-        metadata = document.instance_variable_get('@metadata')
+      if document.instance_variable_defined?("@metadata")
+        metadata = document.instance_variable_get("@metadata")
       end
 
       metadata = metadata.merge({
-        'Raven-Ruby-Type' => get_type_from_document(document),
-        '@collection' => get_collection_name(document.class)
+        "Raven-Ruby-Type" => get_type_from_document(document),
+        "@collection" => get_collection_name(document.class)
       })
 
       document.instance_variables.each do |instance_variable|
@@ -294,12 +294,12 @@ module RavenDB
         end
 
         if !((nested_type = (find_nested_type(value_for_check))).nil?)
-          nested_types[instance_variable.to_s.gsub('@', '')] = nested_type
+          nested_types[instance_variable.to_s.gsub("@", "")] = nested_type
         end
       end
 
       if !nested_types.empty?
-        metadata['@nested_object_types'] = nested_types
+        metadata["@nested_object_types"] = nested_types
       end
 
       metadata
@@ -308,7 +308,7 @@ module RavenDB
     protected
     def find_nested_type(instance_variable_value)
       if instance_variable_value.is_a?(Date) || instance_variable_value.is_a?(DateTime)
-        return 'date'
+        return "date"
       end
 
       if TypeUtilities::is_document?(instance_variable_value)

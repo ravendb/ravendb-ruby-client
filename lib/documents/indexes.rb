@@ -1,5 +1,5 @@
-require 'constants/documents'
-require 'constants/database'
+require "constants/documents"
+require "constants/database"
 
 module RavenDB
 
@@ -20,14 +20,14 @@ module RavenDB
     end
 
     def type
-      result = 'Map'
+      result = "Map"
 
-      if @_name && @_name.start_with?('Auto/')
-        result = 'Auto' + result
+      if @_name && @_name.start_with?("Auto/")
+        result = "Auto" + result
       end
 
       if @reduce > 0
-        result += 'Reduce'
+        result += "Reduce"
       end
 
       result

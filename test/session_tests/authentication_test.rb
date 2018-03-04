@@ -1,5 +1,5 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class AuthenticationTest < RavenDatabaseTest
   def setup
@@ -57,7 +57,7 @@ CERTIFICATE
   def test_should_raise_not_supported_exception_when_trying_to_connect_to_secured_server_without_auth_options
     assert_raises(RavenDB::NotSupportedException) do
       store = RavenDB::DocumentStore.new(
-          ['https://secured.db.somedomain.com'], 'SomeDatabase'
+          ["https://secured.db.somedomain.com"], "SomeDatabase"
       )
 
       store.configure
@@ -65,7 +65,7 @@ CERTIFICATE
   end
 
   def test_should_raise_unauthorized_exception_when_trying_to_connect_to_secured_server_with_invalid_certificate
-    unless DEFAULT_URL.downcase.include?('https://')
+    unless DEFAULT_URL.downcase.include?("https://")
       return
     end
 
@@ -77,7 +77,7 @@ CERTIFICATE
 
       store.configure
       store.open_session do |session|
-        session.load('DocumentWillNotLoad/1')
+        session.load("DocumentWillNotLoad/1")
       end
     end
   end

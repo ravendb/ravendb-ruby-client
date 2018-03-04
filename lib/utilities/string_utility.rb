@@ -1,4 +1,4 @@
-require 'stringio'
+require "stringio"
 
 class String
   def alnum?
@@ -41,7 +41,7 @@ module RavenDB
 
       string.chars.each_with_index do |c, i|
         if i == 0
-          if !c.alpha? && !['_', '@'].include?(c)
+          if !c.alpha? && !["_", "@"].include?(c)
             escape = true
             break
           end
@@ -49,7 +49,7 @@ module RavenDB
           next
         end
 
-        if !c.alnum? && !['_', '@', '.', '[', ']'].include?(c)
+        if !c.alnum? && !["_", "@", ".", "[", "]"].include?(c)
           escape = true
           break
         end

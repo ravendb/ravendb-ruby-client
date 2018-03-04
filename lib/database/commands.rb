@@ -1,11 +1,11 @@
 require "set"
 require "uri"
 require "json"
-require 'date'
+require "date"
 require "net/http"
 require "utilities/json"
 require "database/exceptions"
-require 'documents/query/index_query'
+require "documents/query/index_query"
 require "documents/indexes"
 require "requests/request_helpers"
 require "utilities/type_utilities"
@@ -60,9 +60,9 @@ module RavenDB
         begin
           request.body = JSON.generate(@payload)
         rescue JSON::GeneratorError
-          raise RuntimeError, 'Invalid payload specified. Can be JSON object only'
+          raise RuntimeError, "Invalid payload specified. Can be JSON object only"
         end
-        @headers['Content-Type'] = 'application/json'
+        @headers["Content-Type"] = "application/json"
       end 
       
       if !@headers.empty?      
@@ -169,10 +169,10 @@ module RavenDB
   end
 end
 
-require_relative './commands/batch'
-require_relative './commands/databases'
-require_relative './commands/documents'
-require_relative './commands/indexes'
-require_relative './commands/queries'
-require_relative './commands/hilo'
-require_relative './commands/attachments'
+require_relative "./commands/batch"
+require_relative "./commands/databases"
+require_relative "./commands/documents"
+require_relative "./commands/indexes"
+require_relative "./commands/queries"
+require_relative "./commands/hilo"
+require_relative "./commands/attachments"

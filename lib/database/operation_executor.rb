@@ -1,12 +1,12 @@
-require 'time'
-require 'net/http'
-require 'database/operations'
-require 'database/commands'
-require 'database/exceptions'
-require 'constants/database'
-require 'constants/documents'
-require 'requests/request_executor'
-require 'auth/auth_options'
+require "time"
+require "net/http"
+require "database/operations"
+require "database/commands"
+require "database/exceptions"
+require "constants/database"
+require "constants/documents"
+require "requests/request_executor"
+require "auth/auth_options"
 
 module RavenDB
   class OperationAwaiter
@@ -33,7 +33,7 @@ module RavenDB
         if @timeout && ((Time.now.to_f - start_time) > @timeout)
           return {
             :status => OperationStatus::Faulted,
-            :exception => DatabaseLoadTimeoutException.new('The operation did not finish before the timeout end')
+            :exception => DatabaseLoadTimeoutException.new("The operation did not finish before the timeout end")
           }
         end
         
@@ -92,7 +92,7 @@ module RavenDB
       store = @store
       executor = request_executor
       conventions = store.conventions
-      error_message = 'Invalid object passed as an operation'      
+      error_message = "Invalid object passed as an operation"      
       
       if operation.is_a?(AbstractOperation)
         begin
@@ -119,7 +119,7 @@ module RavenDB
     end
 
     def request_executor_factory
-      raise NotImplementedError, 'You should implement request_executor_factory method'
+      raise NotImplementedError, "You should implement request_executor_factory method"
     end  
 
     def request_executor
@@ -200,7 +200,7 @@ module RavenDB
 
   class ServerOperationExecutor < AbstractOperationExecutor
     def send(operation)
-      raise RuntimeError, 'Invalid operation passed. It should be derived from ServerOperation' unless operation.is_a?(ServerOperation)
+      raise RuntimeError, "Invalid operation passed. It should be derived from ServerOperation" unless operation.is_a?(ServerOperation)
 
       super(operation)
     end
@@ -239,7 +239,7 @@ module RavenDB
     end
 
     def send(operation)
-      raise RuntimeError, 'Invalid operation passed. It should be derived from AdminOperation' unless operation.is_a?(AdminOperation)
+      raise RuntimeError, "Invalid operation passed. It should be derived from AdminOperation" unless operation.is_a?(AdminOperation)
       
       super(operation)
     end

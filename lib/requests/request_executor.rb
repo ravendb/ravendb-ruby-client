@@ -1,16 +1,16 @@
-require 'uri'
-require 'time'
-require 'thread'
-require 'net/http'
-require 'openssl'
-require 'constants/database'
-require 'constants/documents'
-require 'database/exceptions'
-require 'database/commands'
-require 'documents/conventions'
-require 'requests/request_helpers'
-require 'utilities/observable'
-require 'auth/auth_options'
+require "uri"
+require "time"
+require "thread"
+require "net/http"
+require "openssl"
+require "constants/database"
+require "constants/documents"
+require "database/exceptions"
+require "database/commands"
+require "documents/conventions"
+require "requests/request_helpers"
+require "utilities/observable"
+require "auth/auth_options"
 
 module RavenDB
   class RequestExecutor
@@ -126,7 +126,7 @@ module RavenDB
         if @_first_topology_update_exception.is_a?(AuthorizationException)
           raise @_first_topology_update_exception
         elsif is_first_topology_update_tries_expired?
-          raise DatabaseLoadFailureException, 'Max topology update tries reached'
+          raise DatabaseLoadFailureException, "Max topology update tries reached"
         elsif
           sleep 0.1
           await_first_topology_update
@@ -155,11 +155,11 @@ module RavenDB
       end
 
       if !command.is_a?(RavenCommand)
-        raise RuntimeError, 'Not a valid command'
+        raise RuntimeError, "Not a valid command"
       end
 
       if !server_node.is_a?(ServerNode)
-        raise RuntimeError, 'Not a valid server node'
+        raise RuntimeError, "Not a valid server node"
       end
 
       response = nil

@@ -1,5 +1,5 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class DocumentDeleteTest < RavenDatabaseTest
   IDS = [101, 10, 106, 107]

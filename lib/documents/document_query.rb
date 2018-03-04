@@ -1,13 +1,13 @@
-require 'date'
-require 'digest'
-require 'active_support/inflector'
-require 'constants/documents'
-require 'database/commands'
-require 'database/exceptions'
-require 'documents/query/index_query'
-require 'documents/query/query_builder'
-require 'utilities/observable'
-require 'utilities/type_utilities'
+require "date"
+require "digest"
+require "active_support/inflector"
+require "constants/documents"
+require "database/commands"
+require "database/exceptions"
+require "documents/query/index_query"
+require "documents/query/query_builder"
+require "utilities/observable"
+require "utilities/type_utilities"
 
 module RavenDB
   class DocumentQueryBase
@@ -24,7 +24,7 @@ module RavenDB
       if options.is_a?(Hash)
         with_statistics = options[:with_statistics] || false
         index_name = options[:index_name] || nil
-        collection = options[:collection]  || '@all_docs'
+        collection = options[:collection]  || "@all_docs"
         document_type = options[:document_type] || nil
         index_query_options = options[:index_query_options] || {}
         nested_object_types = options[:nested_object_types] || {}
@@ -46,7 +46,7 @@ module RavenDB
       @request_executor = request_executor
       @nested_object_types = nested_object_types || {}
       @query_parameters = {}
-      @id_property_name = 'id'
+      @id_property_name = "id"
       @take = nil
       @skip = nil
 
@@ -55,7 +55,7 @@ module RavenDB
         @index_name = index_name
       else
         @index_name = nil
-        @collection_name = collection || '@all_docs'
+        @collection_name = collection || "@all_docs"
       end
 
       if !document_type_or_class.nil?
@@ -428,8 +428,8 @@ module RavenDB
     end
 
     def where_between(field_name, from, to, exact = nil)
-      transformed_from = '*'
-      transformed_to = 'NULL'
+      transformed_from = "*"
+      transformed_to = "NULL"
 
       unless from.nil?
         transformed_from = transform_value({
@@ -456,7 +456,7 @@ module RavenDB
     end
 
     def where_greater_than(field_name, value, exact = nil)
-      transformed_value = '*'
+      transformed_value = "*"
 
       unless value.nil?
         transformed_value = transform_value({
@@ -471,7 +471,7 @@ module RavenDB
     end
 
     def where_greater_than_or_equal(field_name, value, exact = nil)
-      transformed_value = '*'
+      transformed_value = "*"
 
       unless value.nil?
         transformed_value = transform_value({
@@ -486,7 +486,7 @@ module RavenDB
     end
 
     def where_less_than(field_name, value, exact = nil)
-      transformed_value = 'NULL'
+      transformed_value = "NULL"
 
       unless value.nil?
         transformed_value = transform_value({
@@ -501,7 +501,7 @@ module RavenDB
     end
 
     def where_less_than_or_equal(field_name, value, exact = nil)
-      transformed_value = 'NULL'
+      transformed_value = "NULL"
 
       unless value.nil?
         transformed_value = transform_value({

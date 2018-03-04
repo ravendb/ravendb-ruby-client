@@ -1,10 +1,10 @@
-require 'utilities/linked_list'
-require 'database/exceptions'
-require 'utilities/observable'
-require 'utilities/string_utility'
-require 'constants/documents'
-require 'documents/query/query_tokens'
-require 'documents/query/spatial'
+require "utilities/linked_list"
+require "database/exceptions"
+require "utilities/observable"
+require "utilities/string_utility"
+require "constants/documents"
+require "documents/query/query_tokens"
+require "documents/query/spatial"
 
 module RavenDB
   class QueryBuilder
@@ -787,7 +787,7 @@ module RavenDB
         end
 
         include.chars.each do |ch|
-          if !ch.alnum?  && !['_', '.'].include?(ch)
+          if !ch.alnum?  && !["_", "."].include?(ch)
             required_quotes = true
             break
           end

@@ -1,18 +1,18 @@
-require 'database/exceptions'
-require 'documents/document_query'
+require "database/exceptions"
+require "documents/document_query"
 require "documents/indexes"
-require 'requests/request_helpers'
+require "requests/request_helpers"
 
 module RavenDB
   class AbstractOperation
     def get_command(conventions)
-      raise NotImplementedError, 'You should implement get_command method'
+      raise NotImplementedError, "You should implement get_command method"
     end
   end
 
   class Operation < AbstractOperation
     def get_command(conventions, store = nil)
-      raise NotImplementedError, 'You should implement get_command method'
+      raise NotImplementedError, "You should implement get_command method"
     end
   end
 
@@ -37,7 +37,7 @@ module RavenDB
   end
 end
 
-require_relative './operations/databases'
-require_relative './operations/indexes'
-require_relative './operations/queries'
-require_relative './operations/attachments'
+require_relative "./operations/databases"
+require_relative "./operations/indexes"
+require_relative "./operations/queries"
+require_relative "./operations/attachments"

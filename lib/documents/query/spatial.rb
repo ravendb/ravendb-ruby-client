@@ -1,5 +1,5 @@
-require 'constants/documents'
-require 'documents/query/query_tokens'
+require "constants/documents"
+require "documents/query/query_tokens"
 
 module RavenDB
   class SpatialCriteria

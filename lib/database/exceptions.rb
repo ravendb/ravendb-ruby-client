@@ -1,4 +1,4 @@
-require 'net/http'
+require "net/http"
 
 module RavenDB
   class RavenException < StandardError

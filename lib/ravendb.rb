@@ -1,4 +1,4 @@
-require 'documents/document_store'
+require "documents/document_store"
 
 module RavenDB 
   # Returns an initially-unconfigured instance of the document store.

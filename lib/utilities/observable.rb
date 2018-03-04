@@ -1,4 +1,4 @@
-require 'observer'
+require "observer"
 
 module Observable
   def emit(event, data = nil)

@@ -1,7 +1,7 @@
 module RavenDB
   class HiloNextCommand < RavenCommand
     def initialize(tag, last_batch_size, last_range_at, identity_parts_separator, last_range_max)
-      super('', Net::HTTP::Get::METHOD)
+      super("", Net::HTTP::Get::METHOD)
       @tag = tag
       @last_batch_size = last_batch_size
       @last_range_at = last_range_at
@@ -41,14 +41,14 @@ module RavenDB
 
   class HiloReturnCommand < RavenCommand
     def initialize(tag, last_value, end_of_range)
-      super('', Net::HTTP::Put::METHOD)
+      super("", Net::HTTP::Put::METHOD)
       @tag  = tag
       @last = last_value
       @end  = end_of_range
     end
 
     def create_request(server_node)
-      @headers['Content-Type'] = 'application/json'
+      @headers["Content-Type"] = "application/json"
       @params = {"tag" => @tag, "last" => @last, "end" => @end}
       @end_point ="/databases/#{server_node.database}/hilo/return"
     end

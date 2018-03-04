@@ -1,11 +1,11 @@
-require 'securerandom'
-require 'database/operation_executor'
-require 'documents/conventions'
-require 'requests/request_executor'
-require 'database/exceptions'
-require 'documents/hilo'
-require 'documents/document_session'
-require 'auth/auth_options'
+require "securerandom"
+require "database/operation_executor"
+require "documents/conventions"
+require "requests/request_executor"
+require "database/exceptions"
+require "documents/hilo"
+require "documents/document_session"
+require "auth/auth_options"
 
 module RavenDB
   class Configuration
@@ -64,7 +64,7 @@ module RavenDB
           "Invalid auth options provided" unless
           @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
 
-        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
+        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?("https") }
           raise NotSupportedException, "Access to secured servers requires StoreAuthOptions to be set"
         end
 

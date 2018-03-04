@@ -1,7 +1,7 @@
 require "json"
-require 'net/http'
-require 'database/exceptions'
-require 'utilities/type_utilities'
+require "net/http"
+require "database/exceptions"
+require "utilities/type_utilities"
 
 class Net::HTTPResponse
   def json(raise_when_invalid = true)
@@ -15,7 +15,7 @@ class Net::HTTPResponse
         end
       rescue
         if raise_when_invalid
-          raise RavenDB::ErrorResponseException, 'Not a valid JSON'  
+          raise RavenDB::ErrorResponseException, "Not a valid JSON"  
         end  
       end  
     end  
@@ -38,16 +38,16 @@ module RavenDB
       mappings = {}
 
       if !TypeUtilities::is_document?(target)
-        raise RuntimeError, 'Invalid target passed. Should be a user-defined class instance'
+        raise RuntimeError, "Invalid target passed. Should be a user-defined class instance"
       end
 
       if !source.is_a?(Hash)
-        raise RuntimeError, 'Invalid source passed. Should be a Hash object'
+        raise RuntimeError, "Invalid source passed. Should be a Hash object"
       end
 
-      if metadata.key?('@nested_object_types') &&
-        metadata['@nested_object_types'].is_a?(Hash)
-        mappings = mappings.merge(metadata['@nested_object_types'])
+      if metadata.key?("@nested_object_types") &&
+        metadata["@nested_object_types"].is_a?(Hash)
+        mappings = mappings.merge(metadata["@nested_object_types"])
       end
 
       if nested_object_types.is_a?(Hash) && nested_object_types.size
@@ -57,12 +57,12 @@ module RavenDB
       current_metadata = {}
 
       if metadata.is_a?(Hash) && metadata.size
-        if target.instance_variable_defined?('@metadata')
-          current_metadata = target.instance_variable_get('@metadata') || {}
+        if target.instance_variable_defined?("@metadata")
+          current_metadata = target.instance_variable_get("@metadata") || {}
         end
 
         current_metadata = current_metadata.merge(metadata)
-        target.instance_variable_set('@metadata', current_metadata)
+        target.instance_variable_set("@metadata", current_metadata)
       end
 
       source.each do |key, value|
@@ -102,13 +102,13 @@ module RavenDB
       json = {}
 
       if !TypeUtilities::is_document?(source)
-        raise RuntimeError, 'Invalid source passed. Should be a user-defined class instance'
+        raise RuntimeError, "Invalid source passed. Should be a user-defined class instance"
       end
 
       current_metadata = {}
 
-      if source.instance_variable_defined?('@metadata')
-        current_metadata = source.instance_variable_get('@metadata') || {}
+      if source.instance_variable_defined?("@metadata")
+        current_metadata = source.instance_variable_get("@metadata") || {}
       end
 
       source.instance_variables.each do |variable|
@@ -117,8 +117,8 @@ module RavenDB
         json_property = variable_name
         json_value = variable_value
 
-        if '@metadata' != variable_name
-          json_property = json_property.gsub('@', '')
+        if "@metadata" != variable_name
+          json_property = json_property.gsub("@", "")
 
           serialized = {
             :original_attribute => json_property,
@@ -150,7 +150,7 @@ module RavenDB
       if mappings.key?(key)
         nested_object_type = mappings[key]
 
-        if 'date' == nested_object_type
+        if "date" == nested_object_type
           return TypeUtilities::parse_date(json_value)
         end
 
@@ -206,8 +206,8 @@ module RavenDB
     def self.json_to_document(json_value, nested_object_type, conventions = nil, parent_path = nil)
       nested_object_metadata = {}
 
-      if json_value.key?('@metadata') && json_value['@metadata'].is_a?(Hash)
-        nested_object_metadata = json_value['@metadata']
+      if json_value.key?("@metadata") && json_value["@metadata"].is_a?(Hash)
+        nested_object_metadata = json_value["@metadata"]
       end
 
       if nested_object_type.is_a?(Class) || nested_object_type.is_a?(String)
@@ -222,7 +222,7 @@ module RavenDB
     end
 
     def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil)
-      if '@metadata' != variable && !!variable_value != variable_value
+      if "@metadata" != variable && !!variable_value != variable_value
         if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
           return TypeUtilities::stringify_date(variable_value)
         end

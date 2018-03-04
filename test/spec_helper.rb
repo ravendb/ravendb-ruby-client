@@ -1,8 +1,8 @@
-require 'ravendb'
-require 'date'
-require 'securerandom'
-require 'minitest/autorun'
-require 'active_support/inflector'
+require "ravendb"
+require "date"
+require "securerandom"
+require "minitest/autorun"
+require "active_support/inflector"
 
 module MiniTest
   module Assertions
@@ -272,15 +272,15 @@ end
 
 class ProductsTestingSort
   def initialize(store)
-    index_map =  'from doc in docs '\
-      'select new {'\
-      'name = doc.name,'\
-      'uid = doc.uid,'\
+    index_map =  "from doc in docs "\
+      "select new {"\
+      "name = doc.name,"\
+      "uid = doc.uid,"\
       'doc_id = doc.uid+"_"+doc.name}'
 
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
-      'Testing_Sort', index_map, nil, {
+      "Testing_Sort", index_map, nil, {
       :fields => {
         "doc_id" => RavenDB::IndexFieldOptions.new(nil, true)
       }
@@ -296,10 +296,10 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
   def on_serialized(serialized)
     metadata = serialized[:metadata]
 
-    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+    if metadata["Raven-Ruby-Type"] == TestCustomSerializer.name
       serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
 
-      if serialized[:original_attribute] == 'item_options'
+      if serialized[:original_attribute] == "item_options"
         serialized[:serialized_value] = serialized[:original_value].join(",")
       end
     end
@@ -308,10 +308,10 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
   def on_unserialized(serialized)
     metadata = serialized[:metadata]
 
-    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
+    if metadata["Raven-Ruby-Type"] == TestCustomSerializer.name
       serialized[:serialized_attribute] = serialized[:original_attribute].underscore
 
-      if serialized[:original_attribute] == 'itemOptions'
+      if serialized[:original_attribute] == "itemOptions"
         serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
       end
     end

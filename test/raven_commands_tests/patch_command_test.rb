@@ -1,7 +1,7 @@
-require 'ravendb'
-require 'securerandom'
-require 'minitest/autorun'
-require 'spec_helper'
+require "ravendb"
+require "securerandom"
+require "minitest/autorun"
+require "spec_helper"
 
 class PatchCommandTest < RavenDatabaseIndexesTest
   ID = "Products/10"
@@ -10,7 +10,7 @@ class PatchCommandTest < RavenDatabaseIndexesTest
   def setup
     super() 
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"name" => "test", "@metadata" => {'Raven-Ruby-Type' => 'Product', '@collection' => 'Products'}}))
+    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"name" => "test", "@metadata" => {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
@@ -22,7 +22,7 @@ class PatchCommandTest < RavenDatabaseIndexesTest
     assert(result.key?(:Document))
     assert_equal(result[:Status], RavenDB::PatchStatus::Patched)
     assert(result[:Document].is_a?(Product))
-    assert_equal('testing', result[:Document].name)
+    assert_equal("testing", result[:Document].name)
   end
 
   def test_should_patch_success_not_ignoring_missing

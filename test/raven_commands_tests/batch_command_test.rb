@@ -1,7 +1,7 @@
-require 'ravendb'
-require 'securerandom'
-require 'minitest/autorun'
-require 'spec_helper'
+require "ravendb"
+require "securerandom"
+require "minitest/autorun"
+require "spec_helper"
 
 class BatchCommandTest < RavenDatabaseIndexesTest
   @_put_command1 = nil
@@ -13,10 +13,10 @@ class BatchCommandTest < RavenDatabaseIndexesTest
     metadata = {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}
     super()
 
-    @_put_command1 = RavenDB::PutCommandData.new('Products/999', {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
-    @_put_command2 = RavenDB::PutCommandData.new('Products/1000', {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
-    @_delete_command = RavenDB::DeleteCommandData.new('Products/1000')
-    @_scripted_patch_command = RavenDB::PatchCommandData.new('Products/999', RavenDB::PatchRequest.new("this.Name = 'testing';"))
+    @_put_command1 = RavenDB::PutCommandData.new("Products/999", {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
+    @_put_command2 = RavenDB::PutCommandData.new("Products/1000", {"Name" => "tests", "Category" => "testing", "@metadata" => metadata})
+    @_delete_command = RavenDB::DeleteCommandData.new("Products/1000")
+    @_scripted_patch_command = RavenDB::PatchCommandData.new("Products/999", RavenDB::PatchRequest.new("this.Name = 'testing';"))
   end
   
   def test_should_be_success_with_one_command
@@ -31,8 +31,8 @@ class BatchCommandTest < RavenDatabaseIndexesTest
 
   def test_should_be_success_with_a_scripted_patch
     @_request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_scripted_patch_command]))
-    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new('Products/999'))
-    assert_equal('testing', result["Results"].first["Name"])
+    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new("Products/999"))
+    assert_equal("testing", result["Results"].first["Name"])
   end
 
   def test_should_fail_the_test_with_invalid_command_data
