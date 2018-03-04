@@ -254,7 +254,7 @@ module RavenDB
     def increment_requests_count
       max_requests = DocumentConventions::MaxNumberOfRequestPerSession
 
-      @number_of_requests_in_session = @number_of_requests_in_session + 1
+      @number_of_requests_in_session += 1
 
       unless @number_of_requests_in_session <= max_requests
         raise "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\

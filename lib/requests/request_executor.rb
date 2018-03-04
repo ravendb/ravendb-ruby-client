@@ -212,7 +212,7 @@ module RavenDB
       end
 
       @_last_known_urls = urls
-      @_first_topology_updates_tries = @_first_topology_updates_tries + 1
+      @_first_topology_updates_tries += 1
       @_first_topology_update = Thread.new do
         updated = false
 

@@ -564,17 +564,6 @@ Style/RegexpLiteral:
   Exclude:
     - 'test/session_tests/document_store_test.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-Style/SelfAssignment:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/hilo.rb'
-    - 'lib/documents/query/index_query.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.

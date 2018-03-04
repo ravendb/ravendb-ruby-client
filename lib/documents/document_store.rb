@@ -120,7 +120,7 @@ module RavenDB
         end
       end
 
-      session_database = session_database || database
+      session_database ||= database
       request_executor = nil
 
       if session_options.key?(:request_executor)

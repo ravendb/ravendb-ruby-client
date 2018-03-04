@@ -31,11 +31,11 @@ module RavenDB
 
     def query_hash
       buffer = "#{@query}#{@page_size}#{@start}"
-      buffer = buffer + (@wait_for_non_stale_results ? "1" : "0")
-      buffer = buffer + (@wait_for_non_stale_results_as_of_now ? "1" : "0")
+      buffer += (@wait_for_non_stale_results ? "1" : "0")
+      buffer += (@wait_for_non_stale_results_as_of_now ? "1" : "0")
 
       if @wait_for_non_stale_results
-        buffer = buffer + "#{@wait_for_non_stale_results_timeout}"
+        buffer += "#{@wait_for_non_stale_results_timeout}"
       end
 
       Digest::SHA256.hexdigest(buffer)

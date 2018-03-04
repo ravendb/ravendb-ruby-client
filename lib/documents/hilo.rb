@@ -15,7 +15,7 @@ module RavenDB
     end
 
     def increment
-      @current = @current + 1
+      @current += 1
     end
 
     def needs_new_range?

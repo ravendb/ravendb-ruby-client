@@ -160,7 +160,7 @@ module RavenDB
     end
 
     def open_subclause
-      @current_clause_depth = @current_clause_depth + 1
+      @current_clause_depth += 1
       append_operator_if_needed(@where_tokens)
       negate_if_needed
       @where_tokens.add_last(OpenSubclauseToken.instance)
@@ -169,7 +169,7 @@ module RavenDB
     end
 
     def close_subclause
-      @current_clause_depth = @current_clause_depth - 1
+      @current_clause_depth -= 1
       @where_tokens.add_last(CloseSubclauseToken.instance)
 
       self
