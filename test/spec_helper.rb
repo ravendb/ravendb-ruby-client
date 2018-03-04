@@ -14,7 +14,7 @@ module MiniTest
       rescue MiniTest::Skip => e
         return e if exp.include? MiniTest::Skip
         raise e
-      rescue Exception => e
+      rescue StandardError => e
         exp = exp.first if exp.size == 1
         flunk "#{msg}: #{e}"
       end
