@@ -1,4 +1,3 @@
-require "thread"
 require "documents/conventions"
 require "utilities/type_utilities"
 require "database/commands"

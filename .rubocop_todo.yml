@@ -204,14 +204,6 @@ Lint/RescueException:
   Exclude:
     - 'test/spec_helper.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Lint/UnneededRequireStatement:
-  Exclude:
-    - 'lib/documents/hilo.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/requests/request_helpers.rb'
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.

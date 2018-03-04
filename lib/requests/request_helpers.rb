@@ -1,4 +1,3 @@
-require "thread"
 require "database/exceptions"
 require "constants/documents"
 

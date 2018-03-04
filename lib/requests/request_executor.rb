@@ -1,6 +1,5 @@
 require "uri"
 require "time"
-require "thread"
 require "net/http"
 require "openssl"
 require "constants/database"
