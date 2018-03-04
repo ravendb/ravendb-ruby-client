@@ -385,7 +385,7 @@ module RavenDB
         body = response_or_exception.json(false)
 
         if !body.nil? && body.key?("Message")
-          ssl_exception = body["Message"];
+          ssl_exception = body["Message"]
         end
       end
 

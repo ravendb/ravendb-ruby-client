@@ -255,7 +255,7 @@ module RavenDB
 
     def self.build_path(attribute, parent_path = nil)
       unless parent_path.nil?
-        return "#{parent_path}.#{attribute}";
+        return "#{parent_path}.#{attribute}"
       end
 
       attribute

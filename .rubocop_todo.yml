@@ -575,15 +575,6 @@ Style/SelfAssignment:
     - 'lib/documents/query/query_builder.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: AllowAsExpressionSeparator.
-Style/Semicolon:
-  Exclude:
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/json.rb'
-    - 'test/raven_commands_tests/get_command_test.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.
