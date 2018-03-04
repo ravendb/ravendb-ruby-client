@@ -410,12 +410,6 @@ Style/ParenthesesAroundCondition:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantBegin:
-  Exclude:
-    - 'lib/documents/hilo.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 Style/RedundantParentheses:
