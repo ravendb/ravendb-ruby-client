@@ -19,13 +19,13 @@ module RavenDB
       @params = params
       @payload = payload
       @headers = headers
-      @failed_nodes = Set.new([])  
-      @_last_response = nil      
+      @failed_nodes = Set.new([])
+      @_last_response = nil
     end
 
     def server_response
       @_last_response
-    end  
+    end
 
     def was_failed?()
       !@failed_nodes.empty?
@@ -43,12 +43,12 @@ module RavenDB
 
     def create_request(server_node)
       raise NotImplementedError, "You should implement create_request method"
-    end  
+    end
 
     def to_request_options
       end_point = @end_point
 
-      if !@params.empty?        
+      if !@params.empty?
         encoded_params = URI.encode_www_form(@params)
         end_point = "#{end_point}?#{encoded_params}"
       end
@@ -63,16 +63,16 @@ module RavenDB
           raise RuntimeError, "Invalid payload specified. Can be JSON object only"
         end
         @headers["Content-Type"] = "application/json"
-      end 
-      
-      if !@headers.empty?      
+      end
+
+      if !@headers.empty?
         @headers.each do |header, value|
           request.add_field(header, value)
         end
-      end  
+      end
 
       request
-    end  
+    end
 
     def set_response(response)
       @_last_response = response
@@ -80,21 +80,21 @@ module RavenDB
       if @_last_response
         ExceptionsFactory.raise_from(response)
         response.json
-      end   
-    end  
+      end
+    end
 
     protected
     def assert_node(node)
       raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless node.is_a? ServerNode
     end
 
-    def add_params(param_or_params, value)      
+    def add_params(param_or_params, value)
       new_params = param_or_params
 
       if !new_params.is_a?(Hash)
         new_params = Hash.new
         new_params[param_or_params] = value
-      end    
+      end
 
       @params = @params.merge(new_params)
     end
@@ -104,14 +104,14 @@ module RavenDB
 
       if !remove.is_a?(Array)
         remove = [remove]
-      end  
+      end
 
-      if !other_params.empty?        
+      if !other_params.empty?
         remove = remove.concat(other_params)
       end
 
       remove.each {|param| @params.delete(param)}
-    end  
+    end
   end
 
   class QueryBasedCommand < RavenCommand
@@ -141,10 +141,10 @@ module RavenDB
       }
 
       @end_point = "/databases/#{server_node.database}/queries"
-      
+
       if options.allow_stale && options.stale_timeout
         add_params("staleTimeout", options.stale_timeout)
-      end  
+      end
     end
   end
 

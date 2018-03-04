@@ -65,7 +65,7 @@ module RavenDB
           document_type = document_type.name
         end
       elsif !collection.nil?
-        document_type = collection.singularize.upcase_first        
+        document_type = collection.singularize.upcase_first
       end
 
       unless document_type.nil?

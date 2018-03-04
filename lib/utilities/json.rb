@@ -15,13 +15,13 @@ class Net::HTTPResponse
         end
       rescue
         if raise_when_invalid
-          raise RavenDB::ErrorResponseException, "Not a valid JSON"  
-        end  
-      end  
-    end  
+          raise RavenDB::ErrorResponseException, "Not a valid JSON"
+        end
+      end
+    end
 
     parsed
-  end  
+  end
 end
 
 module RavenDB
@@ -53,7 +53,7 @@ module RavenDB
       if nested_object_types.is_a?(Hash) && nested_object_types.size
         mappings = mappings.merge(nested_object_types)
       end
-      
+
       current_metadata = {}
 
       if metadata.is_a?(Hash) && metadata.size
@@ -76,15 +76,15 @@ module RavenDB
             :original_value => value,
             :serialized_value => json_to_variable(value, key, mappings, conventions, parent_path),
             :attribute_path => build_path(key, parent_path),
-            :source => source, 
+            :source => source,
             :target => target,
-            :metadata => current_metadata, 
+            :metadata => current_metadata,
             :nested_object_types => nested_object_types
           }
 
           unless conventions.nil?
-            conventions.serializers.each do |serializer|            
-              serializer.on_unserialized(serialized)         
+            conventions.serializers.each do |serializer|
+              serializer.on_unserialized(serialized)
             end
           end
 
@@ -129,15 +129,15 @@ module RavenDB
             :source => source,
             :metadata => current_metadata
           }
-          
+
           unless conventions.nil?
-            conventions.serializers.each do |serializer|            
-              serializer.on_serialized(serialized)         
+            conventions.serializers.each do |serializer|
+              serializer.on_serialized(serialized)
             end
-          end  
+          end
 
           json_property = serialized[:serialized_attribute]
-          json_value = serialized[:serialized_value]          
+          json_value = serialized[:serialized_value]
         end
 
         json[json_property] = json_value

@@ -29,14 +29,14 @@ module RavenDB
 
       begin
         response = @request_executor.execute(status_command)
-        
+
         if @timeout && ((Time.now.to_f - start_time) > @timeout)
           return {
             :status => OperationStatus::Faulted,
             :exception => DatabaseLoadTimeoutException.new("The operation did not finish before the timeout end")
           }
         end
-        
+
         case response["Status"]
         when OperationStatus::Completed
           return {
@@ -53,11 +53,11 @@ module RavenDB
           return {
             :status => response["Status"],
             :exception => exception
-          }  
+          }
         else
           return {
             :status => OperationStatus::Running
-          }  
+          }
         end
 
       rescue => exception
@@ -65,8 +65,8 @@ module RavenDB
           :status => OperationStatus::Faulted,
           :exception => exception
         }
-      end  
-    end  
+      end
+    end
 
     def on_next(result)
       case result[:status]
@@ -86,24 +86,24 @@ module RavenDB
       @store = store
       @_request_executor = nil
     end
-    
+
     def send(operation)
       command = nil
       store = @store
       executor = request_executor
       conventions = store.conventions
-      error_message = "Invalid object passed as an operation"      
-      
+      error_message = "Invalid object passed as an operation"
+
       if operation.is_a?(AbstractOperation)
         begin
-          command = operation.is_a?(Operation) ? 
-            operation.get_command(conventions, store) : 
+          command = operation.is_a?(Operation) ?
+            operation.get_command(conventions, store) :
             operation.get_command(conventions)
         rescue => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}"
-        end      
-      end  
-      
+        end
+      end
+
       if !command
         raise RuntimeError, error_message
       end
@@ -114,13 +114,13 @@ module RavenDB
     end
 
     protected
-    def set_response(operation, command, response)    
+    def set_response(operation, command, response)
       response
     end
 
     def request_executor_factory
       raise NotImplementedError, "You should implement request_executor_factory method"
-    end  
+    end
 
     def request_executor
       @_request_executor ||= request_executor_factory
@@ -153,7 +153,7 @@ module RavenDB
   end
 
   class OperationExecutor < AbstractDatabaseOperationExecutor
-    protected 
+    protected
     def set_response(operation, command, response)
       store = @store
       json = response
@@ -188,14 +188,14 @@ module RavenDB
           patch_result = {
             :Status => json["Status"],
             :Document => document
-          }          
+          }
         end
 
         response = patch_result
       end
 
       super(operation, command, response)
-    end    
+    end
   end
 
   class ServerOperationExecutor < AbstractOperationExecutor
@@ -225,14 +225,14 @@ module RavenDB
       conventions.disable_topology_updates ?
        ClusterRequestExecutor.create_for_single_node(store.single_node_url, nil, auth) :
        ClusterRequestExecutor.create(store.urls, nil, auth)
-    end    
+    end
   end
 
   class AdminOperationExecutor < AbstractDatabaseOperationExecutor
     def initialize(store, database = nil)
       super(store, database)
       @_server = nil
-    end  
+    end
 
     def server
       @_server ||= ServerOperationExecutor.new(@store)
@@ -240,8 +240,8 @@ module RavenDB
 
     def send(operation)
       raise RuntimeError, "Invalid operation passed. It should be derived from AdminOperation" unless operation.is_a?(AdminOperation)
-      
+
       super(operation)
     end
   end
-end  
+end

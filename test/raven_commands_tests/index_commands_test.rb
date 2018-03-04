@@ -9,7 +9,7 @@ class IndexCommandsTest < RavenDatabaseTest
 
     refute_raises(RavenDB::RavenException) do
       @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    end  
+    end
   end
 
   def test_should_get_index_with_success
@@ -17,7 +17,7 @@ class IndexCommandsTest < RavenDatabaseTest
     @_store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
 
     result = @_store.operations.send(RavenDB::GetIndexOperation.new("get_index"))
-    refute_nil(result)    
+    refute_nil(result)
   end
 
   def test_should_get_index_with_fail
@@ -41,7 +41,7 @@ class IndexCommandsTest < RavenDatabaseTest
 
   def test_should_delete_index_with_fail
     assert_raises(RuntimeError) do
-      @_store.operations.send(RavenDB::DeleteIndexOperation.new(nil))    
-    end  
+      @_store.operations.send(RavenDB::DeleteIndexOperation.new(nil))
+    end
   end
-end  
+end

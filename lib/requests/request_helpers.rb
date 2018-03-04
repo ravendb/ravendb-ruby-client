@@ -10,18 +10,18 @@ module RavenDB
       @url = url
       @database = database
       @cluster_tag = cluster_tag
-    end  
+    end
 
-    def self.from_json(json)      
+    def self.from_json(json)
       node = self.new
       node.from_json(json)
 
       node
     end
 
-    def from_json(json)     
+    def from_json(json)
       raise ArgumentError, 'Argument "json" should be an hash object' unless json.is_a? Hash
-      
+
       @url = json["Url"]
       @database = json["Database"]
       @cluster_tag = json["ClusterTag"]
@@ -50,10 +50,10 @@ module RavenDB
 
       if json["Etag"]
         @etag = json["Etag"]
-      end  
+      end
 
       if json["Topology"] && json["Topology"]["AllNodes"]
-        json["Topology"]["AllNodes"].each do |tag,url| 
+        json["Topology"]["AllNodes"].each do |tag,url|
           nodes.push({"Url" => url, "ClusterTag" => tag})
         end
       elsif json["Nodes"]
@@ -62,7 +62,7 @@ module RavenDB
 
       nodes.each do |node|
          @nodes.push(ServerNode.from_json(node))
-      end         
+      end
     end
   end
 
@@ -97,7 +97,7 @@ module RavenDB
         sleep next_timer_period
         @_on_update.call(self)
         @_timer = nil
-      end  
+      end
     end
 
     def retry_update
@@ -166,20 +166,20 @@ module RavenDB
       nodes.at(@current_node_index)
     end
 
-    protected 
+    protected
     def assign_topology(topology, force_update)
       old_topology = @topology
-      
+
       @_lock.synchronize do
         if !force_update
           @current_node_index = 0
-        end  
+        end
 
         if old_topology == topology
           @topology = topology
-        elsif 
-          assign_topology(topology, force_update)  
-        end  
+        elsif
+          assign_topology(topology, force_update)
+        end
       end
     end
 
@@ -212,7 +212,7 @@ module RavenDB
 
       if nodes.include?(failed_node)
         failed_node_index = nodes.index(failed_node)
-        
+
         if @current_node_index > failed_node_index
           @current_node_index = failed_node_index
         end
@@ -225,4 +225,4 @@ module RavenDB
       end
     end
   end
-end 
+end

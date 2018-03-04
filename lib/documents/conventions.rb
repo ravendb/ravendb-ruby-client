@@ -12,7 +12,7 @@ module RavenDB
     DefaultUseOptimisticConcurrency = true
     MaxLengthOfQueryUsingGetUrl = 1024 + 512
     IdentityPartsSeparator = "/"
-    
+
     attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
 
     def initialize
@@ -32,13 +32,13 @@ module RavenDB
     end
 
     def add_attribute_serializer(serializer)
-      raise ArgumentError, 
+      raise ArgumentError,
         "Serializer shoulde be class instance derived from RavenDB::AttributeSerializer" unless
         serializer.is_a?(AttributeSerializer)
 
-      @serializers.push(serializer)  
+      @serializers.push(serializer)
     end
-    
+
     def add_id_property_resolver(&resolver)
       if block_given?
         @_document_id_resolvers.push(resolver)
@@ -79,12 +79,12 @@ module RavenDB
 
       if TypeUtilities::is_document?(document_or_class)
         document_class = document_or_class.class
-        document_instance = document_or_class        
+        document_instance = document_or_class
       elsif document_or_class.is_a?(Class)
         document_class = document_or_class
       elsif document_or_class.is_a?(String)
         document_type = document_or_class
-      end  
+      end
 
       if document_type.nil? && !document_class.nil?
         document_type = document_class.name
@@ -105,7 +105,7 @@ module RavenDB
               :document_type => document_type,
               :document_class => document_class,
               :document => document_instance
-            }) || nil 
+            }) || nil
           rescue
             found_id_property = nil
           end
@@ -117,7 +117,7 @@ module RavenDB
           id_property = found_id_property
           @_id_properties_names_cache[document_type] = id_property
         end
-      end  
+      end
 
       id_property
     end
@@ -317,5 +317,5 @@ module RavenDB
 
       nil
     end
-  end  
-end  
+  end
+end

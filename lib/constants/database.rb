@@ -39,4 +39,4 @@ module RavenDB
     Faulted = "Faulted"
     Running = "Running"
   end
-end  
+end

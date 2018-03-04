@@ -20,7 +20,7 @@ module RavenDB
 
   class DocumentStore
     def initialize(url_or_urls = nil, database = nil, auth_options = nil)
-      @_urls = []  
+      @_urls = []
       @_conventions = nil
       @_request_executors = nil
       @_operations = nil
@@ -73,7 +73,7 @@ module RavenDB
       end
 
       self
-    end  
+    end
 
     def database
       @_database
@@ -98,7 +98,7 @@ module RavenDB
 
     def maintenance
       assert_configure
-      @_maintenance ||= AdminOperationExecutor.new(self, @_database)      
+      @_maintenance ||= AdminOperationExecutor.new(self, @_database)
     end
 
     def conventions
@@ -158,11 +158,11 @@ module RavenDB
 
       if !@_request_executors.key?(for_single_node)
         @_request_executors[for_single_node] = {}
-      end  
+      end
 
       if !@_request_executors[for_single_node].key?(db_name)
         @_request_executors[for_single_node][db_name] = create_request_executor(db_name, for_single_node)
-      end    
+      end
 
       @_request_executors[for_single_node][db_name]
     end
@@ -183,7 +183,7 @@ module RavenDB
       end
     end
 
-    protected 
+    protected
     def set_urls(url_or_urls)
       if !url_or_urls.nil?
         @_urls = url_or_urls
@@ -192,7 +192,7 @@ module RavenDB
           @_urls = [@_urls]
         end
       end
-    end  
+    end
 
     def assert_configure
       if !@_initialized
@@ -216,5 +216,5 @@ module RavenDB
         RequestExecutor.create_for_single_node(single_node_url, db_name, auth) :
         RequestExecutor.create(urls, db_name, auth)
     end
-  end  
+  end
 end

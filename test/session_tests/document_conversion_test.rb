@@ -62,7 +62,7 @@ class DocumentConversionTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       doc = TestCustomDocumentId.new(nil, "New Item")
-      
+
       session.store(doc)
       session.save_changes
       id = doc.item_id
@@ -89,7 +89,7 @@ class DocumentConversionTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       doc = TestCustomSerializer.new(nil, "New Item", [1, 2, 3])
-      
+
       session.store(doc)
       session.save_changes
       id = doc.item_id
@@ -109,7 +109,7 @@ class DocumentConversionTest < RavenDatabaseTest
       assert_equal(raw_entity["itemTitle"], "New Item")
       assert_equal(raw_entity["itemOptions"], "1,2,3")
     end
-  end 
+  end
 
   protected
   def make_document(id = nil, date = NOW)

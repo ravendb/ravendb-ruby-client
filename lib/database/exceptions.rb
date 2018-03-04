@@ -74,7 +74,7 @@ module RavenDB
       if !exception.nil?
         raise exception
       end
-    end   
+    end
 
     def self.raise_from(json_or_response, status_code = nil)
       exception = create_from(json_or_response, status_code)
@@ -83,128 +83,128 @@ module RavenDB
         raise exception
       end
     end
-  end  
+  end
 
   class ErrorResponseException < RavenException
   end
-  class DocumentDoesNotExistsException < RavenException 
+  class DocumentDoesNotExistsException < RavenException
   end
-  class NonUniqueObjectException < RavenException 
+  class NonUniqueObjectException < RavenException
   end
-  class ConcurrencyException < RavenException 
+  class ConcurrencyException < RavenException
   end
   class DatabaseDoesNotExistException < RavenException
   end
-  class AuthorizationException < RavenException 
+  class AuthorizationException < RavenException
   end
-  class IndexDoesNotExistException < RavenException 
+  class IndexDoesNotExistException < RavenException
   end
-  class DatabaseLoadTimeoutException < RavenException 
+  class DatabaseLoadTimeoutException < RavenException
   end
-  class AuthenticationException < RavenException 
+  class AuthenticationException < RavenException
   end
-  class BadRequestException < RavenException 
+  class BadRequestException < RavenException
   end
-  class BulkInsertAbortedException < RavenException 
+  class BulkInsertAbortedException < RavenException
   end
   class BulkInsertProtocolViolationException < RavenException
   end
   class IndexCompilationException < RavenException
   end
-  class TransformerCompilationException < RavenException 
+  class TransformerCompilationException < RavenException
   end
-  class DocumentConflictException < RavenException 
+  class DocumentConflictException < RavenException
   end
-  class DocumentDoesNotExistException < RavenException 
+  class DocumentDoesNotExistException < RavenException
   end
-  class DocumentParseException < RavenException 
+  class DocumentParseException < RavenException
   end
-  class IndexInvalidException < RavenException 
+  class IndexInvalidException < RavenException
   end
-  class IndexOrTransformerAlreadyExistException < RavenException 
+  class IndexOrTransformerAlreadyExistException < RavenException
   end
-  class JavaScriptException < RavenException 
+  class JavaScriptException < RavenException
   end
-  class JavaScriptParseException < RavenException 
+  class JavaScriptParseException < RavenException
   end
-  class SubscriptionClosedException < RavenException 
+  class SubscriptionClosedException < RavenException
   end
-  class SubscriptionDoesNotBelongToNodeException < RavenException 
+  class SubscriptionDoesNotBelongToNodeException < RavenException
   end
-  class SubscriptionDoesNotExistException < RavenException 
+  class SubscriptionDoesNotExistException < RavenException
   end
-  class SubscriptionException < RavenException 
+  class SubscriptionException < RavenException
   end
-  class SubscriptionInUseException < RavenException 
+  class SubscriptionInUseException < RavenException
   end
-  class TransformerDoesNotExistException < RavenException 
+  class TransformerDoesNotExistException < RavenException
   end
-  class VersioningDisabledException < RavenException 
+  class VersioningDisabledException < RavenException
   end
   class AllTopologyNodesDownException < RavenException
   end
-  class BadResponseException < RavenException 
+  class BadResponseException < RavenException
   end
-  class ChangeProcessingException < RavenException 
+  class ChangeProcessingException < RavenException
   end
-  class CommandExecutionException < RavenException 
+  class CommandExecutionException < RavenException
   end
-  class NoLeaderException < RavenException 
+  class NoLeaderException < RavenException
   end
-  class CompilationException < RavenException 
+  class CompilationException < RavenException
   end
-  class ConflictException < RavenException 
+  class ConflictException < RavenException
   end
-  class DatabaseConcurrentLoadTimeoutException < RavenException 
+  class DatabaseConcurrentLoadTimeoutException < RavenException
   end
-  class DatabaseDisabledException < RavenException 
+  class DatabaseDisabledException < RavenException
   end
-  class DatabaseLoadFailureException < RavenException 
+  class DatabaseLoadFailureException < RavenException
   end
-  class DatabaseNotFoundException < RavenException 
+  class DatabaseNotFoundException < RavenException
   end
   class NotSupportedException < RavenException
   end
-  class NotSupportedOsException < RavenException 
+  class NotSupportedOsException < RavenException
   end
-  class SecurityException < RavenException 
+  class SecurityException < RavenException
   end
-  class ServerLoadFailureException < RavenException 
+  class ServerLoadFailureException < RavenException
   end
-  class UnsuccessfulRequestException < RavenException 
+  class UnsuccessfulRequestException < RavenException
   end
-  class CriticalIndexingException < RavenException 
+  class CriticalIndexingException < RavenException
   end
-  class IndexAnalyzerException < RavenException 
+  class IndexAnalyzerException < RavenException
   end
-  class IndexCorruptionException < RavenException 
+  class IndexCorruptionException < RavenException
   end
-  class IndexOpenException < RavenException 
+  class IndexOpenException < RavenException
   end
-  class IndexWriteException < RavenException 
+  class IndexWriteException < RavenException
   end
-  class IndexWriterCreationException < RavenException 
+  class IndexWriterCreationException < RavenException
   end
-  class StorageException < RavenException 
+  class StorageException < RavenException
   end
-  class StreamDisposedException < RavenException 
+  class StreamDisposedException < RavenException
   end
-  class LowMemoryException < RavenException 
+  class LowMemoryException < RavenException
   end
-  class IncorrectDllException < RavenException 
+  class IncorrectDllException < RavenException
   end
-  class DiskFullException < RavenException 
+  class DiskFullException < RavenException
   end
-  class InvalidJournalFlushRequestException < RavenException 
+  class InvalidJournalFlushRequestException < RavenException
   end
-  class QuotaException < RavenException 
+  class QuotaException < RavenException
   end
-  class VoronUnrecoverableErrorException < RavenException 
+  class VoronUnrecoverableErrorException < RavenException
   end
-  class NonDurableFileSystemException < RavenException 
+  class NonDurableFileSystemException < RavenException
   end
-  class AggregateException < RavenException 
+  class AggregateException < RavenException
   end
   class ParseException < RavenException
   end
-end  
+end

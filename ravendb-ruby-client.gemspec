@@ -6,7 +6,7 @@ Gem::Specification.new do |spec|
   spec.description = "RavenDB client for Ruby"
   spec.authors     = ["Hibernating Rhinos"]
   spec.email       = "support@ravendb.net"
-  
+
   spec.files         = `git ls-files -z`.split("\x0")
   spec.test_files    = spec.files.grep(%r{^(test)/})
   spec.require_paths = ["lib"]

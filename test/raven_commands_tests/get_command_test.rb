@@ -8,9 +8,9 @@ class GetCommandTest < RavenDatabaseTest
   @_other_put_command = nil
   @_response = nil
   @_other_response = nil
-  
+
   def setup
-    super() 
+    super()
 
     @_put_command = RavenDB::PutDocumentCommand.new("Products/101", {"Name" => "test", "@metadata" => {}});
     @_other_put_command = RavenDB::PutDocumentCommand.new("Products/10", {"Name" => "test", "@metadata" => {}});
@@ -34,4 +34,4 @@ class GetCommandTest < RavenDatabaseTest
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new("product"))
     assert_nil(result)
   end
-end  
+end

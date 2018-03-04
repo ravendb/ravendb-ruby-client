@@ -17,16 +17,16 @@ module RavenDB
   end
 
   class AdminOperation < AbstractOperation
-  end  
+  end
 
   class ServerOperation < AbstractOperation
-  end  
+  end
 
-  class PatchResultOperation < Operation 
-  end  
+  class PatchResultOperation < Operation
+  end
 
   class AwaitableOperation < Operation
-  end  
+  end
 
   class QueryBasedOperation < AwaitableOperation
     def initialize(query, options = nil)

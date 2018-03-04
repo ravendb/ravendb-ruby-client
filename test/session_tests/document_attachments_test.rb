@@ -11,7 +11,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       session.store(product)
       session.save_changes
 
-      refute_raises do 
+      refute_raises do
         @_store.operations.send(
           RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
           [ATTACHMENT].pack("H*"), "image/gif"

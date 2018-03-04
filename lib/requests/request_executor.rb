@@ -16,8 +16,8 @@ module RavenDB
   class RequestExecutor
     include Observable
 
-    MaxFirstTopologyUpdatesTries = 5    
-    attr_reader :initial_database    
+    MaxFirstTopologyUpdatesTries = 5
+    attr_reader :initial_database
 
     def initialize(database, options = {})
       urls = options[:first_topology_update_urls] || []
@@ -30,7 +30,7 @@ module RavenDB
       @_disposed = false
       @initial_database = database
       @_http_clients = {}
-      @_first_topology_updates_tries = 0      
+      @_first_topology_updates_tries = 0
       @_last_known_urls = nil
       @_failed_nodes_statuses = {}
       @_first_topology_update = nil
@@ -118,9 +118,9 @@ module RavenDB
 
           if false == first_topology_update
             start_first_topology_update(@_last_known_urls)
-          end  
+          end
         end
-      end  
+      end
 
       unless is_fulfilled
         if @_first_topology_update_exception.is_a?(AuthorizationException)
@@ -130,8 +130,8 @@ module RavenDB
         elsif
           sleep 0.1
           await_first_topology_update
-        end    
-      end      
+        end
+      end
     end
 
     def prepare_command(command, server_node)
@@ -166,7 +166,7 @@ module RavenDB
       command_response = nil
       request_exception = nil
       request = prepare_command(command, server_node)
-      
+
       begin
         response = http_client(server_node).request(request)
       rescue OpenSSL::SSL::SSLError => ssl_exception
@@ -203,16 +203,16 @@ module RavenDB
       )
         raise request_exception
       end
-      
+
       return command_response, should_retry
     end
 
     def start_first_topology_update(urls = [])
       if is_first_topology_update_tries_expired?
         return
-      end  
+      end
 
-      @_last_known_urls = urls  
+      @_last_known_urls = urls
       @_first_topology_updates_tries = @_first_topology_updates_tries + 1
       @_first_topology_update = Thread.new do
         updated = false
@@ -227,11 +227,11 @@ module RavenDB
              @_first_topology_update_exception = exception
            rescue
              next
-           end  
-         end  
+           end
+         end
 
-        @_first_topology_update = updated 
-      end    
+        @_first_topology_update = updated
+      end
     end
 
     def update_topology(server_node)
@@ -243,7 +243,7 @@ module RavenDB
         if was_failed || response.nil?
           raise UnsuccessfulRequestException, "Unable to obtain topology from node #{server_node.url}"
         end
-        
+
         if @_node_selector
           event_data = {
             :topology_json => response,
@@ -258,16 +258,16 @@ module RavenDB
             cancel_failing_nodes_timers
           end
         else
-          @_node_selector = NodeSelector.new(self, Topology.from_json(response))          
-        end    
+          @_node_selector = NodeSelector.new(self, Topology.from_json(response))
+        end
 
         @_topology_etag = @_node_selector.topology_etag
-      end  
+      end
     end
 
     def get_update_topology_command_class
       GetTopologyCommand
-    end  
+    end
 
     def handle_server_down(command, failed_node, failed_node_index)
       next_node = nil
@@ -282,7 +282,7 @@ module RavenDB
 
         @_failed_nodes_statuses[failed_node] = status
         status.start_update
-      end  
+      end
 
       emit(RavenServerEvent::REQUEST_FAILED, failed_node)
       next_node = node_selector.current_node
@@ -290,10 +290,10 @@ module RavenDB
       if !next_node || command.was_failed_with_node?(next_node)
         raise AllTopologyNodesDownException, "Tried all nodes in the cluster "\
           "but failed getting a response"
-      end  
+      end
 
       execute_command(command, next_node).first
-    end  
+    end
 
     def check_node_status(node_status)
       nodes = @_node_selector.nodes
@@ -312,7 +312,7 @@ module RavenDB
 
       is_still_failed = nil
       command = GetStatisticsCommand.new(true)
-          
+
       begin
         request = prepare_command(command, server_node)
         response = http_client(server_node).request(request)
@@ -324,21 +324,21 @@ module RavenDB
           if @_failed_nodes_statuses.key?(server_node)
             @_failed_nodes_statuses[server_node].dispose
             @_failed_nodes_statuses.delete(server_node)
-          end  
-        end  
+          end
+        end
       rescue
         is_still_failed = true
-      end    
+      end
 
       if (is_still_failed == false) && @_failed_nodes_statuses.key?(server_node)
-        @_failed_nodes_statuses[server_node].retry_update()      
+        @_failed_nodes_statuses[server_node].retry_update()
       end
     end
 
     def cancel_failing_nodes_timers
-      @_failed_nodes_statuses.each_value {|status| status.dispose} 
+      @_failed_nodes_statuses.each_value {|status| status.dispose}
       @_failed_nodes_statuses.clear
-    end  
+    end
 
     def http_client(server_node)
       url = server_node.url
@@ -358,7 +358,7 @@ module RavenDB
         end
 
         @_http_clients[url] = client
-      end  
+      end
 
       @_http_clients[url]
     end
@@ -387,7 +387,7 @@ module RavenDB
         if !body.nil? && body.key?("Message")
           ssl_exception = body["Message"];
         end
-      end     
+      end
 
       unless ssl_exception.nil?
         message = "#{message} SSL Exception: #{ssl_exception}"
@@ -397,12 +397,12 @@ module RavenDB
 
       AuthorizationException.new(message)
     end
-  end  
+  end
 
   class ClusterRequestExecutor < RequestExecutor
     protected
     def get_update_topology_command_class
       GetClusterTopologyCommand
-    end  
+    end
   end
-end  
+end

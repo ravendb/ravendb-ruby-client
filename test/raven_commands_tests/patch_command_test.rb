@@ -6,9 +6,9 @@ require "spec_helper"
 class PatchCommandTest < RavenDatabaseIndexesTest
   ID = "Products/10"
   @_change_vector = nil
-  
+
   def setup
-    super() 
+    super()
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, {"name" => "test", "@metadata" => {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}}))
     result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
@@ -46,4 +46,4 @@ class PatchCommandTest < RavenDatabaseIndexesTest
       }))
     end
   end
-end  
+end

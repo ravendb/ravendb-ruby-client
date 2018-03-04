@@ -3,15 +3,15 @@ module RavenDB
     def initialize(document_id, name, change_vector = nil)
       super("", Net::HTTP::Get::METHOD)
 
-      raise ArgumentError, "Document ID can't be empty" if 
-        TypeUtilities::is_nil_or_whitespace?(document_id)        
-      
-      raise ArgumentError, "Attachment name can't be empty" if 
+      raise ArgumentError, "Document ID can't be empty" if
+        TypeUtilities::is_nil_or_whitespace?(document_id)
+
+      raise ArgumentError, "Attachment name can't be empty" if
         TypeUtilities::is_nil_or_whitespace?(name)
-        
+
       @_document_id = document_id
       @_name = name
-      @_change_vector = change_vector         
+      @_change_vector = change_vector
     end
 
     def create_request(server_node)
@@ -29,7 +29,7 @@ module RavenDB
       @_stream = stream
       @_content_type = content_type
 
-      raise ArgumentError, "Attachment can't be empty" if 
+      raise ArgumentError, "Attachment can't be empty" if
         stream.nil? || stream.empty?
     end
 
@@ -46,7 +46,7 @@ module RavenDB
       unless TypeUtilities::is_nil_or_whitespace?(@_content_type)
         @headers["Content-Type"] = @_content_type
         @params["contentType"] = @_content_type
-      end      
+      end
     end
 
     def to_request_options
@@ -76,7 +76,7 @@ module RavenDB
       raise ArgumentError, "Change Vector cannot be null for non-document attachment type" if
         @_change_vector.nil? && !AttachmentType::is_document(type)
 
-      @_type = type  
+      @_type = type
     end
 
     def create_request(server_node)
@@ -94,13 +94,13 @@ module RavenDB
 
       if response.json(false).nil?
         @_last_response = response
-      else 
+      else
         super.set_response(response)
-      end  
+      end
 
       attachment = response.body.force_encoding("ASCII-8BIT")
       content_type = try_get_header("Content-Type")
-      hash = try_get_header("Attachment-Hash")  
+      hash = try_get_header("Attachment-Hash")
       change_vector = try_get_header("Etag")
       size = try_get_header("Attachment-Size")
 
@@ -133,7 +133,7 @@ module RavenDB
         @_last_response[header]
       elsif @_last_response.key?(header.downcase)
         @_last_response[header.downcase]
-      else 
+      else
         nil
       end
     end

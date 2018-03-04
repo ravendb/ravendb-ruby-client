@@ -281,11 +281,6 @@ Layout/SpaceInsideHashLiteralBraces:
 Layout/TrailingBlankLines:
   Enabled: false
 
-# Offense count: 261
-# Cop supports --auto-correct.
-Layout/TrailingWhitespace:
-  Enabled: false
-
 # Offense count: 2
 # Configuration parameters: AllowSafeAssignment.
 Lint/AssignmentInCondition:

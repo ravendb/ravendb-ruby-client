@@ -5,14 +5,14 @@ require "spec_helper"
 
 class QueryCommandTest < RavenDatabaseIndexesTest
   def setup
-    super() 
+    super()
 
     query = "from index 'Testing' where Tag = 'Products'"
 
     @_request_executor.execute(RavenDB::PutDocumentCommand.new("Products/10", {
-      "Name" => "test", 
+      "Name" => "test",
       "@metadata" => {
-        "Raven-Ruby-Type": "Product", 
+        "Raven-Ruby-Type": "Product",
         "@collection": "Products"
       }
     }))

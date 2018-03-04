@@ -94,7 +94,7 @@ module RavenDB
     REQUEST_FAILED = "request:failed"
     TOPOLOGY_UPDATED = "topology:updated"
     NODE_STATUS_UPDATED = "node:status:updated"
-  end  
+  end
 
   class PatchStatus
     DocumentDoesNotExist = "DocumentDoesNotExist"
@@ -113,7 +113,7 @@ module RavenDB
   class AttachmentType
     Document = "Document"
     Revision = "Revision"
-    
+
     def self.is_document(type)
       type == Document
     end

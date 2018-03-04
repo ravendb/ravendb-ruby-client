@@ -7,7 +7,7 @@ class QueryOperationsTest < RavenDatabaseTest
   def setup
     super()
 
-    index_map = 
+    index_map =
       "from doc in docs.Testings "\
       "select new{"\
       "Name = doc.Name,"\
@@ -30,9 +30,9 @@ class QueryOperationsTest < RavenDatabaseTest
     query = "from index 'Testing_Sort' where exists(Name) update { this.Name = args.name; }"
     index_query = RavenDB::IndexQuery.new(query, {:name => "Patched"}, nil, nil, {:wait_for_non_stale_results => true})
     patch_by_index_operation = RavenDB::PatchByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
-    
+
     response = @_store.operations.send(patch_by_index_operation)
-    
+
     refute_nil(response)
     refute(response["Result"]["Total"] < 100)
 
@@ -77,6 +77,6 @@ class QueryOperationsTest < RavenDatabaseTest
 
     assert_raises(RavenDB::IndexDoesNotExistException) do
       @_store.operations.send(delete_by_index_operation)
-    end  
-  end   
-end  
+    end
+  end
+end

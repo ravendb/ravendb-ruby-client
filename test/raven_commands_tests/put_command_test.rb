@@ -15,4 +15,4 @@ class PutCommandTest < RavenDatabaseTest
       @_request_executor.execute(RavenDB::PutDocumentCommand.new("testing/2", "invalid json"))
     end
   end
-end  
+end

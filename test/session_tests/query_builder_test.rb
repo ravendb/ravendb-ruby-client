@@ -240,7 +240,7 @@ class QueryBuilderTest < RavenTest
       .not.where_starts_with("Name", "foo")
 
     index_query = query.get_index_query
-  
+
     assert_equal(index_query.query, "FROM Users WHERE true AND NOT startsWith(Name, $p0)")
     assert_equal(index_query.query_parameters[:p0], "foo")
   end
@@ -260,7 +260,7 @@ class QueryBuilderTest < RavenTest
       .close_subclause
 
     index_query = query.get_index_query
-  
+
     assert_equal(index_query.query, "FROM Users WHERE Age >= $p0 AND (Name = $p1 OR Name = $p2)")
     assert_equal(index_query.query_parameters[:p0], 16)
     assert_equal(index_query.query_parameters[:p1], "rob")
