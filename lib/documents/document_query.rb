@@ -718,7 +718,7 @@ module RavenDB
       end
 
       if value.is_a?(Date) || value.is_a?(DateTime)
-        return TypeUtilities::stringify_date(value)
+        return TypeUtilities.stringify_date(value)
       end
 
       raise ArgumentError,

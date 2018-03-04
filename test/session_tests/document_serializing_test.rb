@@ -64,7 +64,7 @@ class DocumentSerializingTest < RavenTest
     }
 
     @document = SerializingTest.new
-    RavenDB::JsonSerializer::from_json(@document, @json, {}, @nested_object_types, @_store.conventions)
+    RavenDB::JsonSerializer.from_json(@document, @json, {}, @nested_object_types, @_store.conventions)
   end
 
   def test_should_parse_scalars
@@ -159,7 +159,7 @@ class DocumentSerializingTest < RavenTest
 
   def test_should_parse_dates
     assert(@document.date_prop.is_a?(DateTime))
-    assert(RavenDB::TypeUtilities::stringify_date(@document.date_prop), @json["date_prop"])
+    assert(RavenDB::TypeUtilities.stringify_date(@document.date_prop), @json["date_prop"])
   end
 
   def test_should_parse_deep_objects_and_arrays_according_to_specified_nested_objects_types
@@ -180,7 +180,7 @@ class DocumentSerializingTest < RavenTest
   end
 
   def test_should_serialize_back_to_source_json
-    serialized = RavenDB::JsonSerializer::to_json(@document, @_store.conventions)
+    serialized = RavenDB::JsonSerializer.to_json(@document, @_store.conventions)
 
     assert_equal(serialized, @json)
   end

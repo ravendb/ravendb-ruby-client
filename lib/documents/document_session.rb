@@ -117,7 +117,7 @@ module RavenDB
 
       raise RuntimeError,
             "Invalid argument passed. Should be document model instance or document id string" unless
-        (document_or_id.is_a?(String) || TypeUtilities::is_document?(document_or_id))
+        (document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id))
 
       if options.is_a?(Hash)
         expected_change_vector = options[:expected_change_vector] || nil
@@ -295,7 +295,7 @@ module RavenDB
     end
 
     def check_document_and_metadata_before_store(document = nil)
-      if !TypeUtilities::is_document?(document)
+      if !TypeUtilities.is_document?(document)
         raise RuntimeError, "Invalid argument passed. Should be an document"
       end
 
@@ -424,7 +424,7 @@ module RavenDB
           document = changes.get_document(index - changes.deferred_commands_count)
 
           if @raw_entities_and_metadata.key?(document)
-            metadata = TypeUtilities::omit_keys(command_result, ["Type"])
+            metadata = TypeUtilities.omit_keys(command_result, ["Type"])
             info = @raw_entities_and_metadata[document]
 
             info = info.merge(

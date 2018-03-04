@@ -4,10 +4,10 @@ module RavenDB
       super("", Net::HTTP::Get::METHOD)
 
       raise ArgumentError, "Document ID can't be empty" if
-        TypeUtilities::is_nil_or_whitespace?(document_id)
+        TypeUtilities.is_nil_or_whitespace?(document_id)
 
       raise ArgumentError, "Attachment name can't be empty" if
-        TypeUtilities::is_nil_or_whitespace?(name)
+        TypeUtilities.is_nil_or_whitespace?(name)
 
       @_document_id = document_id
       @_name = name
@@ -43,7 +43,7 @@ module RavenDB
         @headers["If-Match"] = "\"#{@_change_vector}\""
       end
 
-      unless TypeUtilities::is_nil_or_whitespace?(@_content_type)
+      unless TypeUtilities.is_nil_or_whitespace?(@_content_type)
         @headers["Content-Type"] = @_content_type
         @params["contentType"] = @_content_type
       end
@@ -74,7 +74,7 @@ module RavenDB
       super(document_id, name, change_vector)
 
       raise ArgumentError, "Change Vector cannot be null for non-document attachment type" if
-        @_change_vector.nil? && !AttachmentType::is_document(type)
+        @_change_vector.nil? && !AttachmentType.is_document(type)
 
       @_type = type
     end
@@ -82,7 +82,7 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
 
-      unless AttachmentType::is_document(@_type)
+      unless AttachmentType.is_document(@_type)
         @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
         @method = Net::HTTP::Post::METHOD
       end

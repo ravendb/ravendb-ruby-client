@@ -14,7 +14,7 @@ module RavenDB
         "tag" => @tag,
         "lastMax" => @last_range_max,
         "lastBatchSize" => @last_batch_size,
-        "lastRangeAt" => TypeUtilities::stringify_date(@last_range_at),
+        "lastRangeAt" => TypeUtilities.stringify_date(@last_range_at),
         "identityPartsSeparator" => @identity_parts_separator
       }
 

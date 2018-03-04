@@ -408,21 +408,6 @@ Style/CaseEquality:
   Exclude:
     - 'lib/documents/query/query_tokens.rb'
 
-# Offense count: 74
-# Cop supports --auto-correct.
-Style/ColonMethodCall:
-  Exclude:
-    - 'lib/database/commands/attachments.rb'
-    - 'lib/database/commands/hilo.rb'
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/hilo.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/spatial.rb'
-    - 'lib/utilities/json.rb'
-    - 'test/session_tests/document_serializing_test.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.

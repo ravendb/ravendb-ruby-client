@@ -77,7 +77,7 @@ module RavenDB
       document_class = nil
       document_instance = document
 
-      if TypeUtilities::is_document?(document_or_class)
+      if TypeUtilities.is_document?(document_or_class)
         document_class = document_or_class.class
         document_instance = document_or_class
       elsif document_or_class.is_a?(Class)
@@ -141,8 +141,8 @@ module RavenDB
       metadata = raw_entity.fetch("@metadata", {})
       original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
-      attributes = TypeUtilities::omit_keys(raw_entity, ["@metadata"])
-      document = JsonSerializer::from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
+      attributes = TypeUtilities.omit_keys(raw_entity, ["@metadata"])
+      document = JsonSerializer.from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
       set_id_on_document(document, metadata["@id"] || nil)
 
@@ -157,7 +157,7 @@ module RavenDB
 
     def convert_to_raw_entity(document)
       id_property = get_id_property_name(document)
-      raw_entity = JsonSerializer::to_json(document, self)
+      raw_entity = JsonSerializer.to_json(document, self)
 
       if raw_entity.key?(id_property)
         raw_entity.delete_if {|key| id_property == key}
@@ -250,7 +250,7 @@ module RavenDB
     def get_type_from_document(document)
       raise RuntimeError,
             "Invalid argument passed. Should be an document" unless
-        TypeUtilities::is_document?(document)
+        TypeUtilities.is_document?(document)
 
       metadata = {}
 
@@ -275,7 +275,7 @@ module RavenDB
 
       raise RuntimeError,
             "Invalid argument passed. Should be an document" unless
-        TypeUtilities::is_document?(document)
+        TypeUtilities.is_document?(document)
 
       if document.instance_variable_defined?("@metadata")
         metadata = document.instance_variable_get("@metadata")
@@ -311,7 +311,7 @@ module RavenDB
         return "date"
       end
 
-      if TypeUtilities::is_document?(instance_variable_value)
+      if TypeUtilities.is_document?(instance_variable_value)
         return get_document_type(instance_variable_value.class)
       end
 

@@ -42,13 +42,13 @@ module RavenDB
 
       case @relation
         when SpatialRelations::Intersects
-          relation_token = WhereToken::intersects(field_name, shape_token, @distance_error_pct)
+          relation_token = WhereToken.intersects(field_name, shape_token, @distance_error_pct)
         when SpatialRelations::Contains
-          relation_token = WhereToken::contains(field_name, shape_token, @distance_error_pct)
+          relation_token = WhereToken.contains(field_name, shape_token, @distance_error_pct)
         when SpatialRelations::Within
-          relation_token = WhereToken::within(field_name, shape_token, @distance_error_pct)
+          relation_token = WhereToken.within(field_name, shape_token, @distance_error_pct)
         when SpatialRelations::Disjoint
-          relation_token = WhereToken::disjoint(field_name, shape_token, @distance_error_pct)
+          relation_token = WhereToken.disjoint(field_name, shape_token, @distance_error_pct)
       end
 
       relation_token
@@ -66,7 +66,7 @@ module RavenDB
     end
 
     def get_shape_token(&spatial_parameter_name_generator)
-      ShapeToken::circle(
+      ShapeToken.circle(
         spatial_parameter_name_generator.call(@radius),
         spatial_parameter_name_generator.call(@latitude),
         spatial_parameter_name_generator.call(@longitude),
@@ -83,7 +83,7 @@ module RavenDB
     end
 
     def get_shape_token(&spatial_parameter_name_generator)
-      ShapeToken::wkt(spatial_parameter_name_generator.call(@shape_wkt))
+      ShapeToken.wkt(spatial_parameter_name_generator.call(@shape_wkt))
     end
   end
 end

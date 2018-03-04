@@ -41,7 +41,7 @@ module RavenDB
         projections = fields
       end
 
-      update_fields_to_fetch_token(FieldsToFetchToken::create(fields, projections))
+      update_fields_to_fetch_token(FieldsToFetchToken.create(fields, projections))
       self
     end
 
@@ -68,7 +68,7 @@ module RavenDB
     end
 
     def from(index_name = nil, collection_name = nil)
-      @from_token = FromToken::create(index_name, collection_name)
+      @from_token = FromToken.create(index_name, collection_name)
 
       self
     end
@@ -89,8 +89,8 @@ module RavenDB
       assert_no_raw_query
 
       @order_by_tokens.add_last(seed ?
-        OrderByToken::create_random(seed) :
-        OrderByToken::random
+        OrderByToken.create_random(seed) :
+        OrderByToken.random
       )
 
       self
@@ -130,7 +130,7 @@ module RavenDB
       params[:field_name] = ensure_valid_field_name(params[:field_name], params[:is_nested_path])
 
       append_operator_if_needed(@where_tokens)
-      @where_tokens.add_last(WhereToken::equals(params[:field_name], params[:parameter_name], params[:exact]))
+      @where_tokens.add_last(WhereToken.equals(params[:field_name], params[:parameter_name], params[:exact]))
 
       self
     end
@@ -155,7 +155,7 @@ module RavenDB
       params[:field_name] = ensure_valid_field_name(params[:field_name], params[:is_nested_path])
 
       append_operator_if_needed(@where_tokens)
-      @where_tokens.add_last(WhereToken::not_equals(params[:field_name], params[:parameter_name], params[:exact]))
+      @where_tokens.add_last(WhereToken.not_equals(params[:field_name], params[:parameter_name], params[:exact]))
 
       self
     end
@@ -164,14 +164,14 @@ module RavenDB
       @current_clause_depth = @current_clause_depth + 1
       append_operator_if_needed(@where_tokens)
       negate_if_needed
-      @where_tokens.add_last(OpenSubclauseToken::instance)
+      @where_tokens.add_last(OpenSubclauseToken.instance)
 
       self
     end
 
     def close_subclause
       @current_clause_depth = @current_clause_depth - 1
-      @where_tokens.add_last(CloseSubclauseToken::instance)
+      @where_tokens.add_last(CloseSubclauseToken.instance)
 
       self
     end
@@ -188,7 +188,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::in(field_name, parameter_name, exact))
+      @where_tokens.add_last(WhereToken.in(field_name, parameter_name, exact))
 
       self
     end
@@ -199,7 +199,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::all_in(field_name, parameter_name))
+      @where_tokens.add_last(WhereToken.all_in(field_name, parameter_name))
 
       self
     end
@@ -210,7 +210,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::starts_with(field_name, parameter_name))
+      @where_tokens.add_last(WhereToken.starts_with(field_name, parameter_name))
 
       self
     end
@@ -221,7 +221,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::ends_with(field_name, parameter_name))
+      @where_tokens.add_last(WhereToken.ends_with(field_name, parameter_name))
 
       self
     end
@@ -232,7 +232,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::between(field_name, from_parameter_name, to_parameter_name, exact))
+      @where_tokens.add_last(WhereToken.between(field_name, from_parameter_name, to_parameter_name, exact))
 
       self
     end
@@ -243,7 +243,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::greater_than(field_name, parameter_name, exact))
+      @where_tokens.add_last(WhereToken.greater_than(field_name, parameter_name, exact))
 
       self
     end
@@ -254,7 +254,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::greater_than_or_equal(field_name, parameter_name, exact))
+      @where_tokens.add_last(WhereToken.greater_than_or_equal(field_name, parameter_name, exact))
 
       self
     end
@@ -265,7 +265,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::less_than_or_equal(field_name, parameter_name, exact))
+      @where_tokens.add_last(WhereToken.less_than_or_equal(field_name, parameter_name, exact))
 
       self
     end
@@ -276,7 +276,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::less_than(field_name, parameter_name, exact))
+      @where_tokens.add_last(WhereToken.less_than(field_name, parameter_name, exact))
 
       self
     end
@@ -287,7 +287,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::exists(field_name))
+      @where_tokens.add_last(WhereToken.exists(field_name))
 
       self
     end
@@ -301,7 +301,7 @@ module RavenDB
         raise RuntimeError, "Cannot add AND, previous token was already an operator token."
       end
 
-      @where_tokens.add_last(QueryOperatorToken::and)
+      @where_tokens.add_last(QueryOperatorToken.and)
 
       self
     end
@@ -315,7 +315,7 @@ module RavenDB
         raise RuntimeError, "Cannot add OR, previous token was already an operator token."
       end
 
-      @where_tokens.add_last(QueryOperatorToken::or)
+      @where_tokens.add_last(QueryOperatorToken.or)
 
       self
     end
@@ -361,7 +361,7 @@ module RavenDB
       assert_no_raw_query
 
       field = ensure_valid_field_name(field)
-      @order_by_tokens.add_last(OrderByToken::create_ascending(field, ordering_type))
+      @order_by_tokens.add_last(OrderByToken.create_ascending(field, ordering_type))
 
       self
     end
@@ -370,21 +370,21 @@ module RavenDB
       assert_no_raw_query
 
       field = ensure_valid_field_name(field)
-      @order_by_tokens.add_last(OrderByToken::create_descending(field, ordering_type))
+      @order_by_tokens.add_last(OrderByToken.create_descending(field, ordering_type))
 
       self
     end
 
     def order_by_score
       assert_no_raw_query
-      @order_by_tokens.add_last(OrderByToken::score_ascending)
+      @order_by_tokens.add_last(OrderByToken.score_ascending)
 
       self
     end
 
     def order_by_score_descending
       assert_no_raw_query
-      @order_by_tokens.add_last(OrderByToken::score_descending)
+      @order_by_tokens.add_last(OrderByToken.score_descending)
 
       self
     end
@@ -395,7 +395,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed(field_name)
 
-      @where_tokens.add_last(WhereToken::search(field_name, search_terms_parameter_name, operator))
+      @where_tokens.add_last(WhereToken.search(field_name, search_terms_parameter_name, operator))
 
       self
     end
@@ -408,7 +408,7 @@ module RavenDB
         (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
 
       @is_intersect = true
-      @where_tokens.add_last(IntersectMarkerToken::instance)
+      @where_tokens.add_last(IntersectMarkerToken.instance)
 
       self
     end
@@ -419,7 +419,7 @@ module RavenDB
       end
 
       @is_distinct = true
-      @select_tokens.add_first(DistinctToken::instance)
+      @select_tokens.add_first(DistinctToken.instance)
 
       self
     end
@@ -440,7 +440,7 @@ module RavenDB
 
       fields.each do |field|
         field = ensure_valid_field_name(field)
-        @group_by_tokens.add_last(GroupByToken::create(field))
+        @group_by_tokens.add_last(GroupByToken.create(field))
       end
 
       self
@@ -458,7 +458,7 @@ module RavenDB
         end
       end
 
-      @select_tokens.add_last(GroupByKeyToken::create(field_name, projected_name))
+      @select_tokens.add_last(GroupByKeyToken.create(field_name, projected_name))
 
       self
     end
@@ -468,7 +468,7 @@ module RavenDB
       @is_group_by = true
 
       field_name = ensure_valid_field_name(field_name)
-      @select_tokens.add_last(GroupBySumToken::create(field_name, projected_name))
+      @select_tokens.add_last(GroupBySumToken.create(field_name, projected_name))
 
       self
     end
@@ -477,7 +477,7 @@ module RavenDB
       assert_no_raw_query
       @is_group_by = true
 
-      @select_tokens.add_last(GroupByCountToken::create(projected_name))
+      @select_tokens.add_last(GroupByCountToken.create(projected_name))
 
       self
     end
@@ -486,7 +486,7 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed
 
-      @where_tokens.add_last(TrueToken::instance)
+      @where_tokens.add_last(TrueToken.instance)
 
       self
     end
@@ -500,8 +500,8 @@ module RavenDB
       append_operator_if_needed(@where_tokens)
       negate_if_needed
 
-      @where_tokens.add_last(WhereToken::within(
-        field_name, ShapeToken::circle(
+      @where_tokens.add_last(WhereToken.within(
+        field_name, ShapeToken.circle(
           radius_parameter_name,
           latitude_parameter_name,
           longitude_parameter_name,
@@ -535,13 +535,13 @@ module RavenDB
     end
 
     def order_by_distance(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      @order_by_tokens.add_last(OrderByToken::create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
+      @order_by_tokens.add_last(OrderByToken.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
 
       self
     end
 
     def order_by_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      @order_by_tokens.add_last(OrderByToken::create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
+      @order_by_tokens.add_last(OrderByToken.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
 
       self
     end
@@ -572,7 +572,7 @@ module RavenDB
     def ensure_valid_field_name(field_name, is_nested_path = false)
       result = {
         original_field_name: field_name,
-        escaped_field_name: StringUtilities::escape_if_necessary(field_name)
+        escaped_field_name: StringUtilities.escape_if_necessary(field_name)
       }
 
       if @is_group_by && !is_nested_path
@@ -612,10 +612,10 @@ module RavenDB
       end
 
       token = (QueryOperator::And == @default_operator) ?
-        QueryOperatorToken::and : QueryOperatorToken::or
+        QueryOperatorToken.and : QueryOperatorToken.or
 
       unless last_where.nil? || last_where.search_operator.nil?
-        token = QueryOperatorToken::or
+        token = QueryOperatorToken.or
       end
 
       tokens.add_last(token)
@@ -634,7 +634,7 @@ module RavenDB
         and_also
       end
 
-      @where_tokens.add_last(NegateToken::instance)
+      @where_tokens.add_last(NegateToken.instance)
     end
 
     def find_last_where_token
