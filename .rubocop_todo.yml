@@ -53,12 +53,6 @@ Layout/EmptyLinesAroundClassBody:
   Exclude:
     - 'lib/auth/auth_options.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/EmptyLinesAroundExceptionHandlingKeywords:
-  Exclude:
-    - 'lib/database/operation_executor.rb'
-
 # Offense count: 5
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment, ForceEqualSignAlignment.

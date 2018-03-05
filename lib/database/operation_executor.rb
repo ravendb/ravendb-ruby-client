@@ -59,7 +59,6 @@ module RavenDB
             status: OperationStatus::Running
           }
         end
-
       rescue StandardError => exception
         return {
           status: OperationStatus::Faulted,
