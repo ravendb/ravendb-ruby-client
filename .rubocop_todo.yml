@@ -83,15 +83,6 @@ Layout/ExtraSpacing:
     - 'test/raven_commands_tests/query_command_test.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: special_inside_parentheses, consistent, align_brackets
-Layout/IndentArray:
-  Exclude:
-    - 'lib/utilities/type_utilities.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

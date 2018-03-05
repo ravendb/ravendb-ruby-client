@@ -117,7 +117,7 @@ class DocumentConversionTest < RavenDatabaseTest
       id, date, Foo.new("Foos/1", "Foo #1", 1), [
         Foo.new("Foos/2", "Foo #2", 2),
         Foo.new("Foos/3", "Foo #3", 3)
-    ])
+      ])
   end
 
   def check_foo(foo, id_of_foo = 1)

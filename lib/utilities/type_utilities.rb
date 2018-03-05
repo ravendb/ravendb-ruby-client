@@ -8,9 +8,9 @@ module RavenDB
     DATE_STRINGIFY_FORMAT = "%Y-%m-%dT%H:%M:%S.%6N0".freeze
 
     BASIC_TYPES = [
-        String, Integer, Numeric, Float,
-        Numeric, NilClass, Hash, Symbol,
-        Array, Range, Date, DateTime
+      String, Integer, Numeric, Float,
+      Numeric, NilClass, Hash, Symbol,
+      Array, Range, Date, DateTime
     ].freeze
 
     def self.is_document?(object)
