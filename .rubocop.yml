@@ -26,3 +26,6 @@ Layout/SpaceInsideHashLiteralBraces:
 
 Style/DoubleNegation:
   Enabled: false
+
+Style/RegexpLiteral:
+  AllowInnerSlashes: true

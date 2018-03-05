@@ -409,14 +409,6 @@ Style/RedundantSelf:
     - 'lib/requests/request_executor.rb'
     - 'lib/requests/request_helpers.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, AllowInnerSlashes.
-# SupportedStyles: slashes, percent_r, mixed
-Style/RegexpLiteral:
-  Exclude:
-    - 'test/session_tests/document_store_test.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: IgnoredMethods.
