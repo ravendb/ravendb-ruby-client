@@ -47,13 +47,6 @@ Layout/EmptyLinesAroundClassBody:
   Exclude:
     - 'lib/auth/auth_options.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-Layout/MultilineBlockLayout:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.

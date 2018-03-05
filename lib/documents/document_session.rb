@@ -98,8 +98,8 @@ module RavenDB
         fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
       end
 
-      results = ids.map do |id| (!@known_missing_ids.include?(id) &&
-          @documents_by_id.key?(id)) ? @documents_by_id[id] : nil
+      results = ids.map do |id|
+        (!@known_missing_ids.include?(id) && @documents_by_id.key?(id)) ? @documents_by_id[id] : nil
       end
 
       if loading_one_doc
