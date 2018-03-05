@@ -181,12 +181,6 @@ Layout/SpaceBeforeBlockBraces:
     - 'test/session_tests/document_delete_test.rb'
     - 'test/session_tests/document_query_test.rb'
 
-# Offense count: 2
-# Configuration parameters: AllowSafeAssignment.
-Lint/AssignmentInCondition:
-  Exclude:
-    - 'lib/documents/hilo.rb'
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
