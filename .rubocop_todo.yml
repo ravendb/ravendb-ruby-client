@@ -448,13 +448,6 @@ Style/UnneededInterpolation:
   Exclude:
     - 'lib/documents/query/index_query.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: MinSize, WordRegex.
-# SupportedStyles: percent, brackets
-Style/WordArray:
-  EnforcedStyle: brackets
-
 # Offense count: 12
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

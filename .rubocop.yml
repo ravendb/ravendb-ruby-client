@@ -29,3 +29,6 @@ Style/DoubleNegation:
 
 Style/RegexpLiteral:
   AllowInnerSlashes: true
+
+Style/WordArray:
+  EnforcedStyle: brackets
