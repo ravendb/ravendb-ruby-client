@@ -499,12 +499,12 @@ module RavenDB
       negate_if_needed
 
       @where_tokens.add_last(WhereToken.within(
-        field_name, ShapeToken.circle(
-          radius_parameter_name,
-          latitude_parameter_name,
-          longitude_parameter_name,
-          radius_units),
-        dist_error_percent)
+                               field_name, ShapeToken.circle(
+                                             radius_parameter_name,
+                                             latitude_parameter_name,
+                                             longitude_parameter_name,
+                                             radius_units),
+                               dist_error_percent)
       )
 
       self

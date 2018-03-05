@@ -114,7 +114,7 @@ class DocumentConversionTest < RavenDatabaseTest
   protected
   def make_document(id = nil, date = NOW)
     TestConversion.new(
-        id, date, Foo.new("Foos/1", "Foo #1", 1), [
+      id, date, Foo.new("Foos/1", "Foo #1", 1), [
         Foo.new("Foos/2", "Foo #2", 2),
         Foo.new("Foos/3", "Foo #3", 3)
     ])

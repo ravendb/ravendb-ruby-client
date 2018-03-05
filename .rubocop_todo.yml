@@ -83,17 +83,6 @@ Layout/ExtraSpacing:
     - 'test/raven_commands_tests/query_command_test.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: consistent, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/FirstParameterIndentation:
-  Exclude:
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'test/session_tests/authentication_test.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
