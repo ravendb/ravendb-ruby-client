@@ -832,7 +832,11 @@ module RavenDB
           .append(") ")
       end
     end
+  end
+end
 
+module RavenDB
+  class QueryBuilder
     def self.add_space_if_needed(previous_token, current_token, writer)
       if previous_token.nil?
         return

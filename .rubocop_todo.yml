@@ -194,11 +194,6 @@ Lint/ConditionPosition:
     - 'lib/requests/request_executor.rb'
     - 'lib/requests/request_helpers.rb'
 
-# Offense count: 1
-Lint/IneffectiveAccessModifier:
-  Exclude:
-    - 'lib/documents/query/query_builder.rb'
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
