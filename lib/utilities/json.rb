@@ -48,7 +48,7 @@ module RavenDB
       end
 
       if metadata.key?("@nested_object_types") &&
-          metadata["@nested_object_types"].is_a?(Hash)
+         metadata["@nested_object_types"].is_a?(Hash)
         mappings = mappings.merge(metadata["@nested_object_types"])
       end
 

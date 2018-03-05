@@ -843,7 +843,7 @@ module RavenDB
       end
 
       if previous_token.is_a?(OpenSubclauseToken) ||
-        current_token.is_a?(CloseSubclauseToken)
+         current_token.is_a?(CloseSubclauseToken)
         current_token.is_a?(IntersectMarkerToken)
         return
       end

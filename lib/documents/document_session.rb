@@ -376,10 +376,10 @@ module RavenDB
 
         if (DocumentConventions::DefaultUseOptimisticConcurrency &&
           (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
-          (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
+           (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
           change_vector = info[:change_vector] ||
-              info[:metadata]["@change-vector"] ||
-              conventions.empty_change_vector
+                          info[:metadata]["@change-vector"] ||
+                          conventions.empty_change_vector
         end
 
         @documents_by_id.delete(id)
@@ -447,7 +447,7 @@ module RavenDB
 
       info = @raw_entities_and_metadata[document]
       (info[:original_metadata] != info[:metadata]) ||
-          (info[:original_value] != conventions.convert_to_raw_entity(document))
+        (info[:original_value] != conventions.convert_to_raw_entity(document))
     end
 
     def make_document(command_result, document_type = nil, nested_object_types = nil)
@@ -476,7 +476,7 @@ module RavenDB
 
       document = conversion_result[:document]
       document_id = conventions.get_id_from_document(document) ||
-        conversion_result[:original_metadata]["@id"] || conversion_result[:metadata]["@id"]
+                    conversion_result[:original_metadata]["@id"] || conversion_result[:metadata]["@id"]
 
       unless document_id
         return nil

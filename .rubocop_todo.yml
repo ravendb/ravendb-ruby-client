@@ -145,17 +145,6 @@ Layout/MultilineMethodDefinitionBraceLayout:
   Exclude:
     - 'lib/documents/query/query_builder.rb'
 
-# Offense count: 9
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented
-Layout/MultilineOperationIndentation:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/query/index_query.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/utilities/json.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 # Configuration parameters: AllowForAlignment.

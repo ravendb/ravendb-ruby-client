@@ -23,7 +23,7 @@ module RavenDB
 
       if (@wait_for_non_stale_results ||
           @wait_for_non_stale_results_as_of_now) &&
-          !@wait_for_non_stale_results_timeout
+         !@wait_for_non_stale_results_timeout
 
         @wait_for_non_stale_results_timeout = DefaultTimeout
       end
@@ -69,7 +69,7 @@ module RavenDB
 
       if (@wait_for_non_stale_results ||
           @wait_for_non_stale_results_as_of_now) &&
-          !@wait_for_non_stale_results_timeout.nil?
+         !@wait_for_non_stale_results_timeout.nil?
         json["WaitForNonStaleResultsTimeout"] = @wait_for_non_stale_results_timeout.to_s
 
       end
