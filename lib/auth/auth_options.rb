@@ -26,10 +26,8 @@ module RavenDB
   end
 
   class StoreAuthOptions < AuthOptions
-
   end
 
   class RequestAuthOptions < AuthOptions
-
   end
 end
