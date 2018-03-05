@@ -67,9 +67,9 @@ module RavenDB
 
     def get_shape_token(&spatial_parameter_name_generator)
       ShapeToken.circle(
-        spatial_parameter_name_generator.call(@radius),
-        spatial_parameter_name_generator.call(@latitude),
-        spatial_parameter_name_generator.call(@longitude),
+        yield(@radius),
+        yield(@latitude),
+        yield(@longitude),
         @radius_units
       )
     end
@@ -83,7 +83,7 @@ module RavenDB
     end
 
     def get_shape_token(&spatial_parameter_name_generator)
-      ShapeToken.wkt(spatial_parameter_name_generator.call(@shape_wkt))
+      ShapeToken.wkt(yield(@shape_wkt))
     end
   end
 end

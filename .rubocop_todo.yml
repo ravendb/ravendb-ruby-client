@@ -107,12 +107,6 @@ Naming/PredicateName:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Performance/RedundantBlockCall:
-  Exclude:
-    - 'lib/documents/query/spatial.rb'
-
 # Offense count: 1
 Style/CaseEquality:
   Exclude:
