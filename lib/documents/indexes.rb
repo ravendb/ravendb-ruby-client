@@ -2,7 +2,6 @@ require "constants/documents"
 require "constants/database"
 
 module RavenDB
-
   class IndexDefinition
     def initialize(name, index_map, configuration = nil, init_options = {})
       @_name = name
@@ -91,5 +90,4 @@ module RavenDB
       }
     end
   end
-
 end
