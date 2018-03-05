@@ -196,9 +196,7 @@ module RavenDB
 
       should_retry = !request_exception.nil?
 
-      if should_retry && (command.was_failed? ||
-        request_exception.is_a?(AuthorizationException)
-      )
+      if should_retry && (command.was_failed? || request_exception.is_a?(AuthorizationException))
         raise request_exception
       end
 

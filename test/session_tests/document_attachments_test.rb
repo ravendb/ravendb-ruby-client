@@ -15,7 +15,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
         @_store.operations.send(
           RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
                                               [ATTACHMENT].pack("H*"), "image/gif"
-          )
+                                             )
         )
       end
     end
@@ -32,13 +32,13 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
                                             attachment_raw, "image/gif"
-        )
+                                           )
       )
 
       attachment_result = @_store.operations.send(
         RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
                                             RavenDB::AttachmentType::Document
-        )
+                                           )
       )
 
       assert_equal(attachment_result[:stream], attachment_raw)
@@ -59,7 +59,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
       @_store.operations.send(
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif",
                                             [ATTACHMENT].pack("H*"), "image/gif"
-        )
+                                           )
       )
 
       @_store.operations.send(
@@ -70,7 +70,7 @@ class DocumentAttachmentsTest < RavenDatabaseTest
         @_store.operations.send(
           RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif",
                                               RavenDB::AttachmentType::Document
-          )
+                                             )
         )
       end
     end

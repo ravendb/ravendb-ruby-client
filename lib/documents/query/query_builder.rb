@@ -90,7 +90,7 @@ module RavenDB
       @order_by_tokens.add_last(seed ?
         OrderByToken.create_random(seed) :
         OrderByToken.random
-      )
+                               )
 
       self
     end
@@ -505,7 +505,7 @@ module RavenDB
                                              longitude_parameter_name,
                                              radius_units),
                                dist_error_percent)
-      )
+                            )
 
       self
     end
