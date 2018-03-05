@@ -91,16 +91,6 @@ Layout/IndentHeredoc:
   Exclude:
     - 'test/session_tests/authentication_test.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: normal, rails
-Layout/IndentationConsistency:
-  Exclude:
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/type_utilities.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

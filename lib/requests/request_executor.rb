@@ -215,18 +215,18 @@ module RavenDB
       @_first_topology_update = Thread.new do
         updated = false
 
-         urls.each do |url|
-           begin
-             update_topology(ServerNode.new(url, @initial_database))
-             @_first_topology_update_exception = nil
-             updated = true
-             break
-           rescue AuthorizationException => exception
-             @_first_topology_update_exception = exception
-           rescue StandardError
-             next
-           end
-         end
+        urls.each do |url|
+          begin
+            update_topology(ServerNode.new(url, @initial_database))
+            @_first_topology_update_exception = nil
+            updated = true
+            break
+          rescue AuthorizationException => exception
+            @_first_topology_update_exception = exception
+          rescue StandardError
+            next
+          end
+        end
 
         @_first_topology_update = updated
       end
