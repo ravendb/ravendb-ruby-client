@@ -20,18 +20,18 @@ module RavenDB
         exception_message = message
 
         case exception_type
-          when "InvalidOperationException"
-            exception_ctor = RuntimeError
-          when "ArgumentNullException", "InvalidArgumentException"
-            exception_ctor = ArgumentError
-          when "ArgumentOutOfRangeException"
-            exception_ctor = IndexError
-          else
-            begin
-              exception_ctor = Object.const_get("RavenDB::#{exception_type}")
-            rescue StandardError
-              exception_ctor = RavenException
-            end
+        when "InvalidOperationException"
+          exception_ctor = RuntimeError
+        when "ArgumentNullException", "InvalidArgumentException"
+          exception_ctor = ArgumentError
+        when "ArgumentOutOfRangeException"
+          exception_ctor = IndexError
+        else
+          begin
+            exception_ctor = Object.const_get("RavenDB::#{exception_type}")
+          rescue StandardError
+            exception_ctor = RavenException
+          end
         end
       end
 

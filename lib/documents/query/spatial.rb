@@ -41,14 +41,14 @@ module RavenDB
       shape_token = get_shape_token(&spatial_parameter_name_generator)
 
       case @relation
-        when SpatialRelations::Intersects
-          relation_token = WhereToken.intersects(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Contains
-          relation_token = WhereToken.contains(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Within
-          relation_token = WhereToken.within(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Disjoint
-          relation_token = WhereToken.disjoint(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Intersects
+        relation_token = WhereToken.intersects(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Contains
+        relation_token = WhereToken.contains(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Within
+        relation_token = WhereToken.within(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Disjoint
+        relation_token = WhereToken.disjoint(field_name, shape_token, @distance_error_pct)
       end
 
       relation_token

@@ -600,7 +600,7 @@ module RavenDB
       end
 
       case @where_operator
-        when WhereOperator::Search,
+      when WhereOperator::Search,
              WhereOperator::Lucene,
              WhereOperator::StartsWith,
              WhereOperator::EndsWith,
@@ -609,104 +609,104 @@ module RavenDB
              WhereOperator::Contains,
              WhereOperator::Disjoint,
              WhereOperator::Intersects
-          writer
-            .append(@where_operator)
-            .append("(")
+        writer
+          .append(@where_operator)
+          .append("(")
       end
 
       write_field(writer, @field_name)
 
       case @where_operator
-        when WhereOperator::In
-          writer
-            .append(" ")
-            .append(QueryKeyword::In)
-            .append(" ($")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::AllIn
-          writer
-            .append(" ")
-            .append(QueryKeyword::All)
-            .append(" ")
-            .append(QueryKeyword::In)
-            .append(" ($")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::Between
-          writer
-            .append(" ")
-            .append(QueryKeyword::Between)
-            .append(" $")
-            .append(@from_parameter_name)
-            .append(" ")
-            .append(QueryOperator::And)
-            .append(" $")
-            .append(@to_parameter_name)
-        when WhereOperator::Equals
-          writer
-            .append(" = $")
-            .append(@parameter_name)
-        when WhereOperator::NotEquals
-          writer
-            .append(" != $")
-            .append(@parameter_name)
-        when WhereOperator::GreaterThan
-          writer
-            .append(" > $")
-            .append(@parameter_name)
-        when WhereOperator::GreaterThanOrEqual
-          writer
-            .append(" >= $")
-            .append(@parameter_name)
-        when WhereOperator::LessThan
-          writer
-            .append(" < $")
-            .append(@parameter_name)
-        when WhereOperator::LessThanOrEqual
-          writer
-            .append(" <= $")
-            .append(@parameter_name)
-        when WhereOperator::Search
-          writer
-            .append(", $")
-            .append(@parameter_name)
+      when WhereOperator::In
+        writer
+          .append(" ")
+          .append(QueryKeyword::In)
+          .append(" ($")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::AllIn
+        writer
+          .append(" ")
+          .append(QueryKeyword::All)
+          .append(" ")
+          .append(QueryKeyword::In)
+          .append(" ($")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::Between
+        writer
+          .append(" ")
+          .append(QueryKeyword::Between)
+          .append(" $")
+          .append(@from_parameter_name)
+          .append(" ")
+          .append(QueryOperator::And)
+          .append(" $")
+          .append(@to_parameter_name)
+      when WhereOperator::Equals
+        writer
+          .append(" = $")
+          .append(@parameter_name)
+      when WhereOperator::NotEquals
+        writer
+          .append(" != $")
+          .append(@parameter_name)
+      when WhereOperator::GreaterThan
+        writer
+          .append(" > $")
+          .append(@parameter_name)
+      when WhereOperator::GreaterThanOrEqual
+        writer
+          .append(" >= $")
+          .append(@parameter_name)
+      when WhereOperator::LessThan
+        writer
+          .append(" < $")
+          .append(@parameter_name)
+      when WhereOperator::LessThanOrEqual
+        writer
+          .append(" <= $")
+          .append(@parameter_name)
+      when WhereOperator::Search
+        writer
+          .append(", $")
+          .append(@parameter_name)
 
-          if @search_operator === SearchOperator::And
-            writer
-              .append(", ")
-              .append(@search_operator)
-          end
+        if @search_operator === SearchOperator::And
+          writer
+            .append(", ")
+            .append(@search_operator)
+        end
 
-          writer.append(")")
-        when WhereOperator::Lucene,
+        writer.append(")")
+      when WhereOperator::Lucene,
              WhereOperator::StartsWith,
              WhereOperator::EndsWith
-          writer
-            .append(", $")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::Exists
-          writer
-            .append(")")
-        when WhereOperator::Within,
+        writer
+          .append(", $")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::Exists
+        writer
+          .append(")")
+      when WhereOperator::Within,
              WhereOperator::Contains,
              WhereOperator::Disjoint,
              WhereOperator::Intersects
-          writer
-            .append(", ")
+        writer
+          .append(", ")
 
-          @where_shape.write_to(writer)
+        @where_shape.write_to(writer)
 
-          if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
-            writer.append(", ")
-            writer.append(@distance_error_pct.to_s)
-          end
+        if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
+          writer.append(", ")
+          writer.append(@distance_error_pct.to_s)
+        end
 
-          writer
-            .append(")")
-        else
-          raise IndexError, "Invalid where operator provided"
+        writer
+          .append(")")
+      else
+        raise IndexError, "Invalid where operator provided"
       end
 
       if @exact
