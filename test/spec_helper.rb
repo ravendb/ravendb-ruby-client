@@ -18,7 +18,6 @@ module MiniTest
         exp = exp.first if exp.size == 1
         flunk "#{msg}: #{e}"
       end
-
     end
   end
   module Expectations
