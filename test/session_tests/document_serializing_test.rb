@@ -36,7 +36,8 @@ class DocumentSerializingTest < RavenTest
         "some_array" => [3, 4]
         }, [5, 6], [7, 8, {
           "some_prop" => "someValue"
-        }]],
+        }]
+      ],
       "date_prop" => "2017-06-04T18:39:05.1230000",
       "deep_foo_prop" => {
         "@metadata" => {},

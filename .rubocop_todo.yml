@@ -63,15 +63,6 @@ Layout/ExtraSpacing:
     - 'test/raven_commands_tests/query_command_test.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: symmetrical, new_line, same_line
-Layout/MultilineArrayBraceLayout:
-  Exclude:
-    - 'lib/requests/request_executor.rb'
-    - 'test/session_tests/document_serializing_test.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 Layout/MultilineBlockLayout:

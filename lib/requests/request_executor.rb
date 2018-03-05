@@ -175,8 +175,7 @@ module RavenDB
 
       unless response.nil?
         if [Net::HTTPRequestTimeOut, Net::HTTPBadGateway,
-            Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable
-        ].any? { |response_type| response.is_a?(response_type) }
+            Net::HTTPGatewayTimeOut, Net::HTTPServiceUnavailable].any? { |response_type| response.is_a?(response_type) }
           message = "HTTP #{response.code}: #{response.message}"
           request_exception = UnsuccessfulRequestException.new(message)
         elsif response.is_a?(Net::HTTPForbidden)
