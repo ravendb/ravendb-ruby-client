@@ -398,18 +398,6 @@ Style/OptionalArguments:
   Exclude:
     - 'lib/documents/query/spatial.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: AllowSafeAssignment.
-Style/ParenthesesAroundCondition:
-  Exclude:
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/utilities/type_utilities.rb'
-
 # Offense count: 42
 # Cop supports --auto-correct.
 Style/RedundantSelf:

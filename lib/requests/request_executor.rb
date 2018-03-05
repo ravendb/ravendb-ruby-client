@@ -53,7 +53,7 @@ module RavenDB
 
       if !@_without_topology && !urls.empty?
         start_first_topology_update(urls)
-      elsif (@_without_topology && options[:single_node_topology])
+      elsif @_without_topology && options[:single_node_topology]
         @_node_selector = NodeSelector.new(self, options[:single_node_topology])
       end
     end

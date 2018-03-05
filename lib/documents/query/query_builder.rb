@@ -402,7 +402,7 @@ module RavenDB
     def intersect
       @last_token = @where_tokens.last
 
-      unless (@last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken))
+      unless @last_token.is_a?(WhereToken) || @last_token.is_a?(CloseSubclauseToken)
         raise "Cannot add INTERSECT at this point."
       end
 

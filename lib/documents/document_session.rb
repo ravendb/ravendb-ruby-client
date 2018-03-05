@@ -115,7 +115,7 @@ module RavenDB
       document = nil
       expected_change_vector = nil
 
-      unless (document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id))
+      unless document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id)
         raise "Invalid argument passed. Should be document model instance or document id string"
       end
 

@@ -73,7 +73,7 @@ module RavenDB
               "Fields list can't be empty"
       end
 
-      if (projections.empty? && projections.size != fields_to_fetch.size)
+      if projections.empty? && projections.size != fields_to_fetch.size
         raise ArgumentError,
               "Length of projections must be the "\
               "same as length of fields to fetch."
@@ -124,7 +124,7 @@ module RavenDB
     end
 
     def write_to(writer)
-      if (@collection_name.nil? && @index_name.nil?)
+      if @collection_name.nil? && @index_name.nil?
         raise NotSupportedException,
               "Either IndexName or CollectionName must be specified"
       end

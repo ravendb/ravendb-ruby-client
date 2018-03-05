@@ -25,7 +25,7 @@ module RavenDB
         "::TypeUtilities::stringify_date. It should be instance of DateTime"
 
       raise invalid_date_message unless
-          (datetime.is_a?(DateTime) || datetime.is_a?(Date))
+          datetime.is_a?(DateTime) || datetime.is_a?(Date)
 
       datetime.strftime(DATE_STRINGIFY_FORMAT)
     end
