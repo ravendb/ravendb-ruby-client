@@ -134,8 +134,6 @@ module RavenDB
         @_last_response[header]
       elsif @_last_response.key?(header.downcase)
         @_last_response[header.downcase]
-      else
-        nil
       end
     end
   end

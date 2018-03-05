@@ -137,14 +137,6 @@ Style/DefWithParentheses:
     - 'lib/database/commands.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: empty, nil, both
-Style/EmptyElse:
-  Exclude:
-    - 'lib/database/commands/attachments.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
