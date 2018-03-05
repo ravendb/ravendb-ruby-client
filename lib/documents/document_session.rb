@@ -64,7 +64,7 @@ module RavenDB
         nested_object_types = options[:nested_object_types] || {}
       end
 
-      ids_of_non_existing_documents  = Set.new(ids)
+      ids_of_non_existing_documents = Set.new(ids)
 
       if !includes.nil? && !includes.is_a?(Array)
         if includes.is_a?(String)

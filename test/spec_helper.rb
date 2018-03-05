@@ -228,7 +228,7 @@ end
 
 class LastFmAnalyzed
   def initialize(store, test)
-    index_map =  "from song in docs.LastFms "\
+    index_map = "from song in docs.LastFms "\
       "select new {"\
       "query = new object[] {"\
       "song.artist,"\
@@ -272,7 +272,7 @@ end
 
 class ProductsTestingSort
   def initialize(store)
-    index_map =  "from doc in docs "\
+    index_map = "from doc in docs "\
       "select new {"\
       "name = doc.name,"\
       "uid = doc.uid,"\

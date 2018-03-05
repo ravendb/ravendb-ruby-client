@@ -1,7 +1,7 @@
 module RavenDB
   class IndexQuery
     DefaultTimeout = 15 * 1000
-    DefaultPageSize = 2 ** 31 - 1
+    DefaultPageSize = 2**31 - 1
 
     attr_accessor :start, :page_size
     attr_reader :query, :query_parameters, :wait_for_non_stale_results,

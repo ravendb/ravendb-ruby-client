@@ -784,7 +784,7 @@ module RavenDB
         end
 
         include.chars.each do |ch|
-          if !ch.alnum?  && !["_", "."].include?(ch)
+          if !ch.alnum? && !["_", "."].include?(ch)
             required_quotes = true
             break
           end

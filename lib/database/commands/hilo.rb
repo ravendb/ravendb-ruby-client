@@ -50,7 +50,7 @@ module RavenDB
     def create_request(server_node)
       @headers["Content-Type"] = "application/json"
       @params = {"tag" => @tag, "last" => @last, "end" => @end}
-      @end_point ="/databases/#{server_node.database}/hilo/return"
+      @end_point = "/databases/#{server_node.database}/hilo/return"
     end
   end
 end
