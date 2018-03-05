@@ -297,7 +297,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.all?{ |result| result.instance_variable_defined?("@doc_id") })
+      assert(results.all? { |result| result.instance_variable_defined?("@doc_id") })
     end
   end
 
@@ -313,7 +313,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(results.size, 2)
-      results.each{ |last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"]) }
+      results.each { |last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"]) }
     end
   end
 

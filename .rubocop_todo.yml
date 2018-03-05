@@ -149,19 +149,6 @@ Layout/SpaceAroundOperators:
     - 'lib/documents/query/query_builder.rb'
     - 'test/spec_helper.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
-# SupportedStyles: space, no_space
-# SupportedStylesForEmptyBraces: space, no_space
-Layout/SpaceBeforeBlockBraces:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-    - 'test/session_tests/document_delete_test.rb'
-    - 'test/session_tests/document_query_test.rb'
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.

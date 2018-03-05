@@ -134,6 +134,6 @@ class DocumentConversionTest < RavenDatabaseTest
     assert(doc.foos.is_a?(Array))
 
     check_foo(doc.foo)
-    doc.foos.each_index{ |index| check_foo(doc.foos[index], index + 2) }
+    doc.foos.each_index { |index| check_foo(doc.foos[index], index + 2) }
   end
 end

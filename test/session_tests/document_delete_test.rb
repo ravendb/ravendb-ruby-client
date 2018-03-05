@@ -14,10 +14,10 @@ class DocumentDeleteTest < RavenDatabaseTest
     end
 
     @_store.open_session do |session|
-      products = session.load(IDS.map{ |id| "Products/#{id}" })
+      products = session.load(IDS.map { |id| "Products/#{id}" })
     end
 
-    @change_vectors = products.map{ |product| product.instance_variable_get("@metadata")["@change-vector"] }
+    @change_vectors = products.map { |product| product.instance_variable_get("@metadata")["@change-vector"] }
   end
 
   def test_should_delete_with_key_with_save_session

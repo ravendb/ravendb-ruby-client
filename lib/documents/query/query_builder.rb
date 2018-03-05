@@ -519,13 +519,13 @@ module RavenDB
       negate_if_needed
 
       if shape_wkt_parameter_name_or_criteria.is_a?(SpatialCriteria)
-        @where_tokens.add_last(criteria.to_query_token(field_name){ yield })
+        @where_tokens.add_last(criteria.to_query_token(field_name) { yield })
       else
         shape_wkt_parameter_name = shape_wkt_parameter_name_or_criteria
         relation = relation
 
         criteria = WktCriteria.new(nil, relation, dist_error_percent)
-        @where_tokens.add_last(criteria.to_query_token(field_name){ shape_wkt_parameter_name })
+        @where_tokens.add_last(criteria.to_query_token(field_name) { shape_wkt_parameter_name })
       end
 
       self
