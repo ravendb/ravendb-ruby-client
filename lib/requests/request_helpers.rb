@@ -176,7 +176,7 @@ module RavenDB
 
         if old_topology == topology
           @topology = topology
-        elsif
+        else
           assign_topology(topology, force_update)
         end
       end

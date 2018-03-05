@@ -71,7 +71,7 @@ module RavenDB
       @generate_id_lock.synchronize do
         if !@range.needs_new_range?
           @range.increment
-        elsif
+        else
           begin
             @range = get_next_range
           rescue ConcurrencyException

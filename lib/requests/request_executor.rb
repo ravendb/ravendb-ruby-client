@@ -125,7 +125,7 @@ module RavenDB
           raise @_first_topology_update_exception
         elsif is_first_topology_update_tries_expired?
           raise DatabaseLoadFailureException, "Max topology update tries reached"
-        elsif
+        else
           sleep 0.1
           await_first_topology_update
         end
