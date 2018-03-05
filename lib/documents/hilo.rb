@@ -67,6 +67,7 @@ module RavenDB
     end
 
     protected
+
     def try_request_next_range
       @generate_id_lock.synchronize do
         if !@range.needs_new_range?
@@ -122,6 +123,7 @@ module RavenDB
     end
 
     protected
+
     def get_generator_for_tag(tag)
       @get_generator_lock.synchronize do
         unless @generators.key?(tag)
@@ -144,6 +146,7 @@ module RavenDB
     end
 
     protected
+
     def get_generator_for_database(db_name)
       @get_generator_lock.synchronize do
         unless @generators.key?(db_name)

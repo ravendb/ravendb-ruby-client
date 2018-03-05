@@ -55,6 +55,7 @@ class HiloGeneratorTest < RavenDatabaseTest
   end
 
   protected
+
   def range(document_id)
     document_id.gsub("#{COLLECTION}/", "").gsub("-A", "").to_i
   end

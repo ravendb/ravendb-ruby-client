@@ -232,6 +232,7 @@ module RavenDB
     end
 
     protected
+
     def attach_query(query)
       if @attached_queries.key?(query)
         raise "Query is already attached to session"

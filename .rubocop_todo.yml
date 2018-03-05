@@ -34,11 +34,6 @@ Layout/ClosingParenthesisIndentation:
     - 'lib/requests/request_executor.rb'
     - 'test/session_tests/document_attachments_test.rb'
 
-# Offense count: 32
-# Cop supports --auto-correct.
-Layout/EmptyLinesAroundAccessModifier:
-  Enabled: false
-
 # Offense count: 29
 # Cop supports --auto-correct.
 # Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.

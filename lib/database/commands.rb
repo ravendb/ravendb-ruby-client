@@ -84,6 +84,7 @@ module RavenDB
     end
 
     protected
+
     def assert_node(node)
       raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless node.is_a? ServerNode
     end

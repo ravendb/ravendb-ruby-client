@@ -166,6 +166,7 @@ module RavenDB
     end
 
     protected
+
     def assign_topology(topology, force_update)
       old_topology = @topology
 

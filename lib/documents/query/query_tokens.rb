@@ -20,6 +20,7 @@ module RavenDB
     end
 
     protected
+
     def write_field(writer, field)
       is_keyword = QueryKeywords.include?(field)
 
@@ -39,6 +40,7 @@ module RavenDB
     end
 
     protected
+
     def token_text
       raise NotImplementedError, "You should implement token_text method"
     end
@@ -46,6 +48,7 @@ module RavenDB
 
   class CloseSubclauseToken < SimpleQueryToken
     protected
+
     def token_text
       ")"
     end
@@ -53,6 +56,7 @@ module RavenDB
 
   class DistinctToken < SimpleQueryToken
     protected
+
     def token_text
       QueryKeyword::Distinct
     end
@@ -255,6 +259,7 @@ module RavenDB
 
   class IntersectMarkerToken < SimpleQueryToken
     protected
+
     def token_text
       ","
     end
@@ -262,6 +267,7 @@ module RavenDB
 
   class NegateToken < SimpleQueryToken
     protected
+
     def token_text
       QueryOperator::Not
     end
@@ -269,6 +275,7 @@ module RavenDB
 
   class OpenSubclauseToken < SimpleQueryToken
     protected
+
     def token_text
       "("
     end
@@ -389,6 +396,7 @@ module RavenDB
 
   class TrueToken < SimpleQueryToken
     protected
+
     def token_text
       true.to_s
     end

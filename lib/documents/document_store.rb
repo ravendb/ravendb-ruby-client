@@ -189,6 +189,7 @@ module RavenDB
     end
 
     protected
+
     def set_urls(url_or_urls)
       unless url_or_urls.nil?
         @_urls = url_or_urls

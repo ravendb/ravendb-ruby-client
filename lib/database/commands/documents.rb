@@ -32,6 +32,7 @@ module RavenDB
     end
 
     protected
+
     def check_response(response)
       unless response.is_a?(Net::HTTPNoContent)
         raise "Could not delete document #{@id}"
@@ -183,6 +184,7 @@ module RavenDB
     end
 
     protected
+
     def check_response(response)
       unless response.body
         raise ErrorResponseException, "Failed to store document to the database "\

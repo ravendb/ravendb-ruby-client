@@ -98,6 +98,7 @@ module RavenDB
     end
 
     protected
+
     def is_first_topology_update_tries_expired?
       @_first_topology_updates_tries >= MaxFirstTopologyUpdatesTries
     end
@@ -399,6 +400,7 @@ module RavenDB
 
   class ClusterRequestExecutor < RequestExecutor
     protected
+
     def get_update_topology_command_class
       GetClusterTopologyCommand
     end

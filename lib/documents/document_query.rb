@@ -227,6 +227,7 @@ module RavenDB
     end
 
     protected
+
     def execute_query
       emit(RavenServerEvent::EVENT_DOCUMENTS_QUERIED)
 
@@ -699,6 +700,7 @@ module RavenDB
     end
 
     protected
+
     def add_query_parameter(value_or_values)
       parameter_name = "p#{@query_parameters.size}".to_sym
 

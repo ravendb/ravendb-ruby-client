@@ -128,6 +128,7 @@ module RavenDB
     end
 
     protected
+
     def try_get_header(header)
       if @_last_response.key?(header)
         @_last_response[header]

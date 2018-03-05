@@ -307,6 +307,7 @@ module RavenDB
     end
 
     protected
+
     def find_nested_type(instance_variable_value)
       if instance_variable_value.is_a?(Date) || instance_variable_value.is_a?(DateTime)
         return "date"

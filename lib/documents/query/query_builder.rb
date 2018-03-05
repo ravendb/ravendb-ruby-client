@@ -566,6 +566,7 @@ module RavenDB
     end
 
     protected
+
     def ensure_valid_field_name(field_name, is_nested_path = false)
       result = {
         original_field_name: field_name,

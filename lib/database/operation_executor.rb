@@ -23,6 +23,7 @@ module RavenDB
     end
 
     protected
+
     def fetch_operation_status
       start_time = Time.now.to_f
       status_command = GetOperationStateCommand.new(@operation_id)
@@ -113,6 +114,7 @@ module RavenDB
     end
 
     protected
+
     def set_response(operation, command, response)
       response
     end
@@ -146,6 +148,7 @@ module RavenDB
     end
 
     protected
+
     def request_executor_factory
       @store.get_request_executor(@database)
     end
@@ -153,6 +156,7 @@ module RavenDB
 
   class OperationExecutor < AbstractDatabaseOperationExecutor
     protected
+
     def set_response(operation, command, response)
       store = @store
       json = response
@@ -209,6 +213,7 @@ module RavenDB
     end
 
     protected
+
     def request_executor_factory
       auth = nil
       store = @store
