@@ -99,7 +99,7 @@ module RavenDB
       end
 
       results = ids.map do |id|
-        (!@known_missing_ids.include?(id) && @documents_by_id.key?(id)) ? @documents_by_id[id] : nil
+        !@known_missing_ids.include?(id) && @documents_by_id.key?(id) ? @documents_by_id[id] : nil
       end
 
       if loading_one_doc
