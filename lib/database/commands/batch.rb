@@ -83,9 +83,7 @@ module RavenDB
   end
 
   class SaveChangesData
-    def deferred_commands_count
-      @deferred_commands_count
-    end
+    attr_reader :deferred_commands_count
 
     def commands_count
       @commands.size
