@@ -116,19 +116,6 @@ Style/ConditionalAssignment:
     - 'lib/documents/document_session.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 13
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, EnforcedStyle.
-# SupportedStyles: predicate, comparison
-Style/NumericPredicate:
-  Exclude:
-    - 'spec/**/*'
-    - 'lib/documents/indexes.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/utilities/linked_list.rb'
-    - 'lib/utilities/string_utility.rb'
-
 # Offense count: 12
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
