@@ -6,7 +6,7 @@ require "active_support/inflector"
 
 module MiniTest
   module Assertions
-    def refute_raises *exp
+    def refute_raises(*exp)
       msg = exp.last.is_a?(String) ? exp.pop : "unexpected exception raised"
 
       begin
