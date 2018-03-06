@@ -368,11 +368,11 @@ module RavenDB
 
       message = "Forbidden access to #{message}#{server_node.url} node, "
 
-      if @_auth_options.certificate.nil?
-        message = "#{message}a certificate is required."
-      else
-        message = "#{message}certificate does not have permission to access it or is unknown."
-      end
+      message = if @_auth_options.certificate.nil?
+                  "#{message}a certificate is required."
+                else
+                  "#{message}certificate does not have permission to access it or is unknown."
+                end
 
       if response_or_exception.is_a?(Exception)
         ssl_exception = response_or_exception.message

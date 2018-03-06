@@ -67,11 +67,9 @@ module RavenDB
       ids_of_non_existing_documents = Set.new(ids)
 
       if !includes.nil? && !includes.is_a?(Array)
-        if includes.is_a?(String)
-          includes = [includes]
-        else
-          includes = nil
-        end
+        includes = if includes.is_a?(String)
+                     [includes]
+                   end
       end
 
       if includes.nil?

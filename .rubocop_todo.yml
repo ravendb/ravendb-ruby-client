@@ -107,15 +107,6 @@ Naming/PredicateName:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
-# SupportedStyles: assign_to_condition, assign_inside_condition
-Style/ConditionalAssignment:
-  Exclude:
-    - 'lib/documents/document_session.rb'
-    - 'lib/requests/request_executor.rb'
-
 # Offense count: 294
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
