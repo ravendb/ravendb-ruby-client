@@ -121,16 +121,6 @@ Style/ConditionalAssignment:
 Style/GuardClause:
   Enabled: false
 
-# Offense count: 11
-Style/MultilineTernaryOperator:
-  Exclude:
-    - 'lib/database/operation_executor.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_session.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/documents/query/query_tokens.rb'
-
 # Offense count: 1
 Style/NestedTernaryOperator:
   Exclude:

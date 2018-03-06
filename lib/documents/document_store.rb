@@ -218,9 +218,11 @@ module RavenDB
         )
       end
 
-      (true == for_single_node) ?
-        RequestExecutor.create_for_single_node(single_node_url, db_name, auth) :
+      if for_single_node
+        RequestExecutor.create_for_single_node(single_node_url, db_name, auth)
+      else
         RequestExecutor.create(urls, db_name, auth)
+      end
     end
   end
 end

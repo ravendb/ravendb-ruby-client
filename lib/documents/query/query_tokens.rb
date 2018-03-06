@@ -295,17 +295,21 @@ module RavenDB
     end
 
     def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = longitude_parameter_name.nil? ?
-        "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))" :
-        "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      expression = if longitude_parameter_name.nil?
+                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
+                   else
+                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+                   end
 
       self.new(expression)
     end
 
     def self.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = longitude_parameter_name.nil? ?
-        "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))" :
-        "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      expression = if longitude_parameter_name.nil?
+                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
+                   else
+                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+                   end
 
       self.new(expression, true)
     end
@@ -374,9 +378,11 @@ module RavenDB
 
   class ShapeToken < QueryToken
     def self.circle(radius_parameter_name, latitute_parameter_name, longitude_parameter_name, radius_units = nil)
-      expression = radius_units.nil? ?
-        "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})" :
-        "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+      expression = if radius_units.nil?
+                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
+                   else
+                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+                   end
 
       self.new(expression)
     end

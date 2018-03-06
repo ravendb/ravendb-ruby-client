@@ -87,10 +87,13 @@ module RavenDB
     def random_ordering(seed = nil)
       assert_no_raw_query
 
-      @order_by_tokens.add_last(seed ?
-        OrderByToken.create_random(seed) :
-        OrderByToken.random
-                               )
+      order_by_token = if seed
+                         OrderByToken.create_random(seed)
+                       else
+                         OrderByToken.random
+                       end
+
+      @order_by_tokens.add_last(order_by_token)
 
       self
     end
@@ -98,9 +101,11 @@ module RavenDB
     def custom_sort_using(type_name, descending = false)
       field_name = "#{FieldConstants::CustomSortFieldName};#{type_name}"
 
-      descending ?
-        order_by_descending(field_name) :
+      if descending
+        order_by_descending(field_name)
+      else
         order_by(field_name)
+      end
     end
 
     def include(path)
@@ -609,8 +614,11 @@ module RavenDB
         current = current.previous
       end
 
-      token = (QueryOperator::And == @default_operator) ?
-        QueryOperatorToken.and : QueryOperatorToken.or
+      token = if QueryOperator::And == @default_operator
+                QueryOperatorToken.and
+              else
+                QueryOperatorToken.or
+              end
 
       unless last_where.nil? || last_where.search_operator.nil?
         token = QueryOperatorToken.or

@@ -157,9 +157,11 @@ module RavenDB
       end
 
       if results.size != 1
-        error_message = (results.length > 1) ?
-          "There's more than one result corresponding to given query criteria." :
-          "There's no results corresponding to given query criteria."
+        error_message = if results.length > 1
+                          "There's more than one result corresponding to given query criteria."
+                        else
+                          "There's no results corresponding to given query criteria."
+                        end
 
         raise error_message
       end

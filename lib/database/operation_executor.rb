@@ -96,9 +96,11 @@ module RavenDB
 
       if operation.is_a?(AbstractOperation)
         begin
-          command = operation.is_a?(Operation) ?
-            operation.get_command(conventions, store) :
-            operation.get_command(conventions)
+          command = if operation.is_a?(Operation)
+                      operation.get_command(conventions, store)
+                    else
+                      operation.get_command(conventions)
+                    end
         rescue StandardError => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}"
         end
@@ -226,9 +228,11 @@ module RavenDB
         )
       end
 
-      conventions.disable_topology_updates ?
-       ClusterRequestExecutor.create_for_single_node(store.single_node_url, nil, auth) :
-       ClusterRequestExecutor.create(store.urls, nil, auth)
+      if conventions.disable_topology_updates
+        ClusterRequestExecutor.create_for_single_node(store.single_node_url, nil, auth)
+      else
+        ClusterRequestExecutor.create(store.urls, nil, auth)
+      end
     end
   end
 
