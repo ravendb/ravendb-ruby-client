@@ -35,7 +35,7 @@ module RavenDB
       buffer += (@wait_for_non_stale_results_as_of_now ? "1" : "0")
 
       if @wait_for_non_stale_results
-        buffer += "#{@wait_for_non_stale_results_timeout}"
+        buffer += @wait_for_non_stale_results_timeout.to_s
       end
 
       Digest::SHA256.hexdigest(buffer)
