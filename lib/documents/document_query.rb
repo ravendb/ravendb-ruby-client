@@ -717,7 +717,7 @@ module RavenDB
         return nil
       end
 
-      if "" == value
+      if value == ""
         return ""
       end
 

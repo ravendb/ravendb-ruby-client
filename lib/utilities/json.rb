@@ -71,7 +71,7 @@ module RavenDB
         variable_name = key
         variable_value = value
 
-        if "@metadata" != key
+        if key != "@metadata"
           serialized = {
             original_attribute: key,
             serialized_attribute: key,
@@ -117,7 +117,7 @@ module RavenDB
         json_property = variable_name
         json_value = variable_value
 
-        if "@metadata" != variable_name
+        if variable_name != "@metadata"
           json_property = json_property.delete("@")
 
           serialized = {
@@ -148,7 +148,7 @@ module RavenDB
       if mappings.key?(key)
         nested_object_type = mappings[key]
 
-        if "date" == nested_object_type
+        if nested_object_type == "date"
           return TypeUtilities.parse_date(json_value)
         end
 
@@ -220,7 +220,7 @@ module RavenDB
     end
 
     def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil)
-      if "@metadata" != variable && !!variable_value != variable_value
+      if variable != "@metadata" && !!variable_value != variable_value
         if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
           return TypeUtilities.stringify_date(variable_value)
         end

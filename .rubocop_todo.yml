@@ -116,20 +116,6 @@ Style/ConditionalAssignment:
     - 'lib/documents/document_session.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 12
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: all_comparison_operators, equality_operators_only
-Style/YodaCondition:
-  Exclude:
-    - 'lib/database/commands/attachments.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/requests/request_helpers.rb'
-    - 'lib/utilities/json.rb'
-
 # Offense count: 294
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https

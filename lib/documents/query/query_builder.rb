@@ -325,7 +325,7 @@ module RavenDB
     end
 
     def boost(boost)
-      if 1 == boost
+      if boost == 1
         return self
       end
 
@@ -749,7 +749,7 @@ module RavenDB
         .append(QueryKeyword::Select)
         .append(" ")
 
-      if (1 == tokens.count) && tokens.first.value.is_a?(DistinctToken)
+      if (tokens.count == 1) && tokens.first.value.is_a?(DistinctToken)
         tokens.first.value.writeTo(writer)
         writer.append(" *")
 

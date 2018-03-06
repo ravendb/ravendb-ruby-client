@@ -110,7 +110,7 @@ module RavenDB
         size = 0
       end
 
-      if "\"" == change_vector[0]
+      if change_vector[0] == "\""
         change_vector = change_vector[1..-2]
       end
 

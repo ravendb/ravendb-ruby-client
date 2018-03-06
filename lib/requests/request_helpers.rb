@@ -181,7 +181,7 @@ module RavenDB
 
     def on_topology_updated(topology_data)
       should_update = false
-      force_update = (true == topology_data[:force_update])
+      force_update = (topology_data[:force_update] == true)
 
       if topology_data[:topology_json]
         topology = Topology.from_json(topology_data[:topology_json])

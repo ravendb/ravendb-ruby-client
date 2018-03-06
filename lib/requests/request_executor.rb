@@ -111,9 +111,9 @@ module RavenDB
 
       @_await_first_topology_lock.synchronize do
         if first_topology_update.equal?(@_first_topology_update)
-          is_fulfilled = true == first_topology_update
+          is_fulfilled = first_topology_update == true
 
-          if false == first_topology_update
+          if first_topology_update == false
             start_first_topology_update(@_last_known_urls)
           end
         end
