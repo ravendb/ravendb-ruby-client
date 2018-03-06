@@ -23,12 +23,6 @@ Lint/UnusedMethodArgument:
     - 'lib/documents/query/spatial.rb'
     - 'lib/requests/request_helpers.rb'
 
-# Offense count: 2
-Lint/UselessAssignment:
-  Exclude:
-    - 'lib/requests/request_executor.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 76
 Metrics/AbcSize:
   Max: 83

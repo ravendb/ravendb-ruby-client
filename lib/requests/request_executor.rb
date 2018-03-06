@@ -264,7 +264,6 @@ module RavenDB
     end
 
     def handle_server_down(command, failed_node, failed_node_index)
-      next_node = nil
       node_selector = @_node_selector
 
       command.add_failed_node(failed_node)
