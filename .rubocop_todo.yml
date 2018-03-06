@@ -150,20 +150,6 @@ Style/RedundantSelf:
     - 'lib/requests/request_executor.rb'
     - 'lib/requests/request_helpers.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: IgnoredMethods.
-# IgnoredMethods: respond_to, define_method
-Style/SymbolProc:
-  Exclude:
-    - 'lib/database/commands/batch.rb'
-    - 'lib/database/commands/documents.rb'
-    - 'lib/database/commands/indexes.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, AllowSafeAssignment.

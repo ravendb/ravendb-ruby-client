@@ -38,3 +38,6 @@ Style/DateTime:
 
 Style/EmptyMethod:
   EnforcedStyle: expanded
+
+Style/SymbolProc:
+  Enabled: false
