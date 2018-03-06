@@ -27,7 +27,7 @@ module RavenDB
       @_last_response
     end
 
-    def was_failed?()
+    def was_failed?
       !@failed_nodes.empty?
     end
 

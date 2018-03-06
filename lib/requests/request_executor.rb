@@ -103,7 +103,7 @@ module RavenDB
       @_first_topology_updates_tries >= MaxFirstTopologyUpdatesTries
     end
 
-    def await_first_topology_update()
+    def await_first_topology_update
       is_fulfilled = false
       first_topology_update = @_first_topology_update
 

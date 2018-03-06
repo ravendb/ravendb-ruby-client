@@ -118,13 +118,6 @@ Style/ConditionalAssignment:
 
 # Offense count: 2
 # Cop supports --auto-correct.
-Style/DefWithParentheses:
-  Exclude:
-    - 'lib/database/commands.rb'
-    - 'lib/requests/request_executor.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: compact, expanded
 Style/EmptyMethod:
