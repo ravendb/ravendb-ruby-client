@@ -32,3 +32,6 @@ Style/RegexpLiteral:
 
 Style/WordArray:
   EnforcedStyle: brackets
+
+Style/DateTime:
+  Enabled: false

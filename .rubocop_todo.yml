@@ -116,15 +116,6 @@ Style/ConditionalAssignment:
     - 'lib/documents/document_session.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 7
-Style/DateTime:
-  Exclude:
-    - 'lib/utilities/type_utilities.rb'
-    - 'test/session_tests/document_conversion_test.rb'
-    - 'test/session_tests/document_store_test.rb'
-    - 'test/session_tests/query_builder_test.rb'
-    - 'test/spec_helper.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/DefWithParentheses:
