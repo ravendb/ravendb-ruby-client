@@ -80,11 +80,13 @@ module RavenDB
     end
 
     def to_json
+      storage = @storage ? "Yes" : "No" unless @storage.nil?
+
       {
         "Analyzer" => @analyzer,
         "Indexing" => @indexing || nil,
         "Spatial" => nil,
-        "Storage" => @storage.nil? ? nil : (@storage ? "Yes" : "No"),
+        "Storage" => storage,
         "Suggestions" => @suggestions,
         "TermVector" => @term_vector || nil
       }
