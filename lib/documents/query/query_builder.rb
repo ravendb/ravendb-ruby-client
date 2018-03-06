@@ -776,7 +776,7 @@ module RavenDB
     end
 
     def build_include(writer)
-      if @includes.nil? || (@includes.size == 0)
+      if @includes.nil? || @includes.empty?
         return
       end
 

@@ -197,12 +197,6 @@ Style/YodaCondition:
     - 'lib/requests/request_helpers.rb'
     - 'lib/utilities/json.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/ZeroLengthPredicate:
-  Exclude:
-    - 'lib/documents/query/query_builder.rb'
-
 # Offense count: 294
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
