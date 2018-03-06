@@ -1,6 +1,6 @@
-require 'documents/document_store'
+require "documents/document_store"
 
-module RavenDB 
+module RavenDB
   # Returns an initially-unconfigured instance of the document store.
   # @return [DocumentStore] an instance of the store
   #
@@ -11,9 +11,9 @@ module RavenDB
   #   end
   #
   #   RavenDB.store.open_session do |session|
-  #     session.store(Product.new("Products/1", "Test Product")) 
-  #     session.save_changes 
-  #   end 
+  #     session.store(Product.new("Products/1", "Test Product"))
+  #     session.save_changes
+  #   end
   #
   def self.store
     @store ||= DocumentStore.new

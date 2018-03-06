@@ -1,31 +1,31 @@
-require 'date'
-require 'active_support/core_ext/object/deep_dup'
+require "date"
+require "active_support/core_ext/object/deep_dup"
 require "database/exceptions"
 
 module RavenDB
   class TypeUtilities
-    DATE_PARSE_FORMAT = "%Y-%m-%dT%H:%M:%S.%N"
-    DATE_STRINGIFY_FORMAT = "%Y-%m-%dT%H:%M:%S.%6N0"
+    DATE_PARSE_FORMAT = "%Y-%m-%dT%H:%M:%S.%N".freeze
+    DATE_STRINGIFY_FORMAT = "%Y-%m-%dT%H:%M:%S.%6N0".freeze
 
     BASIC_TYPES = [
-        String, Integer, Numeric, Float,
-        Numeric, NilClass, Hash, Symbol,
-        Array, Range, Date, DateTime
-    ]
+      String, Integer, Numeric, Float,
+      Numeric, NilClass, Hash, Symbol,
+      Array, Range, Date, DateTime
+    ].freeze
 
     def self.is_document?(object)
       object.is_a?(Object) && (!!object != object)
-          BASIC_TYPES.all? {|basic_type|
-            !object.is_a?(basic_type)
-          }
+      BASIC_TYPES.all? do |basic_type|
+        !object.is_a?(basic_type)
+      end
     end
 
     def self.stringify_date(datetime)
-      invalid_date_message = 'Invalid parameter passed to RavenDB'\
-        '::TypeUtilities::stringify_date. It should be instance of DateTime'
+      invalid_date_message = "Invalid parameter passed to RavenDB"\
+        "::TypeUtilities::stringify_date. It should be instance of DateTime"
 
-      raise RuntimeError, invalid_date_message unless
-          (datetime.is_a?(DateTime) || datetime.is_a?(Date))
+      raise invalid_date_message unless
+          datetime.is_a?(DateTime) || datetime.is_a?(Date)
 
       datetime.strftime(DATE_STRINGIFY_FORMAT)
     end
@@ -43,22 +43,22 @@ module RavenDB
     end
 
     def self.omit_keys(hash, keys = [])
-      raise RuntimeError,
-        'Invalid hash argument passed. Should be an Hash' unless
-        hash.is_a?(Hash)
+      unless hash.is_a?(Hash)
+        raise "Invalid hash argument passed. Should be an Hash"
+      end
 
-      raise RuntimeError,
-        'Invalid keys argument passed. Should be an Array' unless
-        keys.is_a?(Array)
+      unless keys.is_a?(Array)
+        raise "Invalid keys argument passed. Should be an Array"
+      end
 
       copy = hash.deep_dup
-      copy.delete_if {|key| keys.include?(key)}
+      copy.delete_if { |key| keys.include?(key) }
 
       copy
     end
 
     def self.is_nil_or_whitespace?(string)
-      return string.nil? || string.strip.empty?
+      string.nil? || string.strip.empty?
     end
   end
 end

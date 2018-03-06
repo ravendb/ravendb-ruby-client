@@ -1,27 +1,26 @@
-require 'thread'
-require 'database/exceptions'
-require 'constants/documents'
+require "database/exceptions"
+require "constants/documents"
 
 module RavenDB
   class ServerNode
     attr_reader :url, :database, :cluster_tag
 
-    def initialize(url = '', database = nil, cluster_tag = nil)
+    def initialize(url = "", database = nil, cluster_tag = nil)
       @url = url
       @database = database
       @cluster_tag = cluster_tag
-    end  
+    end
 
-    def self.from_json(json)      
-      node = self.new
+    def self.from_json(json)
+      node = new
       node.from_json(json)
 
       node
     end
 
-    def from_json(json)     
+    def from_json(json)
       raise ArgumentError, 'Argument "json" should be an hash object' unless json.is_a? Hash
-      
+
       @url = json["Url"]
       @database = json["Database"]
       @cluster_tag = json["ClusterTag"]
@@ -37,7 +36,7 @@ module RavenDB
     end
 
     def self.from_json(json)
-      topology = self.new
+      topology = new
 
       topology.from_json(json)
       topology
@@ -50,19 +49,19 @@ module RavenDB
 
       if json["Etag"]
         @etag = json["Etag"]
-      end  
+      end
 
       if json["Topology"] && json["Topology"]["AllNodes"]
-        json["Topology"]["AllNodes"].each do |tag,url| 
-          nodes.push({"Url" => url, "ClusterTag" => tag})
+        json["Topology"]["AllNodes"].each do |tag, url|
+          nodes.push("Url" => url, "ClusterTag" => tag)
         end
       elsif json["Nodes"]
         nodes = json["Nodes"]
       end
 
       nodes.each do |node|
-         @nodes.push(ServerNode.from_json(node))
-      end         
+        @nodes.push(ServerNode.from_json(node))
+      end
     end
   end
 
@@ -97,7 +96,7 @@ module RavenDB
         sleep next_timer_period
         @_on_update.call(self)
         @_timer = nil
-      end  
+      end
     end
 
     def retry_update
@@ -105,10 +104,10 @@ module RavenDB
     end
 
     def dispose
-      if @_timer
-        @_timer.exit
-        @_timer = nil
-      end
+      return unless @_timer
+
+      @_timer.exit
+      @_timer = nil
     end
   end
 
@@ -116,12 +115,8 @@ module RavenDB
     attr_reader :script
 
     def initialize(script, values = nil)
-      @values = {}
+      @values = values || {}
       @script = script || nil
-
-      if values
-        @values = values
-      end
     end
 
     def to_json
@@ -140,17 +135,17 @@ module RavenDB
       @topology = topology
       @_lock = Mutex.new
 
-      request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) do |data|
         on_topology_updated(data)
-      }
+      end
 
-      request_executor.on(RavenServerEvent::REQUEST_FAILED) { |data|
+      request_executor.on(RavenServerEvent::REQUEST_FAILED) do |data|
         on_request_failed(data)
-      }
+      end
 
-      request_executor.on(RavenServerEvent::NODE_STATUS_UPDATED) { |data|
+      request_executor.on(RavenServerEvent::NODE_STATUS_UPDATED) do |data|
         on_node_restored(data)
-      }
+      end
     end
 
     def nodes
@@ -166,31 +161,32 @@ module RavenDB
       nodes.at(@current_node_index)
     end
 
-    protected 
+    protected
+
     def assign_topology(topology, force_update)
       old_topology = @topology
-      
+
       @_lock.synchronize do
-        if !force_update
+        unless force_update
           @current_node_index = 0
-        end  
+        end
 
         if old_topology == topology
           @topology = topology
-        elsif 
-          assign_topology(topology, force_update)  
-        end  
+        else
+          assign_topology(topology, force_update)
+        end
       end
     end
 
     def on_topology_updated(topology_data)
       should_update = false
-      force_update = (true == topology_data[:force_update])
+      force_update = (topology_data[:force_update] == true)
 
       if topology_data[:topology_json]
         topology = Topology.from_json(topology_data[:topology_json])
 
-        if !topology.nodes.empty?
+        unless topology.nodes.empty?
           should_update = force_update || (@topology.etag < topology.etag)
         end
 
@@ -210,19 +206,19 @@ module RavenDB
     def on_node_restored(failed_node)
       nodes = @topology.nodes
 
-      if nodes.include?(failed_node)
-        failed_node_index = nodes.index(failed_node)
-        
-        if @current_node_index > failed_node_index
-          @current_node_index = failed_node_index
-        end
-      end
+      return unless nodes.include?(failed_node)
+
+      failed_node_index = nodes.index(failed_node)
+
+      return unless @current_node_index > failed_node_index
+
+      @current_node_index = failed_node_index
     end
 
     def assert_topology
-      if !@topology || !@topology.nodes || @topology.nodes.empty?
-        raise RuntimeError, "Empty database topology, this shouldn't happen."
-      end
+      return unless !@topology || !@topology.nodes || @topology.nodes.empty?
+
+      raise "Empty database topology, this shouldn't happen."
     end
   end
-end 
+end

@@ -1,23 +1,23 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class DocumentDeleteTest < RavenDatabaseTest
-  IDS = [101, 10, 106, 107]
+  IDS = [101, 10, 106, 107].freeze
 
   def setup
     super
     products = nil
 
     @_store.open_session do |session|
-      IDS.each {|id| session.store(Product.new("Products/#{id}", "test"))}
+      IDS.each { |id| session.store(Product.new("Products/#{id}", "test")) }
       session.save_changes
     end
 
     @_store.open_session do |session|
-      products = session.load(IDS.map{|id| "Products/#{id}"})
+      products = session.load(IDS.map { |id| "Products/#{id}" })
     end
 
-    @change_vectors = products.map{|product| product.instance_variable_get("@metadata")["@change-vector"]}
+    @change_vectors = products.map { |product| product.instance_variable_get("@metadata")["@change-vector"] }
   end
 
   def test_should_delete_with_key_with_save_session
@@ -65,7 +65,7 @@ class DocumentDeleteTest < RavenDatabaseTest
       product = session.load(id)
       product.name = "Testing"
 
-      assert_raises(RuntimeError) {session.delete(id)}
+      assert_raises(RuntimeError) { session.delete(id) }
     end
   end
 
@@ -73,7 +73,7 @@ class DocumentDeleteTest < RavenDatabaseTest
     @_store.open_session do |session|
       refute_raises do
         IDS.each_index do |index|
-          session.delete("Products/#{IDS[index]}", {:expected_change_vector => @change_vectors[index]})
+          session.delete("Products/#{IDS[index]}", expected_change_vector: @change_vectors[index])
         end
 
         session.save_changes
@@ -85,7 +85,7 @@ class DocumentDeleteTest < RavenDatabaseTest
     @_store.open_session do |session|
       assert_raises do
         IDS.each_index do |index|
-          session.delete("Products/#{IDS[index]}", {:expected_change_vector => "#{@change_vectors[index]}:BROKEN:VECTOR"})
+          session.delete("Products/#{IDS[index]}", expected_change_vector: "#{@change_vectors[index]}:BROKEN:VECTOR")
         end
 
         session.save_changes

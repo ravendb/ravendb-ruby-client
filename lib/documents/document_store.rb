@@ -1,11 +1,12 @@
-require 'securerandom'
-require 'database/operation_executor'
-require 'documents/conventions'
-require 'requests/request_executor'
-require 'database/exceptions'
-require 'documents/hilo'
-require 'documents/document_session'
-require 'auth/auth_options'
+require "securerandom"
+require "database/operation_executor"
+require "documents/conventions"
+require "requests/request_executor"
+require "database/exceptions"
+require "documents/hilo"
+require "documents/document_session"
+require "auth/auth_options"
+require "active_support/core_ext/array/wrap"
 
 module RavenDB
   class Configuration
@@ -20,7 +21,7 @@ module RavenDB
 
   class DocumentStore
     def initialize(url_or_urls = nil, database = nil, auth_options = nil)
-      @_urls = []  
+      @_urls = []
       @_conventions = nil
       @_request_executors = nil
       @_operations = nil
@@ -33,11 +34,11 @@ module RavenDB
     end
 
     def self.create(url_or_urls, database, auth_options = nil)
-      self.new(url_or_urls, database, auth_options)
+      new(url_or_urls, database, auth_options)
     end
 
     def configure
-      if !@_initialized
+      unless @_initialized
         config = Configuration.new
 
         if block_given?
@@ -56,15 +57,16 @@ module RavenDB
           set_urls(config.urls)
         end
 
-        if !@_database
-          raise RuntimeError, "Default database isn't set."
+        unless @_database
+          raise "Default database isn't set."
         end
 
-        raise ArgumentError,
-          "Invalid auth options provided" unless
-          @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
+        unless @_auth_options.nil? || @_auth_options.is_a?(StoreAuthOptions)
+          raise ArgumentError,
+                "Invalid auth options provided"
+        end
 
-        if @_auth_options.nil? && @_urls.any? {|url| url.downcase.start_with?('https') }
+        if @_auth_options.nil? && @_urls.any? { |url| url.downcase.start_with?("https") }
           raise NotSupportedException, "Access to secured servers requires StoreAuthOptions to be set"
         end
 
@@ -73,7 +75,7 @@ module RavenDB
       end
 
       self
-    end  
+    end
 
     def database
       @_database
@@ -98,7 +100,7 @@ module RavenDB
 
     def maintenance
       assert_configure
-      @_maintenance ||= AdminOperationExecutor.new(self, @_database)      
+      @_maintenance ||= AdminOperationExecutor.new(self, @_database)
     end
 
     def conventions
@@ -119,7 +121,7 @@ module RavenDB
         end
       end
 
-      session_database = session_database || database
+      session_database ||= database
       request_executor = nil
 
       if session_options.key?(:request_executor)
@@ -156,49 +158,50 @@ module RavenDB
       db_name = database || @_database
       for_single_node = conventions.disable_topology_updates
 
-      if !@_request_executors.key?(for_single_node)
+      unless @_request_executors.key?(for_single_node)
         @_request_executors[for_single_node] = {}
-      end  
+      end
 
-      if !@_request_executors[for_single_node].key?(db_name)
+      unless @_request_executors[for_single_node].key?(db_name)
         @_request_executors[for_single_node][db_name] = create_request_executor(db_name, for_single_node)
-      end    
+      end
 
       @_request_executors[for_single_node][db_name]
     end
 
     def dispose
-      unless @_disposed
-        @_disposed = true
+      return if @_disposed
 
-        assert_configure
-        @_generator.return_unused_range rescue nil
-        maintenance.server.dispose
+      @_disposed = true
 
-        if @_request_executors.is_a?(Hash)
-          @_request_executors.each_value do |executors|
-            executors.each_value {|executor| executor.dispose}
-          end
-        end
+      assert_configure
+      begin
+        @_generator.return_unused_range
+      rescue StandardError
+        nil
+      end
+      maintenance.server.dispose
+
+      return unless @_request_executors.is_a?(Hash)
+
+      @_request_executors.each_value do |executors|
+        executors.each_value { |executor| executor.dispose }
       end
     end
 
-    protected 
-    def set_urls(url_or_urls)
-      if !url_or_urls.nil?
-        @_urls = url_or_urls
+    protected
 
-        if !url_or_urls.is_a?(Array)
-          @_urls = [@_urls]
-        end
-      end
-    end  
+    def set_urls(url_or_urls)
+      return if url_or_urls.nil?
+
+      @_urls = Array.wrap(url_or_urls)
+    end
 
     def assert_configure
-      if !@_initialized
-        raise RuntimeError, "You cannot open a session or access the database commands"\
-  " before initializing the document store. Did you forget calling configure ?"
-      end
+      return if @_initialized
+
+      raise "You cannot open a session or access the database commands"\
+" before initializing the document store. Did you forget calling configure ?"
     end
 
     def create_request_executor(database = nil, for_single_node = nil)
@@ -207,14 +210,16 @@ module RavenDB
 
       unless @_auth_options.nil?
         auth = RequestAuthOptions.new(
-            @_auth_options.certificate,
-            @_auth_options.password
+          @_auth_options.certificate,
+          @_auth_options.password
         )
       end
 
-      (true == for_single_node) ?
-        RequestExecutor.create_for_single_node(single_node_url, db_name, auth) :
+      if for_single_node
+        RequestExecutor.create_for_single_node(single_node_url, db_name, auth)
+      else
         RequestExecutor.create(urls, db_name, auth)
+      end
     end
-  end  
+  end
 end

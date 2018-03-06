@@ -10,12 +10,12 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if !@id
-        raise RuntimeError, "Nil Id is not valid"
+      unless @id
+        raise "Nil Id is not valid"
       end
 
-      if !@id.is_a?(String)
-        raise RuntimeError, "Id must be a string"
+      unless @id.is_a?(String)
+        raise "Id must be a string"
       end
 
       if @change_vector
@@ -32,10 +32,11 @@ module RavenDB
     end
 
     protected
+
     def check_response(response)
-      if !response.is_a?(Net::HTTPNoContent)
-        raise RuntimeError, "Could not delete document #{@id}"
-      end
+      return if response.is_a?(Net::HTTPNoContent)
+
+      raise "Could not delete document #{@id}"
     end
   end
 
@@ -51,8 +52,8 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if !@id_or_ids
-        raise RuntimeError, "nil ID is not valid"
+      unless @id_or_ids
+        raise "nil ID is not valid"
       end
 
       ids = @id_or_ids.is_a?(Array) ? @id_or_ids : [@id_or_ids]
@@ -89,7 +90,7 @@ module RavenDB
         return
       end
 
-      if !response.body
+      unless response.body
         raise ErrorResponseException, "Failed to load document from the database "\
   "please check the connection to the server"
       end
@@ -100,7 +101,7 @@ module RavenDB
 
   class PatchCommand < RavenCommand
     def initialize(id, patch, options = nil)
-      super('', Net::HTTP::Patch::METHOD)
+      super("", Net::HTTP::Patch::METHOD)
       opts = options || {}
 
       @id = id || nil
@@ -115,29 +116,29 @@ module RavenDB
       assert_node(server_node)
 
       if @id.nil?
-        raise RuntimeError, 'Empty ID is invalid'
+        raise "Empty ID is invalid"
       end
 
       if @patch.nil?
-        raise RuntimeError, 'Empty patch is invalid'
+        raise "Empty patch is invalid"
       end
 
       if @patch_if_missing && !@patch_if_missing.script
-        raise RuntimeError, 'Empty script is invalid'
+        raise "Empty script is invalid"
       end
 
       @params = {"id" => @id}
       @end_point = "/databases/#{server_node.database}/docs"
 
       if @skip_patch_if_change_vector_mismatch
-        add_params('skipPatchIfChangeVectorMismatch', 'true')
+        add_params("skipPatchIfChangeVectorMismatch", "true")
       end
 
       if @return_debug_information
-        add_params('debug', 'true')
+        add_params("debug", "true")
       end
 
-      if !@change_vector.nil?
+      unless @change_vector.nil?
         @headers = {"If-Match" => "\"#{@change_vector}\""}
       end
 
@@ -151,12 +152,10 @@ module RavenDB
       result = super(response)
 
       if !response.is_a?(Net::HTTPOK) && !response.is_a?(Net::HTTPNotModified)
-        raise RuntimeError, "Could not patch document #{@id}"
+        raise "Could not patch document #{@id}"
       end
 
-      if response.body
-        result
-      end
+      result if response.body
     end
   end
 
@@ -169,9 +168,7 @@ module RavenDB
     end
 
     def create_request(server_node)
-      if !@document
-        raise RuntimeError, 'Document must be an object'
-      end
+      raise "Document must be an object" unless @document
 
       @payload = @document
       super(server_node)
@@ -183,11 +180,12 @@ module RavenDB
     end
 
     protected
+
     def check_response(response)
-      if !response.body
-        raise ErrorResponseException, "Failed to store document to the database "\
-  "please check the connection to the server"
-      end
+      return if response.body
+
+      raise ErrorResponseException, "Failed to store document to the database "\
+"please check the connection to the server"
     end
   end
 end

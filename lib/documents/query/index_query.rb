@@ -1,13 +1,13 @@
 module RavenDB
   class IndexQuery
     DefaultTimeout = 15 * 1000
-    DefaultPageSize = 2 ** 31 - 1
+    DefaultPageSize = 2**31 - 1
 
     attr_accessor :start, :page_size
     attr_reader :query, :query_parameters, :wait_for_non_stale_results,
                 :wait_for_non_stale_results_as_of_now, :wait_for_non_stale_results_timeout
 
-    def initialize(query = '', query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
+    def initialize(query = "", query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
       @query = query
       @query_parameters = query_parameters || {}
       @page_size = page_size || DefaultPageSize
@@ -17,13 +17,13 @@ module RavenDB
       @wait_for_non_stale_results_as_of_now = options[:wait_for_non_stale_results_as_of_now] || false
       @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
 
-      if !@page_size.is_a?(Numeric)
+      unless @page_size.is_a?(Numeric)
         @page_size = DefaultPageSize
       end
 
       if (@wait_for_non_stale_results ||
           @wait_for_non_stale_results_as_of_now) &&
-          !@wait_for_non_stale_results_timeout
+         !@wait_for_non_stale_results_timeout
 
         @wait_for_non_stale_results_timeout = DefaultTimeout
       end
@@ -31,11 +31,11 @@ module RavenDB
 
     def query_hash
       buffer = "#{@query}#{@page_size}#{@start}"
-      buffer = buffer + (@wait_for_non_stale_results ? "1" : "0")
-      buffer = buffer + (@wait_for_non_stale_results_as_of_now ? "1" : "0")
+      buffer += (@wait_for_non_stale_results ? "1" : "0")
+      buffer += (@wait_for_non_stale_results_as_of_now ? "1" : "0")
 
       if @wait_for_non_stale_results
-        buffer = buffer + "#{@wait_for_non_stale_results_timeout}"
+        buffer += @wait_for_non_stale_results_timeout.to_s
       end
 
       Digest::SHA256.hexdigest(buffer)
@@ -43,33 +43,33 @@ module RavenDB
 
     def to_json
       json = {
-          "Query" => @query,
-          "QueryParameters" => @query_parameters,
+        "Query" => @query,
+        "QueryParameters" => @query_parameters
       }
 
-      if !@start.nil?
+      unless @start.nil?
         json["Start"] = @start
       end
 
-      if !@page_size.nil?
+      unless @page_size.nil?
         json["PageSize"] = @page_size
       end
 
-      if !@cut_off_etag.nil?
+      unless @cut_off_etag.nil?
         json["CutoffEtag"] = @cut_off_etag
       end
 
-      if !@wait_for_non_stale_results.nil?
+      unless @wait_for_non_stale_results.nil?
         json["WaitForNonStaleResults"] = true
       end
 
-      if !@wait_for_non_stale_results_as_of_now.nil?
+      unless @wait_for_non_stale_results_as_of_now.nil?
         json["WaitForNonStaleResultsAsOfNow"] = true
       end
 
       if (@wait_for_non_stale_results ||
           @wait_for_non_stale_results_as_of_now) &&
-          !@wait_for_non_stale_results_timeout.nil?
+         !@wait_for_non_stale_results_timeout.nil?
         json["WaitForNonStaleResultsTimeout"] = @wait_for_non_stale_results_timeout.to_s
 
       end

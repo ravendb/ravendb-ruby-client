@@ -1,5 +1,5 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class DocumentSerializingTest < RavenTest
   def setup
@@ -32,28 +32,29 @@ class DocumentSerializingTest < RavenTest
       ],
       "deep_array_hash_prop" => [
         1, 2, {
-        "some_prop" => "someValue",
-        "some_array" => [3, 4]
-      }, [5, 6], [7, 8, {
-        "some_prop" => "someValue",
-      }]],
-      "date_prop" => '2017-06-04T18:39:05.1230000',
+          "some_prop" => "someValue",
+          "some_array" => [3, 4]
+        }, [5, 6], [7, 8, {
+          "some_prop" => "someValue"
+        }]
+      ],
+      "date_prop" => "2017-06-04T18:39:05.1230000",
       "deep_foo_prop" => {
         "@metadata" => {},
-        "id" => 'foo1',
-        "name" => 'Foo #1',
+        "id" => "foo1",
+        "name" => "Foo #1",
         "order" => 1
       },
       "deep_array_foo_prop" => [{
-         "@metadata" => {},
-         "id" => 'foo2',
-         "name" => 'Foo #2',
-         "order" => 2
-      },{
         "@metadata" => {},
-         "id" => 'foo3',
-         "name" => 'Foo #3',
-         "order" => 3
+        "id" => "foo2",
+        "name" => "Foo #2",
+        "order" => 2
+      }, {
+        "@metadata" => {},
+        "id" => "foo3",
+        "name" => "Foo #3",
+        "order" => 3
       }]
     }
 
@@ -64,12 +65,12 @@ class DocumentSerializingTest < RavenTest
     }
 
     @document = SerializingTest.new
-    RavenDB::JsonSerializer::from_json(@document, @json, {}, @nested_object_types, @_store.conventions)
+    RavenDB::JsonSerializer.from_json(@document, @json, {}, @nested_object_types, @_store.conventions)
   end
 
   def test_should_parse_scalars
     assert(@document.string_prop.is_a?(String))
-    assert_equal(@document.string_prop, 'string')
+    assert_equal(@document.string_prop, "string")
     assert(@document.number_prop.is_a?(Numeric))
     assert_equal(@document.number_prop, 2)
     assert(@document.number_float_prop.is_a?(Numeric))
@@ -107,7 +108,7 @@ class DocumentSerializingTest < RavenTest
     assert(@document.hash_prop.key?("array_prop"))
 
     assert(@document.hash_prop["string_prop"].is_a?(String))
-    assert_equal(@document.hash_prop["string_prop"], 'string')
+    assert_equal(@document.hash_prop["string_prop"], "string")
     assert(@document.hash_prop["number_prop"].is_a?(Numeric))
     assert_equal(@document.hash_prop["number_prop"], 2)
     assert(@document.hash_prop["number_float_prop"].is_a?(Numeric))
@@ -125,12 +126,12 @@ class DocumentSerializingTest < RavenTest
     deep = @document.deep_hash_prop["some_hash"]
 
     assert(@document.deep_hash_prop.is_a?(Hash))
-    assert(@document.deep_hash_prop.key?('some_prop'))
-    assert_equal(@document.deep_hash_prop['some_prop'], 'someValue')
+    assert(@document.deep_hash_prop.key?("some_prop"))
+    assert_equal(@document.deep_hash_prop["some_prop"], "someValue")
 
     assert(deep.is_a?(Hash))
-    assert(deep.key?('some_prop'))
-    assert(deep['some_prop'], 'someValue')
+    assert(deep.key?("some_prop"))
+    assert(deep["some_prop"], "someValue")
   end
 
   def test_should_parse_mixed_deep_arrays_hashes
@@ -140,8 +141,8 @@ class DocumentSerializingTest < RavenTest
     deep_hash_in_array = deep_array[2]
 
     assert(deep_hash.is_a?(Hash))
-    assert(deep_hash.key?('some_prop'))
-    assert_equal(deep_hash['some_prop'], 'someValue')
+    assert(deep_hash.key?("some_prop"))
+    assert_equal(deep_hash["some_prop"], "someValue")
 
     assert(deep_array_in_hash.is_a?(Array))
     assert_equal(deep_array_in_hash.size, 2)
@@ -153,13 +154,13 @@ class DocumentSerializingTest < RavenTest
     assert_equal(deep_array[1], 8)
 
     assert(deep_hash_in_array.is_a?(Hash))
-    assert(deep_hash_in_array.key?('some_prop'))
-    assert_equal(deep_hash_in_array['some_prop'], 'someValue')
+    assert(deep_hash_in_array.key?("some_prop"))
+    assert_equal(deep_hash_in_array["some_prop"], "someValue")
   end
 
   def test_should_parse_dates
     assert(@document.date_prop.is_a?(DateTime))
-    assert(RavenDB::TypeUtilities::stringify_date(@document.date_prop), @json['date_prop'])
+    assert(RavenDB::TypeUtilities.stringify_date(@document.date_prop), @json["date_prop"])
   end
 
   def test_should_parse_deep_objects_and_arrays_according_to_specified_nested_objects_types
@@ -180,7 +181,7 @@ class DocumentSerializingTest < RavenTest
   end
 
   def test_should_serialize_back_to_source_json
-    serialized = RavenDB::JsonSerializer::to_json(@document, @_store.conventions)
+    serialized = RavenDB::JsonSerializer.to_json(@document, @_store.conventions)
 
     assert_equal(serialized, @json)
   end

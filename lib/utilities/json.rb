@@ -1,27 +1,29 @@
 require "json"
-require 'net/http'
-require 'database/exceptions'
-require 'utilities/type_utilities'
+require "net/http"
+require "database/exceptions"
+require "utilities/type_utilities"
 
-class Net::HTTPResponse
-  def json(raise_when_invalid = true)
-    json = body
-    parsed = nil
+module Net
+  class HTTPResponse
+    def json(raise_when_invalid = true)
+      json = body
+      parsed = nil
 
-    if !json.is_a? Hash
-      begin
-        if json.is_a?(String) && !json.empty?
-          parsed = JSON.parse(json)
+      unless json.is_a? Hash
+        begin
+          if json.is_a?(String) && !json.empty?
+            parsed = JSON.parse(json)
+          end
+        rescue StandardError
+          if raise_when_invalid
+            raise RavenDB::ErrorResponseException, "Not a valid JSON"
+          end
         end
-      rescue
-        if raise_when_invalid
-          raise RavenDB::ErrorResponseException, 'Not a valid JSON'  
-        end  
-      end  
-    end  
+      end
 
-    parsed
-  end  
+      parsed
+    end
+  end
 end
 
 module RavenDB
@@ -37,55 +39,53 @@ module RavenDB
     def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil)
       mappings = {}
 
-      if !TypeUtilities::is_document?(target)
-        raise RuntimeError, 'Invalid target passed. Should be a user-defined class instance'
+      unless TypeUtilities.is_document?(target)
+        raise "Invalid target passed. Should be a user-defined class instance"
       end
 
-      if !source.is_a?(Hash)
-        raise RuntimeError, 'Invalid source passed. Should be a Hash object'
+      unless source.is_a?(Hash)
+        raise "Invalid source passed. Should be a Hash object"
       end
 
-      if metadata.key?('@nested_object_types') &&
-        metadata['@nested_object_types'].is_a?(Hash)
-        mappings = mappings.merge(metadata['@nested_object_types'])
+      if metadata.key?("@nested_object_types") &&
+         metadata["@nested_object_types"].is_a?(Hash)
+        mappings = mappings.merge(metadata["@nested_object_types"])
       end
 
       if nested_object_types.is_a?(Hash) && nested_object_types.size
         mappings = mappings.merge(nested_object_types)
       end
-      
+
       current_metadata = {}
 
       if metadata.is_a?(Hash) && metadata.size
-        if target.instance_variable_defined?('@metadata')
-          current_metadata = target.instance_variable_get('@metadata') || {}
+        if target.instance_variable_defined?("@metadata")
+          current_metadata = target.instance_variable_get("@metadata") || {}
         end
 
         current_metadata = current_metadata.merge(metadata)
-        target.instance_variable_set('@metadata', current_metadata)
+        target.instance_variable_set("@metadata", current_metadata)
       end
 
       source.each do |key, value|
         variable_name = key
         variable_value = value
 
-        if "@metadata" != key
+        if key != "@metadata"
           serialized = {
-            :original_attribute => key,
-            :serialized_attribute => key,
-            :original_value => value,
-            :serialized_value => json_to_variable(value, key, mappings, conventions, parent_path),
-            :attribute_path => build_path(key, parent_path),
-            :source => source, 
-            :target => target,
-            :metadata => current_metadata, 
-            :nested_object_types => nested_object_types
+            original_attribute: key,
+            serialized_attribute: key,
+            original_value: value,
+            serialized_value: json_to_variable(value, key, mappings, conventions, parent_path),
+            attribute_path: build_path(key, parent_path),
+            source: source,
+            target: target,
+            metadata: current_metadata,
+            nested_object_types: nested_object_types
           }
 
-          unless conventions.nil?
-            conventions.serializers.each do |serializer|            
-              serializer.on_unserialized(serialized)         
-            end
+          conventions&.serializers&.each do |serializer|
+            serializer.on_unserialized(serialized)
           end
 
           variable_name = "@#{serialized[:serialized_attribute]}"
@@ -101,14 +101,14 @@ module RavenDB
     def self.to_json(source, conventions = nil, parent_path = nil)
       json = {}
 
-      if !TypeUtilities::is_document?(source)
-        raise RuntimeError, 'Invalid source passed. Should be a user-defined class instance'
+      unless TypeUtilities.is_document?(source)
+        raise "Invalid source passed. Should be a user-defined class instance"
       end
 
       current_metadata = {}
 
-      if source.instance_variable_defined?('@metadata')
-        current_metadata = source.instance_variable_get('@metadata') || {}
+      if source.instance_variable_defined?("@metadata")
+        current_metadata = source.instance_variable_get("@metadata") || {}
       end
 
       source.instance_variables.each do |variable|
@@ -117,27 +117,25 @@ module RavenDB
         json_property = variable_name
         json_value = variable_value
 
-        if '@metadata' != variable_name
-          json_property = json_property.gsub('@', '')
+        if variable_name != "@metadata"
+          json_property = json_property.delete("@")
 
           serialized = {
-            :original_attribute => json_property,
-            :serialized_attribute => json_property,
-            :original_value => variable_value,
-            :serialized_value => variable_to_json(variable_value, json_property, conventions, parent_path),
-            :attribute_path => build_path(json_property, parent_path),
-            :source => source,
-            :metadata => current_metadata
+            original_attribute: json_property,
+            serialized_attribute: json_property,
+            original_value: variable_value,
+            serialized_value: variable_to_json(variable_value, json_property, conventions, parent_path),
+            attribute_path: build_path(json_property, parent_path),
+            source: source,
+            metadata: current_metadata
           }
-          
-          unless conventions.nil?
-            conventions.serializers.each do |serializer|            
-              serializer.on_serialized(serialized)         
-            end
-          end  
+
+          conventions&.serializers&.each do |serializer|
+            serializer.on_serialized(serialized)
+          end
 
           json_property = serialized[:serialized_attribute]
-          json_value = serialized[:serialized_value]          
+          json_value = serialized[:serialized_value]
         end
 
         json[json_property] = json_value
@@ -150,14 +148,14 @@ module RavenDB
       if mappings.key?(key)
         nested_object_type = mappings[key]
 
-        if 'date' == nested_object_type
-          return TypeUtilities::parse_date(json_value)
+        if nested_object_type == "date"
+          return TypeUtilities.parse_date(json_value)
         end
 
         if json_value.is_a?(Hash)
           document = json_to_document(json_value, nested_object_type, conventions, build_path(key, parent_path))
 
-          if !document.nil?
+          unless document.nil?
             return document
           end
         end
@@ -165,16 +163,16 @@ module RavenDB
         if json_value.is_a?(Array)
           documents = []
 
-          if json_value.all? {|json_value_item|
-            document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
-            was_converted = !document.nil?
+          if json_value.all? do |json_value_item|
+               document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
+               was_converted = !document.nil?
 
-            if !document.nil?
-              documents.push(document)
-            end
+               unless document.nil?
+                 documents.push(document)
+               end
 
-            was_converted
-          }
+               was_converted
+             end
             return documents
           end
         end
@@ -206,8 +204,8 @@ module RavenDB
     def self.json_to_document(json_value, nested_object_type, conventions = nil, parent_path = nil)
       nested_object_metadata = {}
 
-      if json_value.key?('@metadata') && json_value['@metadata'].is_a?(Hash)
-        nested_object_metadata = json_value['@metadata']
+      if json_value.key?("@metadata") && json_value["@metadata"].is_a?(Hash)
+        nested_object_metadata = json_value["@metadata"]
       end
 
       if nested_object_type.is_a?(Class) || nested_object_type.is_a?(String)
@@ -222,12 +220,12 @@ module RavenDB
     end
 
     def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil)
-      if '@metadata' != variable && !!variable_value != variable_value
+      if variable != "@metadata" && !!variable_value != variable_value
         if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
-          return TypeUtilities::stringify_date(variable_value)
+          return TypeUtilities.stringify_date(variable_value)
         end
 
-        if TypeUtilities::is_document?(variable_value)
+        if TypeUtilities.is_document?(variable_value)
           return to_json(variable_value, conventions, build_path(variable, parent_path))
         end
 
@@ -257,7 +255,7 @@ module RavenDB
 
     def self.build_path(attribute, parent_path = nil)
       unless parent_path.nil?
-        return "#{parent_path}.#{attribute}";
+        return "#{parent_path}.#{attribute}"
       end
 
       attribute

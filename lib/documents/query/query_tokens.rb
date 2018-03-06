@@ -1,7 +1,7 @@
-require 'stringio'
-require 'constants/documents'
-require 'database/exceptions'
-require 'utilities/string_utility'
+require "stringio"
+require "constants/documents"
+require "database/exceptions"
+require "utilities/string_utility"
 
 module RavenDB
   class QueryToken
@@ -13,13 +13,14 @@ module RavenDB
       QueryKeyword::Group,
       QueryKeyword::Order,
       QueryKeyword::Include
-    ]
+    ].freeze
 
     def write_to(writer)
       raise NotImplementedError, "You should implement write_to method"
     end
 
     protected
+
     def write_field(writer, field)
       is_keyword = QueryKeywords.include?(field)
 
@@ -31,7 +32,7 @@ module RavenDB
 
   class SimpleQueryToken
     def self.instance
-      self.new
+      new
     end
 
     def write_to(writer)
@@ -39,6 +40,7 @@ module RavenDB
     end
 
     protected
+
     def token_text
       raise NotImplementedError, "You should implement token_text method"
     end
@@ -46,6 +48,7 @@ module RavenDB
 
   class CloseSubclauseToken < SimpleQueryToken
     protected
+
     def token_text
       ")"
     end
@@ -53,6 +56,7 @@ module RavenDB
 
   class DistinctToken < SimpleQueryToken
     protected
+
     def token_text
       QueryKeyword::Distinct
     end
@@ -62,20 +66,22 @@ module RavenDB
     attr_reader :fields_to_fetch, :projections
 
     def self.create(fields_to_fetch, projections = [])
-      self.new(fields_to_fetch, projections)
+      new(fields_to_fetch, projections)
     end
 
     def initialize(fields_to_fetch, projections = [])
       super()
 
-      raise ArgumentError,
-        "Fields list can't be empty" if
-        fields_to_fetch.empty?
+      if fields_to_fetch.empty?
+        raise ArgumentError,
+              "Fields list can't be empty"
+      end
 
-      raise ArgumentError,
-        "Length of projections must be the "\
-        "same as length of fields to fetch." if
-        (projections.empty? && projections.size != fields_to_fetch.size)
+      if projections.empty? && projections.size != fields_to_fetch.size
+        raise ArgumentError,
+              "Length of projections must be the "\
+              "same as length of fields to fetch."
+      end
 
       @fields_to_fetch = fields_to_fetch
       @projections = projections
@@ -92,12 +98,12 @@ module RavenDB
 
         write_field(writer, field)
 
-        unless projection.nil? || (projection == field)
-          writer.append(" ")
-          writer.append(QueryKeyword::As)
-          writer.append(" ")
-          writer.append(projection)
-        end
+        next if projection.nil? || (projection == field)
+
+        writer.append(" ")
+        writer.append(QueryKeyword::As)
+        writer.append(" ")
+        writer.append(projection)
       end
     end
   end
@@ -107,10 +113,10 @@ module RavenDB
 
     WhiteSpaceChars = [
       " ", "\t", "\r", "\n", "\v"
-    ]
+    ].freeze
 
     def self.create(index_name = nil, collection_name = nil)
-      self.new(index_name, collection_name)
+      new(index_name, collection_name)
     end
 
     def initialize(index_name = nil, collection_name = nil)
@@ -122,19 +128,21 @@ module RavenDB
     end
 
     def write_to(writer)
-      raise NotSupportedException,
-        "Either IndexName or CollectionName must be specified" if
-        (@collection_name.nil? && @index_name.nil?)
+      if @collection_name.nil? && @index_name.nil?
+        raise NotSupportedException,
+              "Either IndexName or CollectionName must be specified"
+      end
 
       if @is_dynamic
         writer
           .append(QueryKeyword::From)
-          .append(' ')
+          .append(" ")
 
-        if WhiteSpaceChars.any? {|char| @collection_name.include?(char)}
-          raise NotSupportedException,
-            "Collection name cannot contain a quote, but was: #{@collection_name}" if
-            @collection_name.include?('"')
+        if WhiteSpaceChars.any? { |char| @collection_name.include?(char) }
+          if @collection_name.include?('"')
+            raise NotSupportedException,
+                  "Collection name cannot contain a quote, but was: #{@collection_name}"
+          end
 
           writer.append('"').append(@collection_name).append('"')
         else
@@ -146,7 +154,7 @@ module RavenDB
 
       writer
         .append(QueryKeyword::From)
-        .append(' ')
+        .append(" ")
         .append(QueryKeyword::Index)
         .append(" '")
         .append(@index_name)
@@ -156,7 +164,7 @@ module RavenDB
 
   class GroupByCountToken < QueryToken
     def self.create(field_name = nil)
-      self.new(field_name)
+      new(field_name)
     end
 
     def initialize(field_name = nil)
@@ -182,7 +190,7 @@ module RavenDB
 
   class GroupByKeyToken < GroupByCountToken
     def self.create(field_name = nil, projected_name = nil)
-      self.new(field_name, projected_name)
+      new(field_name, projected_name)
     end
 
     def initialize(field_name = nil, projected_name = nil)
@@ -210,26 +218,24 @@ module RavenDB
     def initialize(field_name = nil, projected_name = nil)
       super(field_name, projected_name)
 
-      raise ArgumentError,
-        "Field name can't be null" if
-        field_name.nil?
+      raise ArgumentError, "Field name can't be null" if field_name.nil?
     end
 
     def write_to(writer)
       writer
-          .append("sum(")
-          .append(@field_name)
-          .append(")")
+        .append("sum(")
+        .append(@field_name)
+        .append(")")
 
       if @projected_name.nil?
-          return
+        return
       end
 
       writer
-          .append(" ")
-          .append(QueryKeyword::As)
-          .append(" ")
-          .append(@projected_name)
+        .append(" ")
+        .append(QueryKeyword::As)
+        .append(" ")
+        .append(@projected_name)
     end
   end
 
@@ -237,9 +243,7 @@ module RavenDB
     def initialize(field_name = nil)
       super(field_name)
 
-      raise ArgumentError,
-        "Field name can't be null" if
-        field_name.nil?
+      raise ArgumentError, "Field name can't be null" if field_name.nil?
     end
 
     def write_to(writer)
@@ -249,6 +253,7 @@ module RavenDB
 
   class IntersectMarkerToken < SimpleQueryToken
     protected
+
     def token_text
       ","
     end
@@ -256,6 +261,7 @@ module RavenDB
 
   class NegateToken < SimpleQueryToken
     protected
+
     def token_text
       QueryOperator::Not
     end
@@ -263,6 +269,7 @@ module RavenDB
 
   class OpenSubclauseToken < SimpleQueryToken
     protected
+
     def token_text
       "("
     end
@@ -270,47 +277,52 @@ module RavenDB
 
   class OrderByToken < QueryToken
     def self.random
-      self.new("random()")
+      new("random()")
     end
 
     def self.score_ascending
-      self.new("score()")
+      new("score()")
     end
 
     def self.score_descending
-      self.new("score()", true)
+      new("score()", true)
     end
 
     def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = longitude_parameter_name.nil? ?
-        "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))" :
-        "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      expression = if longitude_parameter_name.nil?
+                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
+                   else
+                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+                   end
 
-      self.new(expression)
+      new(expression)
     end
 
     def self.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = longitude_parameter_name.nil? ?
-        "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))" :
-        "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      expression = if longitude_parameter_name.nil?
+                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
+                   else
+                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+                   end
 
-      self.new(expression, true)
+      new(expression, true)
     end
 
     def self.create_random(seed)
-      raise ArgumentError,
-        "Seed can't be null" if
-        seed.nil?
+      if seed.nil?
+        raise ArgumentError,
+              "Seed can't be null"
+      end
 
-      self.new("random('#{seed.gsub("'", "''")}')")
+      new("random('#{seed.gsub("'", "''")}')")
     end
 
     def self.create_ascending(field_name, ordering = OrderingType::String)
-      self.new(field_name, false, ordering)
+      new(field_name, false, ordering)
     end
 
     def self.create_descending(field_name, ordering = OrderingType::String)
-      self.new(field_name, true, ordering)
+      new(field_name, true, ordering)
     end
 
     def initialize(field_name, descending = false, ordering = OrderingType::String)
@@ -342,11 +354,11 @@ module RavenDB
 
   class QueryOperatorToken < QueryToken
     def self.and
-      self.new(QueryOperator::And)
+      new(QueryOperator::And)
     end
 
     def self.or
-      self.new(QueryOperator::Or)
+      new(QueryOperator::Or)
     end
 
     def initialize(query_operator)
@@ -360,15 +372,17 @@ module RavenDB
 
   class ShapeToken < QueryToken
     def self.circle(radius_parameter_name, latitute_parameter_name, longitude_parameter_name, radius_units = nil)
-      expression = radius_units.nil? ?
-        "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})" :
-        "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+      expression = if radius_units.nil?
+                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
+                   else
+                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+                   end
 
-      self.new(expression)
+      new(expression)
     end
 
     def self.wkt(shape_wkt_parameter_name)
-      self.new("wkt($#{shape_wkt_parameter_name})")
+      new("wkt($#{shape_wkt_parameter_name})")
     end
 
     def initialize(shape)
@@ -382,6 +396,7 @@ module RavenDB
 
   class TrueToken < SimpleQueryToken
     protected
+
     def token_text
       true.to_s
     end
@@ -394,160 +409,160 @@ module RavenDB
                 :exact, :where_shape, :distance_error_pct
 
     def self.equals(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::Equals
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::Equals
+      )
     end
 
     def self.not_equals(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::NotEquals
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::NotEquals
+      )
     end
 
     def self.starts_with(field_name, parameter_name)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::StartsWith
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::StartsWith
+      )
     end
 
     def self.ends_with(field_name, parameter_name)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::EndsWith
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::EndsWith
+      )
     end
 
     def self.greater_than(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::GreaterThan
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::GreaterThan
+      )
     end
 
     def self.greater_than_or_equal(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::GreaterThanOrEqual
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::GreaterThanOrEqual
+      )
     end
 
     def self.less_than(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::LessThan
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::LessThan
+      )
     end
 
     def self.less_than_or_equal(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::LessThanOrEqual
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::LessThanOrEqual
+      )
     end
 
     def self.in(field_name, parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::In
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::In
+      )
     end
 
     def self.all_in(field_name, parameter_name)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::AllIn
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::AllIn
+      )
     end
 
     def self.between(field_name, from_parameter_name, to_parameter_name, exact = false)
-      self.new({
-        :field_name => field_name,
-        :from_parameter_name => from_parameter_name,
-        :to_parameter_name => to_parameter_name,
-        :exact => exact,
-        :where_operator => WhereOperator::Between
-      })
+      new(
+        field_name: field_name,
+        from_parameter_name: from_parameter_name,
+        to_parameter_name: to_parameter_name,
+        exact: exact,
+        where_operator: WhereOperator::Between
+      )
     end
 
     def self.search(field_name, parameter_name, op = SearchOperator::And)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :search_operator => op,
-        :where_operator => WhereOperator::Search
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        search_operator: op,
+        where_operator: WhereOperator::Search
+      )
     end
 
     def self.lucene(field_name, parameter_name)
-      self.new({
-        :field_name => field_name,
-        :parameter_name => parameter_name,
-        :where_operator => WhereOperator::Lucene
-      })
+      new(
+        field_name: field_name,
+        parameter_name: parameter_name,
+        where_operator: WhereOperator::Lucene
+      )
     end
 
     def self.exists(field_name)
-      self.new({
-        :field_name => field_name,
-        :where_operator => WhereOperator::Exists
-      })
+      new(
+        field_name: field_name,
+        where_operator: WhereOperator::Exists
+      )
     end
 
     def self.within(field_name, shape, distance_error_pct)
-      self.new({
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Within
-      })
+      new(
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Within
+      )
     end
 
     def self.contains(field_name, shape, distance_error_pct)
-      self.new({
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Contains
-      })
+      new(
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Contains
+      )
     end
 
     def self.disjoint(field_name, shape, distance_error_pct)
-      self.new({
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Disjoint
-      })
+      new(
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Disjoint
+      )
     end
 
     def self.intersects(field_name, shape, distance_error_pct)
-      self.new({
-        :field_name => field_name,
-        :where_shape => shape,
-        :distance_error_pct => distance_error_pct,
-        :where_operator => WhereOperator::Intersects
-      })
+      new(
+        field_name: field_name,
+        where_shape: shape,
+        distance_error_pct: distance_error_pct,
+        where_operator: WhereOperator::Intersects
+      )
     end
 
     def initialize(where_options)
@@ -585,7 +600,7 @@ module RavenDB
       end
 
       case @where_operator
-        when WhereOperator::Search,
+      when WhereOperator::Search,
              WhereOperator::Lucene,
              WhereOperator::StartsWith,
              WhereOperator::EndsWith,
@@ -594,104 +609,104 @@ module RavenDB
              WhereOperator::Contains,
              WhereOperator::Disjoint,
              WhereOperator::Intersects
-          writer
-            .append(@where_operator)
-            .append("(")
+        writer
+          .append(@where_operator)
+          .append("(")
       end
 
       write_field(writer, @field_name)
 
       case @where_operator
-        when WhereOperator::In
-          writer
-            .append(" ")
-            .append(QueryKeyword::In)
-            .append(" ($")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::AllIn
-          writer
-            .append(" ")
-            .append(QueryKeyword::All)
-            .append(" ")
-            .append(QueryKeyword::In)
-            .append(" ($")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::Between
-          writer
-            .append(" ")
-            .append(QueryKeyword::Between)
-            .append(" $")
-            .append(@from_parameter_name)
-            .append(" ")
-            .append(QueryOperator::And)
-            .append(" $")
-            .append(@to_parameter_name)
-        when WhereOperator::Equals
-          writer
-            .append(" = $")
-            .append(@parameter_name)
-        when WhereOperator::NotEquals
-          writer
-            .append(" != $")
-            .append(@parameter_name)
-        when WhereOperator::GreaterThan
-          writer
-            .append(" > $")
-            .append(@parameter_name)
-        when WhereOperator::GreaterThanOrEqual
-          writer
-            .append(" >= $")
-            .append(@parameter_name)
-        when WhereOperator::LessThan
-          writer
-            .append(" < $")
-            .append(@parameter_name)
-        when WhereOperator::LessThanOrEqual
-          writer
-            .append(" <= $")
-            .append(@parameter_name)
-        when WhereOperator::Search
-          writer
-            .append(", $")
-            .append(@parameter_name)
+      when WhereOperator::In
+        writer
+          .append(" ")
+          .append(QueryKeyword::In)
+          .append(" ($")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::AllIn
+        writer
+          .append(" ")
+          .append(QueryKeyword::All)
+          .append(" ")
+          .append(QueryKeyword::In)
+          .append(" ($")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::Between
+        writer
+          .append(" ")
+          .append(QueryKeyword::Between)
+          .append(" $")
+          .append(@from_parameter_name)
+          .append(" ")
+          .append(QueryOperator::And)
+          .append(" $")
+          .append(@to_parameter_name)
+      when WhereOperator::Equals
+        writer
+          .append(" = $")
+          .append(@parameter_name)
+      when WhereOperator::NotEquals
+        writer
+          .append(" != $")
+          .append(@parameter_name)
+      when WhereOperator::GreaterThan
+        writer
+          .append(" > $")
+          .append(@parameter_name)
+      when WhereOperator::GreaterThanOrEqual
+        writer
+          .append(" >= $")
+          .append(@parameter_name)
+      when WhereOperator::LessThan
+        writer
+          .append(" < $")
+          .append(@parameter_name)
+      when WhereOperator::LessThanOrEqual
+        writer
+          .append(" <= $")
+          .append(@parameter_name)
+      when WhereOperator::Search
+        writer
+          .append(", $")
+          .append(@parameter_name)
 
-          if @search_operator === SearchOperator::And
-            writer
-              .append(", ")
-              .append(@search_operator)
-          end
+        if @search_operator == SearchOperator::And
+          writer
+            .append(", ")
+            .append(@search_operator)
+        end
 
-          writer.append(")")
-        when WhereOperator::Lucene,
+        writer.append(")")
+      when WhereOperator::Lucene,
              WhereOperator::StartsWith,
              WhereOperator::EndsWith
-          writer
-            .append(", $")
-            .append(@parameter_name)
-            .append(")")
-        when WhereOperator::Exists
-          writer
-            .append(")")
-        when WhereOperator::Within,
+        writer
+          .append(", $")
+          .append(@parameter_name)
+          .append(")")
+      when WhereOperator::Exists
+        writer
+          .append(")")
+      when WhereOperator::Within,
              WhereOperator::Contains,
              WhereOperator::Disjoint,
              WhereOperator::Intersects
-          writer
-            .append(", ")
+        writer
+          .append(", ")
 
-          @where_shape.write_to(writer)
+        @where_shape.write_to(writer)
 
-          if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
-            writer.append(", ")
-            writer.append(@distance_error_pct.to_s)
-          end
+        if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
+          writer.append(", ")
+          writer.append(@distance_error_pct.to_s)
+        end
 
-          writer
-            .append(")")
-        else
-          raise IndexError, "Invalid where operator provided"
+        writer
+          .append(")")
+      else
+        raise IndexError, "Invalid where operator provided"
       end
 
       if @exact

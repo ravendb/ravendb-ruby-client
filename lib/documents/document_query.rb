@@ -1,13 +1,13 @@
-require 'date'
-require 'digest'
-require 'active_support/inflector'
-require 'constants/documents'
-require 'database/commands'
-require 'database/exceptions'
-require 'documents/query/index_query'
-require 'documents/query/query_builder'
-require 'utilities/observable'
-require 'utilities/type_utilities'
+require "date"
+require "digest"
+require "active_support/inflector"
+require "constants/documents"
+require "database/commands"
+require "database/exceptions"
+require "documents/query/index_query"
+require "documents/query/query_builder"
+require "utilities/observable"
+require "utilities/type_utilities"
 
 module RavenDB
   class DocumentQueryBase
@@ -24,20 +24,20 @@ module RavenDB
       if options.is_a?(Hash)
         with_statistics = options[:with_statistics] || false
         index_name = options[:index_name] || nil
-        collection = options[:collection]  || '@all_docs'
+        collection = options[:collection] || "@all_docs"
         document_type = options[:document_type] || nil
         index_query_options = options[:index_query_options] || {}
         nested_object_types = options[:nested_object_types] || {}
       end
 
-      self.new(
+      new(
         session, request_executor, collection, index_name, document_type,
         nested_object_types, with_statistics, index_query_options
       )
     end
 
     def initialize(session, request_executor, collection = nil, index_name = nil, document_type_or_class = nil?,
-      nested_object_types = nil, with_statistics = false, index_query_options = {})
+                   nested_object_types = nil, with_statistics = false, index_query_options = {})
       document_type = nil
 
       @session = session
@@ -46,7 +46,7 @@ module RavenDB
       @request_executor = request_executor
       @nested_object_types = nested_object_types || {}
       @query_parameters = {}
-      @id_property_name = 'id'
+      @id_property_name = "id"
       @take = nil
       @skip = nil
 
@@ -55,7 +55,7 @@ module RavenDB
         @index_name = index_name
       else
         @index_name = nil
-        @collection_name = collection || '@all_docs'
+        @collection_name = collection || "@all_docs"
       end
 
       if !document_type_or_class.nil?
@@ -65,7 +65,7 @@ module RavenDB
           document_type = document_type.name
         end
       elsif !collection.nil?
-        document_type = collection.singularize.upcase_first        
+        document_type = collection.singularize.upcase_first
       end
 
       unless document_type.nil?
@@ -81,32 +81,32 @@ module RavenDB
     end
 
     def wait_for_non_stale_results
-      @index_query_options = @index_query_options.merge({
-        :cut_off_etag => nil,
-        :wait_for_non_stale_results => true,
-        :wait_for_non_stale_results_timeout => IndexQuery::DefaultTimeout
-      })
+      @index_query_options = @index_query_options.merge(
+        cut_off_etag: nil,
+        wait_for_non_stale_results: true,
+        wait_for_non_stale_results_timeout: IndexQuery::DefaultTimeout
+      )
 
       self
     end
 
     def wait_for_non_stale_results_as_of(cut_off_etag, wait_timeout = nil)
-      @index_query_options = @index_query_options.merge({
-        :cut_off_etag => cut_off_etag,
-        :wait_for_non_stale_results => true,
-        :wait_for_non_stale_results_timeout => wait_timeout || IndexQuery::DefaultTimeout
-      })
+      @index_query_options = @index_query_options.merge(
+        cut_off_etag: cut_off_etag,
+        wait_for_non_stale_results: true,
+        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DefaultTimeout
+      )
 
       self
     end
 
     def wait_for_non_stale_results_as_of_now(wait_timeout = nil)
-      @index_query_options = @index_query_options.merge({
-        :cut_off_etag => nil,
-        :wait_for_non_stale_results => true,
-        :wait_for_non_stale_results_as_of_now => true,
-        :wait_for_non_stale_results_timeout => wait_timeout || IndexQuery::DefaultTimeout
-      })
+      @index_query_options = @index_query_options.merge(
+        cut_off_etag: nil,
+        wait_for_non_stale_results: true,
+        wait_for_non_stale_results_as_of_now: true,
+        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DefaultTimeout
+      )
 
       self
     end
@@ -157,11 +157,13 @@ module RavenDB
       end
 
       if results.size != 1
-        error_message = (results.length > 1) ?
-          "There's more than one result corresponding to given query criteria." :
-          "There's no results corresponding to given query criteria."
+        error_message = if results.length > 1
+                          "There's more than one result corresponding to given query criteria."
+                        else
+                          "There's no results corresponding to given query criteria."
+                        end
 
-        raise RuntimeError, error_message
+        raise error_message
       end
 
       @take = take
@@ -227,6 +229,7 @@ module RavenDB
     end
 
     protected
+
     def execute_query
       emit(RavenServerEvent::EVENT_DOCUMENTS_QUERIED)
 
@@ -274,8 +277,8 @@ module RavenDB
 
         if @with_statistics
           query_result = {
-            :results => query_result,
-            :response => results
+            results: query_result,
+            response: results
           }
         end
       end
@@ -349,11 +352,11 @@ module RavenDB
       field_name = where_params_or_field_name
 
       if field_name.is_a?(String)
-        return where_equals({
-          :field_name => field_name,
-          :value => value,
-          :exact => exact
-        })
+        return where_equals(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       transformed_value = transform_value(where_params)
@@ -367,11 +370,11 @@ module RavenDB
       field_name = where_params_or_field_name
 
       if field_name.is_a?(String)
-        return where_not_equals({
-            :field_name => field_name,
-            :value => value,
-            :exact => exact
-        })
+        return where_not_equals(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       transformed_value = transform_value(where_params)
@@ -406,45 +409,45 @@ module RavenDB
     end
 
     def where_starts_with(field_name, value)
-      transformed_value = transform_value({
-        :field_name => field_name,
-        :value => value,
-        :allow_wildcards => true
-      })
+      transformed_value = transform_value(
+        field_name: field_name,
+        value: value,
+        allow_wildcards: true
+      )
 
       @builder.where_starts_with(field_name, add_query_parameter(transformed_value))
       self
     end
 
     def where_ends_with(field_name, value)
-      transformed_value = transform_value({
-        :field_name => field_name,
-        :value => value,
-        :allow_wildcards => true
-      })
+      transformed_value = transform_value(
+        field_name: field_name,
+        value: value,
+        allow_wildcards: true
+      )
 
       @builder.where_ends_with(field_name, add_query_parameter(transformed_value))
       self
     end
 
     def where_between(field_name, from, to, exact = nil)
-      transformed_from = '*'
-      transformed_to = 'NULL'
+      transformed_from = "*"
+      transformed_to = "NULL"
 
       unless from.nil?
-        transformed_from = transform_value({
-          :field_name => field_name,
-          :value => from,
-          :exact => exact
-        })
+        transformed_from = transform_value(
+          field_name: field_name,
+          value: from,
+          exact: exact
+        )
       end
 
       unless to.nil?
-        transformed_to = transform_value({
-          :field_name => field_name,
-          :value => to,
-          :exact => exact
-        })
+        transformed_to = transform_value(
+          field_name: field_name,
+          value: to,
+          exact: exact
+        )
       end
 
       @builder.where_between(
@@ -456,14 +459,14 @@ module RavenDB
     end
 
     def where_greater_than(field_name, value, exact = nil)
-      transformed_value = '*'
+      transformed_value = "*"
 
       unless value.nil?
-        transformed_value = transform_value({
-          :field_name => field_name,
-          :value => value,
-          :exact => exact
-        })
+        transformed_value = transform_value(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       @builder.where_greater_than(field_name, add_query_parameter(transformed_value), exact)
@@ -471,14 +474,14 @@ module RavenDB
     end
 
     def where_greater_than_or_equal(field_name, value, exact = nil)
-      transformed_value = '*'
+      transformed_value = "*"
 
       unless value.nil?
-        transformed_value = transform_value({
-          :field_name => field_name,
-          :value => value,
-          :exact => exact
-        })
+        transformed_value = transform_value(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       @builder.where_greater_than_or_equal(field_name, add_query_parameter(transformed_value), exact)
@@ -486,14 +489,14 @@ module RavenDB
     end
 
     def where_less_than(field_name, value, exact = nil)
-      transformed_value = 'NULL'
+      transformed_value = "NULL"
 
       unless value.nil?
-        transformed_value = transform_value({
-          :field_name => field_name,
-          :value => value,
-          :exact => exact
-        })
+        transformed_value = transform_value(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       @builder.where_less_than(field_name, add_query_parameter(transformed_value), exact)
@@ -501,14 +504,14 @@ module RavenDB
     end
 
     def where_less_than_or_equal(field_name, value, exact = nil)
-      transformed_value = 'NULL'
+      transformed_value = "NULL"
 
       unless value.nil?
-        transformed_value = transform_value({
-          :field_name => field_name,
-          :value => value,
-          :exact => exact
-        })
+        transformed_value = transform_value(
+          field_name: field_name,
+          value: value,
+          exact: exact
+        )
       end
 
       @builder.where_less_than_or_equal(field_name, add_query_parameter(transformed_value), exact)
@@ -699,6 +702,7 @@ module RavenDB
     end
 
     protected
+
     def add_query_parameter(value_or_values)
       parameter_name = "p#{@query_parameters.size}".to_sym
 
@@ -713,20 +717,21 @@ module RavenDB
         return nil
       end
 
-      if "" == value
+      if value == ""
         return ""
       end
 
       if value.is_a?(Date) || value.is_a?(DateTime)
-        return TypeUtilities::stringify_date(value)
+        return TypeUtilities.stringify_date(value)
       end
 
-      raise ArgumentError,
-        "Invalid value passed to query condition. "\
-        "Only integer / number / string / dates / bools and nil values are supported" unless
-        ((value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
-          value.is_a?(Date) || value.is_a?(DateTime)
-        )
+      unless (value == !!value) || value.is_a?(Numeric) || value.is_a?(String) ||
+             value.is_a?(Date) || value.is_a?(DateTime)
+
+        raise ArgumentError,
+              "Invalid value passed to query condition. "\
+              "Only integer / number / string / dates / bools and nil values are supported"
+      end
 
       value
     end
@@ -737,9 +742,9 @@ module RavenDB
 
       unpacked.each do |value|
         nested_where_params = {
-          :field_name => field_name,
-          :value => value,
-          :allow_wildcards => true
+          field_name: field_name,
+          value: value,
+          allow_wildcards: true
         }
 
         result.push(transform_value(nested_where_params))

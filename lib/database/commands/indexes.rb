@@ -8,8 +8,8 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if !@index_name
-        raise RuntimeError, "nil or empty index_name is invalid"
+      unless @index_name
+        raise "nil or empty index_name is invalid"
       end
 
       @params = {"name" => @index_name}
@@ -27,7 +27,7 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
       @end_point = "/databases/#{server_node.database}/indexes"
-      @params = { "start" => @start, "page_size" => @page_size }
+      @params = {"start" => @start, "page_size" => @page_size}
     end
 
     def set_response(response)
@@ -37,7 +37,7 @@ module RavenDB
         raise IndexDoesNotExistException, "Can't find requested index(es)"
       end
 
-      if !response.body
+      unless response.body
         return
       end
 
@@ -59,9 +59,7 @@ module RavenDB
     def set_response(response)
       results = super(response)
 
-      if results.is_a?(Array)
-        results.first
-      end
+      results.first if results.is_a?(Array)
     end
   end
 
@@ -74,19 +72,19 @@ module RavenDB
         indexes = indexes.concat(more_indexes_to_add)
       end
 
-      super('', Net::HTTP::Put::METHOD)
+      super("", Net::HTTP::Put::METHOD)
 
       if indexes.empty?
-        raise RuntimeError, 'No indexes specified'
+        raise "No indexes specified"
       end
 
       indexes.each do |index|
-        if !index.is_a?(IndexDefinition)
-          raise RuntimeError, 'All indexes should be instances of IndexDefinition'
+        unless index.is_a?(IndexDefinition)
+          raise "All indexes should be instances of IndexDefinition"
         end
 
-        if !index.name
-          raise RuntimeError, 'All indexes should have a name'
+        unless index.name
+          raise "All indexes should have a name"
         end
 
         @indexes.push(index)
@@ -102,7 +100,7 @@ module RavenDB
     def set_response(response)
       result = super(response)
 
-      if !response.body
+      unless response.body
         throw raise ErrorResponseException, "Failed to put indexes to the database "\
   "please check the connection to the server"
       end

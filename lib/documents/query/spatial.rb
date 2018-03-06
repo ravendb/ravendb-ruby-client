@@ -1,5 +1,5 @@
-require 'constants/documents'
-require 'documents/query/query_tokens'
+require "constants/documents"
+require "documents/query/query_tokens"
 
 module RavenDB
   class SpatialCriteria
@@ -41,14 +41,14 @@ module RavenDB
       shape_token = get_shape_token(&spatial_parameter_name_generator)
 
       case @relation
-        when SpatialRelations::Intersects
-          relation_token = WhereToken::intersects(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Contains
-          relation_token = WhereToken::contains(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Within
-          relation_token = WhereToken::within(field_name, shape_token, @distance_error_pct)
-        when SpatialRelations::Disjoint
-          relation_token = WhereToken::disjoint(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Intersects
+        relation_token = WhereToken.intersects(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Contains
+        relation_token = WhereToken.contains(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Within
+        relation_token = WhereToken.within(field_name, shape_token, @distance_error_pct)
+      when SpatialRelations::Disjoint
+        relation_token = WhereToken.disjoint(field_name, shape_token, @distance_error_pct)
       end
 
       relation_token
@@ -56,7 +56,7 @@ module RavenDB
   end
 
   class CircleCriteria < SpatialCriteria
-    def initialize(radius, latitude, longitude, radius_units = SpatialUnit::Kilometers, relation, dist_error_percent)
+    def initialize(radius, latitude, longitude, radius_units, relation, dist_error_percent)
       super(relation, dist_error_percent)
 
       @radius = radius
@@ -66,10 +66,10 @@ module RavenDB
     end
 
     def get_shape_token(&spatial_parameter_name_generator)
-      ShapeToken::circle(
-        spatial_parameter_name_generator.call(@radius),
-        spatial_parameter_name_generator.call(@latitude),
-        spatial_parameter_name_generator.call(@longitude),
+      ShapeToken.circle(
+        yield(@radius),
+        yield(@latitude),
+        yield(@longitude),
         @radius_units
       )
     end
@@ -83,7 +83,7 @@ module RavenDB
     end
 
     def get_shape_token(&spatial_parameter_name_generator)
-      ShapeToken::wkt(spatial_parameter_name_generator.call(@shape_wkt))
+      ShapeToken.wkt(yield(@shape_wkt))
     end
   end
 end

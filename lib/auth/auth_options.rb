@@ -1,4 +1,4 @@
-require 'auth/certificate'
+require "auth/certificate"
 
 module RavenDB
   class AuthOptions
@@ -19,17 +19,16 @@ module RavenDB
     end
 
     protected
+
     def get_cert_wrapper
       @_cert_wrapper ||= Certificate
-        .create(@certificate, @password)
+                         .create(@certificate, @password)
     end
   end
 
   class StoreAuthOptions < AuthOptions
-
   end
 
   class RequestAuthOptions < AuthOptions
-
   end
 end

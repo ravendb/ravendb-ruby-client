@@ -11,12 +11,12 @@ module RavenDB
     end
 
     def last
-       (index < 0) || (index >= (@list_items.size - 1))
+      (index < 0) || (index >= (@list_items.size - 1))
     end
 
     def previous
       if first
-         return nil
+        return nil
       end
 
       @list_items[index - 1]
@@ -46,17 +46,13 @@ module RavenDB
     end
 
     def first
-      if empty?
-        return nil
-      end
+      return nil if empty?
 
       @items.first
     end
 
     def last
-      if empty?
-        return nil
-      end
+      return nil if empty?
 
       @items.last
     end
@@ -65,7 +61,7 @@ module RavenDB
       @items = []
 
       if items.size
-        items.each {|item| add_last(item)}
+        items.each { |item| add_last(item) }
       end
     end
 
@@ -86,9 +82,9 @@ module RavenDB
     end
 
     def each
-      if block_given?
-        @items.each {|linked_list_item| yield(linked_list_item)}
-      end
+      return unless block_given?
+
+      @items.each { |linked_list_item| yield(linked_list_item) }
     end
   end
 end

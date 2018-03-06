@@ -1,12 +1,12 @@
-require 'ravendb'
-require 'date'
-require 'securerandom'
-require 'minitest/autorun'
-require 'active_support/inflector'
+require "ravendb"
+require "date"
+require "securerandom"
+require "minitest/autorun"
+require "active_support/inflector"
 
 module MiniTest
   module Assertions
-    def refute_raises *exp
+    def refute_raises(*exp)
       msg = exp.last.is_a?(String) ? exp.pop : "unexpected exception raised"
 
       begin
@@ -14,11 +14,9 @@ module MiniTest
       rescue MiniTest::Skip => e
         return e if exp.include? MiniTest::Skip
         raise e
-      rescue Exception => e
-        exp = exp.first if exp.size == 1
+      rescue StandardError => e
         flunk "#{msg}: #{e}"
       end
-
     end
   end
   module Expectations
@@ -62,7 +60,7 @@ class RavenDatabaseTest < RavenTest
       "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\
       "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
 
-    db_doc = RavenDB::DatabaseDocument.new(@_current_database, {:'Raven/DataDir' => "test"})
+    db_doc = RavenDB::DatabaseDocument.new(@_current_database, 'Raven/DataDir': "test")
     @_store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
     @_request_executor = @_store.get_request_executor
   end
@@ -137,14 +135,8 @@ class Product
   )
     @id = id
     @name = name
-
-    unless uid.nil?
-      @uid = uid
-    end
-
-    unless ordering.nil?
-      @ordering = ordering
-    end
+    @uid = uid
+    @ordering = ordering unless ordering.nil?
   end
 end
 
@@ -203,7 +195,7 @@ end
 
 class TestCustomDocumentId
   attr_accessor :item_id, :item_title
-  
+
   def initialize(
     item_id = nil,
     item_title = nil
@@ -228,7 +220,7 @@ end
 
 class LastFmAnalyzed
   def initialize(store, test)
-    index_map =  "from song in docs.LastFms "\
+    index_map = "from song in docs.LastFms "\
       "select new {"\
       "query = new object[] {"\
       "song.artist,"\
@@ -240,11 +232,11 @@ class LastFmAnalyzed
     @test = test
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
-      self.class.name, index_map, nil, {
-      :fields => {
+      self.class.name, index_map, nil,
+      fields: {
         "query" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::Search)
       }
-    })
+    )
   end
 
   def execute
@@ -257,34 +249,36 @@ class LastFmAnalyzed
     search_in = []
     fields = ["artist", "title"]
 
-    fields.each {|field| query.each {|keyword|
-      search_in.push({
-        :keyword => keyword,
-        :sample => last_fm.instance_variable_get("@#{field}")
-      })
-    }}
+    fields.each do |field|
+      query.each do |keyword|
+        search_in.push(
+          keyword: keyword,
+          sample: last_fm.instance_variable_get("@#{field}")
+        )
+      end
+    end
 
-    @test.assert(search_in.any? {|comparsion|
+    @test.assert(search_in.any? do |comparsion|
       comparsion[:sample].include?(comparsion[:keyword])
-    })
+    end)
   end
 end
 
 class ProductsTestingSort
   def initialize(store)
-    index_map =  'from doc in docs '\
-      'select new {'\
-      'name = doc.name,'\
-      'uid = doc.uid,'\
+    index_map = "from doc in docs "\
+      "select new {"\
+      "name = doc.name,"\
+      "uid = doc.uid,"\
       'doc_id = doc.uid+"_"+doc.name}'
 
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
-      'Testing_Sort', index_map, nil, {
-      :fields => {
+      "Testing_Sort", index_map, nil,
+      fields: {
         "doc_id" => RavenDB::IndexFieldOptions.new(nil, true)
       }
-    })
+    )
   end
 
   def execute
@@ -296,24 +290,24 @@ class CustomAttributeSerializer < RavenDB::AttributeSerializer
   def on_serialized(serialized)
     metadata = serialized[:metadata]
 
-    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
-      serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
+    return unless metadata["Raven-Ruby-Type"] == TestCustomSerializer.name
 
-      if serialized[:original_attribute] == 'item_options'
-        serialized[:serialized_value] = serialized[:original_value].join(",")
-      end
-    end
+    serialized[:serialized_attribute] = serialized[:original_attribute].camelize(:lower)
+
+    return unless serialized[:original_attribute] == "item_options"
+
+    serialized[:serialized_value] = serialized[:original_value].join(",")
   end
 
   def on_unserialized(serialized)
     metadata = serialized[:metadata]
 
-    if metadata['Raven-Ruby-Type'] == TestCustomSerializer.name
-      serialized[:serialized_attribute] = serialized[:original_attribute].underscore
+    return unless metadata["Raven-Ruby-Type"] == TestCustomSerializer.name
 
-      if serialized[:original_attribute] == 'itemOptions'
-        serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
-      end
-    end
+    serialized[:serialized_attribute] = serialized[:original_attribute].underscore
+
+    return unless serialized[:original_attribute] == "itemOptions"
+
+    serialized[:serialized_value] = serialized[:original_value].split(",").map { |option| option.to_i }
   end
 end

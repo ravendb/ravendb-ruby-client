@@ -1,8 +1,8 @@
-require 'ravendb'
-require 'spec_helper'
+require "ravendb"
+require "spec_helper"
 
 class HiloGeneratorTest < RavenDatabaseTest
-  COLLECTION = "Products"
+  COLLECTION = "Products".freeze
 
   def setup
     super
@@ -22,7 +22,7 @@ class HiloGeneratorTest < RavenDatabaseTest
     loop do
       id = @generator.generate_document_id
 
-      if !prev_id.nil?
+      unless prev_id.nil?
         assert_equal(range(id) - range(prev_id), 1)
       end
 
@@ -55,6 +55,7 @@ class HiloGeneratorTest < RavenDatabaseTest
   end
 
   protected
+
   def range(document_id)
     document_id.gsub("#{COLLECTION}/", "").gsub("-A", "").to_i
   end

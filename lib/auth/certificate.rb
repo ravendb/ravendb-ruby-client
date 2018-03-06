@@ -1,11 +1,11 @@
-require 'openssl'
+require "openssl"
 
 module RavenDB
   class Certificate
     attr_reader :rsa_key, :x509_cert
 
     def self.create(source, password = nil)
-      self.new(source, password)
+      new(source, password)
     end
 
     def initialize(pem, password)

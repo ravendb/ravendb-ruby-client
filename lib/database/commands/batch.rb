@@ -9,8 +9,8 @@ module RavenDB
       commands = @commands_array
       assert_node(server_node)
 
-      if !commands.all? { |data| data && data.is_a?(RavenCommandData) }
-        raise RuntimeError, "Not a valid command"
+      unless commands.all? { |data| data && data.is_a?(RavenCommandData) }
+        raise "Not a valid command"
       end
 
       @end_point = "/databases/#{server_node.database}/bulk_docs"
@@ -20,8 +20,8 @@ module RavenDB
     def set_response(response)
       result = super(response)
 
-      if !response.body
-        raise RuntimeError, "Invalid response body received"
+      unless response.body
+        raise "Invalid response body received"
       end
 
       result["Results"]
@@ -47,12 +47,12 @@ module RavenDB
     end
 
     def to_json
-      json = super().merge({
+      json = super().merge(
         "Patch" => @scripted_patch.to_json,
         "DebugMode" => @debug_mode
-      })
+      )
 
-      if !@patch_if_missing.nil?
+      unless @patch_if_missing.nil?
         json["PatchIfMissing"] = @patch_if_missing.to_json
       end
 
@@ -83,9 +83,7 @@ module RavenDB
   end
 
   class SaveChangesData
-    def deferred_commands_count
-      @deferred_commands_count
-    end
+    attr_reader :deferred_commands_count
 
     def commands_count
       @commands.size

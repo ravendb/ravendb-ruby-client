@@ -19,21 +19,21 @@ module RavenDB
       super(server_node)
 
       @payload = {
-        "Query" => @query.to_json,
+        "Query" => @query.to_json
       }
     end
   end
 
   class QueryCommand < RavenCommand
     def initialize(conventions, index_query, metadata_only = false, index_entries_only = false)
-      super('', Net::HTTP::Post::METHOD)
+      super("", Net::HTTP::Post::METHOD)
 
-      if !index_query.is_a?(IndexQuery)
-        raise RuntimeError, 'Query must be an instance of IndexQuery class'
+      unless index_query.is_a?(IndexQuery)
+        raise "Query must be an instance of IndexQuery class"
       end
 
-      if !conventions
-        raise RuntimeError, 'Document conventions cannot be empty'
+      unless conventions
+        raise "Document conventions cannot be empty"
       end
 
       @index_query = index_query
@@ -49,11 +49,11 @@ module RavenDB
       @params = {"queryHash" => @index_query.query_hash}
 
       if @metadata_only
-        add_params('metadataOnly', 'true')
+        add_params("metadataOnly", "true")
       end
 
       if @index_entries_only
-        add_params('debug', 'entries')
+        add_params("debug", "entries")
       end
 
       @payload = @index_query.to_json

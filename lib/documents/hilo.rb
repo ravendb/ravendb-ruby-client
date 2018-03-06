@@ -1,8 +1,7 @@
-require 'thread'
-require 'documents/conventions'
-require 'utilities/type_utilities'
-require 'database/commands'
-require 'database/exceptions'
+require "documents/conventions"
+require "utilities/type_utilities"
+require "database/commands"
+require "database/exceptions"
 
 module RavenDB
   class HiloRangeValue
@@ -15,7 +14,7 @@ module RavenDB
     end
 
     def increment
-      @current = @current + 1
+      @current += 1
     end
 
     def needs_new_range?
@@ -36,7 +35,7 @@ module RavenDB
       @generators.each_value do |generator|
         begin
           generator.return_unused_range
-        rescue
+        rescue StandardError
           nil
         end
       end
@@ -48,12 +47,12 @@ module RavenDB
 
     def initialize(store, db_name, tag)
       super(store, db_name, tag)
-      @prefix = ''
+      @prefix = ""
       @server_tag = nil
       @last_batch_size = 0
       @range = HiloRangeValue.new
       @generate_id_lock = Mutex.new
-      @last_range_at = TypeUtilities::zero_date
+      @last_range_at = TypeUtilities.zero_date
       @identity_parts_separator = DocumentConventions::IdentityPartsSeparator
     end
 
@@ -68,11 +67,12 @@ module RavenDB
     end
 
     protected
+
     def try_request_next_range
       @generate_id_lock.synchronize do
         if !@range.needs_new_range?
           @range.increment
-        elsif
+        else
           begin
             @range = get_next_range
           rescue ConcurrencyException
@@ -88,19 +88,19 @@ module RavenDB
       next_command = HiloNextCommand.new(@tag, @last_batch_size, @last_range_at, @identity_parts_separator, @range.max_id)
       response = @store.get_request_executor(@db_name).execute(next_command)
 
-      @prefix = response['prefix']
-      @last_batch_size = response['last_size']
-      @server_tag = response['server_tag'] || nil
-      @last_range_at = TypeUtilities::parse_date(response['last_range_at'])
+      @prefix = response["prefix"]
+      @last_batch_size = response["last_size"]
+      @server_tag = response["server_tag"] || nil
+      @last_range_at = TypeUtilities.parse_date(response["last_range_at"])
 
-      HiloRangeValue.new(response['low'], response['high'])
+      HiloRangeValue.new(response["low"], response["high"])
     end
 
     def assemble_document_id(current_range_value)
-      prefix = @prefix || ''
+      prefix = @prefix || ""
       document_id = "#{prefix}#{current_range_value}"
 
-      if !@server_tag.nil? && !(@server_tag == '')
+      if !@server_tag.nil? && @server_tag != ""
         document_id = "#{document_id}-#{@server_tag}"
       end
 
@@ -119,13 +119,14 @@ module RavenDB
         tag = nil
       end
 
-      get_generator_for_tag(tag).generate_document_id()
+      get_generator_for_tag(tag).generate_document_id
     end
 
     protected
+
     def get_generator_for_tag(tag)
       @get_generator_lock.synchronize do
-        if !@generators.key?(tag)
+        unless @generators.key?(tag)
           @generators[tag] = HiloIdGenerator.new(@store, @db_name, tag)
         end
 
@@ -145,9 +146,10 @@ module RavenDB
     end
 
     protected
+
     def get_generator_for_database(db_name)
       @get_generator_lock.synchronize do
-        if !@generators.key?(db_name)
+        unless @generators.key?(db_name)
           @generators[db_name] = HiloMultiTypeIdGenerator.new(@store, db_name)
         end
 

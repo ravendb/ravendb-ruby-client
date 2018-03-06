@@ -1,8 +1,7 @@
-require 'constants/documents'
-require 'constants/database'
+require "constants/documents"
+require "constants/database"
 
 module RavenDB
-
   class IndexDefinition
     def initialize(name, index_map, configuration = nil, init_options = {})
       @_name = name
@@ -20,14 +19,14 @@ module RavenDB
     end
 
     def type
-      result = 'Map'
+      result = "Map"
 
-      if @_name && @_name.start_with?('Auto/')
-        result = 'Auto' + result
+      if @_name&.start_with?("Auto/")
+        result = "Auto" + result
       end
 
       if @reduce > 0
-        result += 'Reduce'
+        result += "Reduce"
       end
 
       result
@@ -81,15 +80,16 @@ module RavenDB
     end
 
     def to_json
+      storage = @storage ? "Yes" : "No" unless @storage.nil?
+
       {
         "Analyzer" => @analyzer,
         "Indexing" => @indexing || nil,
         "Spatial" => nil,
-        "Storage" => @storage.nil? ? nil : (@storage ? "Yes" : "No"),
+        "Storage" => storage,
         "Suggestions" => @suggestions,
         "TermVector" => @term_vector || nil
       }
     end
   end
-
 end
