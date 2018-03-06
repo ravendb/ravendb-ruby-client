@@ -129,11 +129,6 @@ Style/NumericPredicate:
     - 'lib/utilities/linked_list.rb'
     - 'lib/utilities/string_utility.rb'
 
-# Offense count: 1
-Style/OptionalArguments:
-  Exclude:
-    - 'lib/documents/query/spatial.rb'
-
 # Offense count: 12
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

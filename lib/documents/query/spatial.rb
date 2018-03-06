@@ -56,7 +56,7 @@ module RavenDB
   end
 
   class CircleCriteria < SpatialCriteria
-    def initialize(radius, latitude, longitude, radius_units = SpatialUnit::Kilometers, relation, dist_error_percent)
+    def initialize(radius, latitude, longitude, radius_units, relation, dist_error_percent)
       super(relation, dist_error_percent)
 
       @radius = radius
