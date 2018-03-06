@@ -700,9 +700,7 @@ module RavenDB
     def build_order_by(writer)
       tokens = @order_by_tokens
 
-      unless tokens.count > 0
-        return
-      end
+      return if tokens.empty?
 
       writer
         .append(" ")
@@ -723,9 +721,7 @@ module RavenDB
     def build_group_by(writer)
       tokens = @group_by_tokens
 
-      unless tokens.count > 0
-        return
-      end
+      return if tokens.empty?
 
       writer
         .append(" ")
@@ -746,9 +742,7 @@ module RavenDB
     def build_select(writer)
       tokens = @select_tokens
 
-      unless tokens.count > 0
-        return
-      end
+      return if tokens.empty?
 
       writer
         .append(" ")
