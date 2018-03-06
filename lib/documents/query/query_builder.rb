@@ -687,10 +687,10 @@ module RavenDB
     end
 
     def assert_no_raw_query
-      unless @query_raw.nil?
-        raise "RawQuery was called, cannot modify this query by calling on operations that "\
-              "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)"
-      end
+      return if @query_raw.nil?
+
+      raise "RawQuery was called, cannot modify this query by calling on operations that "\
+            "would modify the query (such as Where, Select, OrderBy, GroupBy, etc)"
     end
 
     def build_from(writer)

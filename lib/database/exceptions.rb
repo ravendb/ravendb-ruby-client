@@ -71,17 +71,13 @@ module RavenDB
     def self.raise_exception(type_or_message, message = "", status_code = nil)
       exception = create(type_or_message, message, status_code)
 
-      unless exception.nil?
-        raise exception
-      end
+      raise exception unless exception.nil?
     end
 
     def self.raise_from(json_or_response, status_code = nil)
       exception = create_from(json_or_response, status_code)
 
-      unless exception.nil?
-        raise exception
-      end
+      raise exception unless exception.nil?
     end
   end
 

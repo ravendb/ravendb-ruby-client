@@ -46,17 +46,13 @@ module RavenDB
     end
 
     def first
-      if empty?
-        return nil
-      end
+      return nil if empty?
 
       @items.first
     end
 
     def last
-      if empty?
-        return nil
-      end
+      return nil if empty?
 
       @items.last
     end
@@ -86,9 +82,9 @@ module RavenDB
     end
 
     def each
-      if block_given?
-        @items.each { |linked_list_item| yield(linked_list_item) }
-      end
+      return unless block_given?
+
+      @items.each { |linked_list_item| yield(linked_list_item) }
     end
   end
 end

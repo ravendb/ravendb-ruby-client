@@ -104,10 +104,10 @@ module RavenDB
     end
 
     def dispose
-      if @_timer
-        @_timer.exit
-        @_timer = nil
-      end
+      return unless @_timer
+
+      @_timer.exit
+      @_timer = nil
     end
   end
 
@@ -115,12 +115,8 @@ module RavenDB
     attr_reader :script
 
     def initialize(script, values = nil)
-      @values = {}
+      @values = values || {}
       @script = script || nil
-
-      if values
-        @values = values
-      end
     end
 
     def to_json
@@ -210,19 +206,19 @@ module RavenDB
     def on_node_restored(failed_node)
       nodes = @topology.nodes
 
-      if nodes.include?(failed_node)
-        failed_node_index = nodes.index(failed_node)
+      return unless nodes.include?(failed_node)
 
-        if @current_node_index > failed_node_index
-          @current_node_index = failed_node_index
-        end
-      end
+      failed_node_index = nodes.index(failed_node)
+
+      return unless @current_node_index > failed_node_index
+
+      @current_node_index = failed_node_index
     end
 
     def assert_topology
-      if !@topology || !@topology.nodes || @topology.nodes.empty?
-        raise "Empty database topology, this shouldn't happen."
-      end
+      return unless !@topology || !@topology.nodes || @topology.nodes.empty?
+
+      raise "Empty database topology, this shouldn't happen."
     end
   end
 end

@@ -116,11 +116,6 @@ Style/ConditionalAssignment:
     - 'lib/documents/document_session.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 41
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Enabled: false
-
 # Offense count: 13
 # Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, EnforcedStyle.

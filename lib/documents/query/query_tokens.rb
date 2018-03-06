@@ -218,10 +218,7 @@ module RavenDB
     def initialize(field_name = nil, projected_name = nil)
       super(field_name, projected_name)
 
-      if field_name.nil?
-        raise ArgumentError,
-              "Field name can't be null"
-      end
+      raise ArgumentError, "Field name can't be null" if field_name.nil?
     end
 
     def write_to(writer)
@@ -246,10 +243,7 @@ module RavenDB
     def initialize(field_name = nil)
       super(field_name)
 
-      if field_name.nil?
-        raise ArgumentError,
-              "Field name can't be null"
-      end
+      raise ArgumentError, "Field name can't be null" if field_name.nil?
     end
 
     def write_to(writer)

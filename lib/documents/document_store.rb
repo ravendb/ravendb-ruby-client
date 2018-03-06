@@ -169,42 +169,42 @@ module RavenDB
     end
 
     def dispose
-      unless @_disposed
-        @_disposed = true
+      return if @_disposed
 
-        assert_configure
-        begin
-          @_generator.return_unused_range
-        rescue StandardError
-          nil
-        end
-        maintenance.server.dispose
+      @_disposed = true
 
-        if @_request_executors.is_a?(Hash)
-          @_request_executors.each_value do |executors|
-            executors.each_value { |executor| executor.dispose }
-          end
-        end
+      assert_configure
+      begin
+        @_generator.return_unused_range
+      rescue StandardError
+        nil
+      end
+      maintenance.server.dispose
+
+      return unless @_request_executors.is_a?(Hash)
+
+      @_request_executors.each_value do |executors|
+        executors.each_value { |executor| executor.dispose }
       end
     end
 
     protected
 
     def set_urls(url_or_urls)
-      unless url_or_urls.nil?
-        @_urls = url_or_urls
+      return if url_or_urls.nil?
 
-        unless url_or_urls.is_a?(Array)
-          @_urls = [@_urls]
-        end
-      end
+      @_urls = url_or_urls
+
+      return if url_or_urls.is_a?(Array)
+
+      @_urls = [@_urls]
     end
 
     def assert_configure
-      unless @_initialized
-        raise "You cannot open a session or access the database commands"\
-  " before initializing the document store. Did you forget calling configure ?"
-      end
+      return if @_initialized
+
+      raise "You cannot open a session or access the database commands"\
+" before initializing the document store. Did you forget calling configure ?"
     end
 
     def create_request_executor(database = nil, for_single_node = nil)

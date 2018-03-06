@@ -91,10 +91,10 @@ module RavenDB
     end
 
     def dispose
-      unless @_disposed
-        @_disposed = true
-        cancel_failing_nodes_timers
-      end
+      return if @_disposed
+
+      @_disposed = true
+      cancel_failing_nodes_timers
     end
 
     protected
@@ -107,9 +107,7 @@ module RavenDB
       is_fulfilled = false
       first_topology_update = @_first_topology_update
 
-      if @_without_topology
-        return
-      end
+      return if @_without_topology
 
       @_await_first_topology_lock.synchronize do
         if first_topology_update.equal?(@_first_topology_update)
@@ -121,15 +119,15 @@ module RavenDB
         end
       end
 
-      unless is_fulfilled
-        if @_first_topology_update_exception.is_a?(AuthorizationException)
-          raise @_first_topology_update_exception
-        elsif is_first_topology_update_tries_expired?
-          raise DatabaseLoadFailureException, "Max topology update tries reached"
-        else
-          sleep 0.1
-          await_first_topology_update
-        end
+      return if is_fulfilled
+
+      if @_first_topology_update_exception.is_a?(AuthorizationException)
+        raise @_first_topology_update_exception
+      elsif is_first_topology_update_tries_expired?
+        raise DatabaseLoadFailureException, "Max topology update tries reached"
+      else
+        sleep 0.1
+        await_first_topology_update
       end
     end
 
@@ -296,9 +294,9 @@ module RavenDB
       index = node_status.node_index
       node = node_status.node
 
-      if (index < nodes.size) && (node == nodes[index])
-        perform_health_check(node)
-      end
+      return unless (index < nodes.size) && (node == nodes[index])
+
+      perform_health_check(node)
     end
 
     def perform_health_check(server_node)
@@ -326,9 +324,9 @@ module RavenDB
         is_still_failed = true
       end
 
-      if (is_still_failed == false) && @_failed_nodes_statuses.key?(server_node)
-        @_failed_nodes_statuses[server_node].retry_update
-      end
+      return unless (is_still_failed == false) && @_failed_nodes_statuses.key?(server_node)
+
+      @_failed_nodes_statuses[server_node].retry_update
     end
 
     def cancel_failing_nodes_timers

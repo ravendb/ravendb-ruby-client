@@ -34,9 +34,9 @@ module RavenDB
     protected
 
     def check_response(response)
-      unless response.is_a?(Net::HTTPNoContent)
-        raise "Could not delete document #{@id}"
-      end
+      return if response.is_a?(Net::HTTPNoContent)
+
+      raise "Could not delete document #{@id}"
     end
   end
 
@@ -155,9 +155,7 @@ module RavenDB
         raise "Could not patch document #{@id}"
       end
 
-      if response.body
-        result
-      end
+      result if response.body
     end
   end
 
@@ -170,9 +168,7 @@ module RavenDB
     end
 
     def create_request(server_node)
-      unless @document
-        raise "Document must be an object"
-      end
+      raise "Document must be an object" unless @document
 
       @payload = @document
       super(server_node)
@@ -186,10 +182,10 @@ module RavenDB
     protected
 
     def check_response(response)
-      unless response.body
-        raise ErrorResponseException, "Failed to store document to the database "\
-  "please check the connection to the server"
-      end
+      return if response.body
+
+      raise ErrorResponseException, "Failed to store document to the database "\
+"please check the connection to the server"
     end
   end
 end

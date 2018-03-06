@@ -41,3 +41,6 @@ Style/EmptyMethod:
 
 Style/SymbolProc:
   Enabled: false
+
+Style/GuardClause:
+  Enabled: false

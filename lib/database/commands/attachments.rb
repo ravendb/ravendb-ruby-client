@@ -43,10 +43,10 @@ module RavenDB
         @headers["If-Match"] = "\"#{@_change_vector}\""
       end
 
-      unless TypeUtilities.is_nil_or_whitespace?(@_content_type)
-        @headers["Content-Type"] = @_content_type
-        @params["contentType"] = @_content_type
-      end
+      return if TypeUtilities.is_nil_or_whitespace?(@_content_type)
+
+      @headers["Content-Type"] = @_content_type
+      @params["contentType"] = @_content_type
     end
 
     def to_request_options
@@ -82,10 +82,10 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
 
-      unless AttachmentType.is_document(@_type)
-        @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
-        @method = Net::HTTP::Post::METHOD
-      end
+      return if AttachmentType.is_document(@_type)
+
+      @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
+      @method = Net::HTTP::Post::METHOD
     end
 
     def set_response(response)

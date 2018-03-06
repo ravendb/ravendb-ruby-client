@@ -77,10 +77,10 @@ module RavenDB
     def set_response(response)
       @_last_response = response
 
-      if @_last_response
-        ExceptionsFactory.raise_from(response)
-        response.json
-      end
+      return unless @_last_response
+
+      ExceptionsFactory.raise_from(response)
+      response.json
     end
 
     protected
@@ -143,9 +143,9 @@ module RavenDB
 
       @end_point = "/databases/#{server_node.database}/queries"
 
-      if options.allow_stale && options.stale_timeout
-        add_params("staleTimeout", options.stale_timeout)
-      end
+      return unless options.allow_stale && options.stale_timeout
+
+      add_params("staleTimeout", options.stale_timeout)
     end
   end
 

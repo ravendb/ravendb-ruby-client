@@ -59,9 +59,7 @@ module RavenDB
     def set_response(response)
       results = super(response)
 
-      if results.is_a?(Array)
-        results.first
-      end
+      results.first if results.is_a?(Array)
     end
   end
 

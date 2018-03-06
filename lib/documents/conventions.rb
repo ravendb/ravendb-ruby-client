@@ -41,9 +41,9 @@ module RavenDB
     end
 
     def add_id_property_resolver(&resolver)
-      if block_given?
-        @_document_id_resolvers.push(resolver)
-      end
+      return unless block_given?
+
+      @_document_id_resolvers.push(resolver)
     end
 
     def get_collection_name(document_class_or_document_type)

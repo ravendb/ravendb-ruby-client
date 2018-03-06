@@ -291,9 +291,9 @@ module RavenDB
         make_document(result, nil, nested_object_types)
       end
 
-      unless response_includes.empty?
-        on_includes_fetched(response_includes)
-      end
+      return if response_includes.empty?
+
+      on_includes_fetched(response_includes)
     end
 
     def check_document_and_metadata_before_store(document = nil)
@@ -459,13 +459,13 @@ module RavenDB
     end
 
     def on_includes_fetched(includes)
-      if includes.is_a?(Array) && !includes.empty?
-        includes.each do |include|
-          document_id = include["@metadata"]["@id"]
+      return unless includes.is_a?(Array) && !includes.empty?
 
-          unless @included_raw_entities_by_id.key?(document_id)
-            @included_raw_entities_by_id[document_id] = include
-          end
+      includes.each do |include|
+        document_id = include["@metadata"]["@id"]
+
+        unless @included_raw_entities_by_id.key?(document_id)
+          @included_raw_entities_by_id[document_id] = include
         end
       end
     end

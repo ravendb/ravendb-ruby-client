@@ -55,9 +55,7 @@ module RavenDB
       @hard_delete = hard_delete || false
       @time_to_wait_for_confirmation = time_to_wait_for_confirmation || nil
 
-      if @from_node.is_a?(ServerNode)
-        @from_node = from_node.cluster_tag
-      end
+      @from_node = from_node.cluster_tag if @from_node.is_a?(ServerNode)
     end
 
     def create_request(server_node)
@@ -70,9 +68,7 @@ module RavenDB
         "TimeToWaitForConfirmation" => @time_to_wait_for_confirmation
       }
 
-      if @from_node
-        @payload["FromNodes"] = [@from_node]
-      end
+      @payload["FromNodes"] = [@from_node] if @from_node
     end
   end
 
@@ -87,17 +83,13 @@ module RavenDB
       @params = {"name" => server_node.database}
       @end_point = "/topology"
 
-      if @force_url
-        add_params("url", @force_url)
-      end
+      add_params("url", @force_url) if @force_url
     end
 
     def set_response(response)
       result = super(response)
 
-      if response.body && response.is_a?(Net::HTTPOK)
-        result
-      end
+      result if response.body && response.is_a?(Net::HTTPOK)
     end
   end
 
@@ -142,17 +134,13 @@ module RavenDB
       assert_node(server_node)
       @end_point = "/databases/#{server_node.database}/stats"
 
-      if @check_for_failures
-        add_params("failure", "check")
-      end
+      add_params("failure", "check") if @check_for_failures
     end
 
     def set_response(response)
       result = super(response)
 
-      if response.is_a?(Net::HTTPOK) && response.body
-        result
-      end
+      result if response.is_a?(Net::HTTPOK) && response.body
     end
   end
 end
