@@ -35,3 +35,6 @@ Style/WordArray:
 
 Style/DateTime:
   Enabled: false
+
+Style/EmptyMethod:
+  EnforcedStyle: expanded
