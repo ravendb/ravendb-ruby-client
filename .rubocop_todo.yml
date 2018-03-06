@@ -107,11 +107,6 @@ Naming/PredicateName:
     - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
-# Offense count: 1
-Style/CaseEquality:
-  Exclude:
-    - 'lib/documents/query/query_tokens.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.

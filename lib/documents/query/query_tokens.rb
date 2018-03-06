@@ -672,7 +672,7 @@ module RavenDB
           .append(", $")
           .append(@parameter_name)
 
-        if @search_operator === SearchOperator::And
+        if @search_operator == SearchOperator::And
           writer
             .append(", ")
             .append(@search_operator)
