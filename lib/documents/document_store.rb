@@ -33,7 +33,7 @@ module RavenDB
     end
 
     def self.create(url_or_urls, database, auth_options = nil)
-      self.new(url_or_urls, database, auth_options)
+      new(url_or_urls, database, auth_options)
     end
 
     def configure

@@ -139,17 +139,6 @@ Style/OptionalArguments:
   Exclude:
     - 'lib/documents/query/spatial.rb'
 
-# Offense count: 42
-# Cop supports --auto-correct.
-Style/RedundantSelf:
-  Exclude:
-    - 'lib/auth/certificate.rb'
-    - 'lib/documents/document_query.rb'
-    - 'lib/documents/document_store.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/requests/request_helpers.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, AllowSafeAssignment.

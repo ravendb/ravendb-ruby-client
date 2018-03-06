@@ -32,7 +32,7 @@ module RavenDB
 
   class SimpleQueryToken
     def self.instance
-      self.new
+      new
     end
 
     def write_to(writer)
@@ -66,7 +66,7 @@ module RavenDB
     attr_reader :fields_to_fetch, :projections
 
     def self.create(fields_to_fetch, projections = [])
-      self.new(fields_to_fetch, projections)
+      new(fields_to_fetch, projections)
     end
 
     def initialize(fields_to_fetch, projections = [])
@@ -116,7 +116,7 @@ module RavenDB
     ].freeze
 
     def self.create(index_name = nil, collection_name = nil)
-      self.new(index_name, collection_name)
+      new(index_name, collection_name)
     end
 
     def initialize(index_name = nil, collection_name = nil)
@@ -164,7 +164,7 @@ module RavenDB
 
   class GroupByCountToken < QueryToken
     def self.create(field_name = nil)
-      self.new(field_name)
+      new(field_name)
     end
 
     def initialize(field_name = nil)
@@ -190,7 +190,7 @@ module RavenDB
 
   class GroupByKeyToken < GroupByCountToken
     def self.create(field_name = nil, projected_name = nil)
-      self.new(field_name, projected_name)
+      new(field_name, projected_name)
     end
 
     def initialize(field_name = nil, projected_name = nil)
@@ -283,15 +283,15 @@ module RavenDB
 
   class OrderByToken < QueryToken
     def self.random
-      self.new("random()")
+      new("random()")
     end
 
     def self.score_ascending
-      self.new("score()")
+      new("score()")
     end
 
     def self.score_descending
-      self.new("score()", true)
+      new("score()", true)
     end
 
     def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
@@ -301,7 +301,7 @@ module RavenDB
                      "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
                    end
 
-      self.new(expression)
+      new(expression)
     end
 
     def self.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
@@ -311,7 +311,7 @@ module RavenDB
                      "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
                    end
 
-      self.new(expression, true)
+      new(expression, true)
     end
 
     def self.create_random(seed)
@@ -320,15 +320,15 @@ module RavenDB
               "Seed can't be null"
       end
 
-      self.new("random('#{seed.gsub("'", "''")}')")
+      new("random('#{seed.gsub("'", "''")}')")
     end
 
     def self.create_ascending(field_name, ordering = OrderingType::String)
-      self.new(field_name, false, ordering)
+      new(field_name, false, ordering)
     end
 
     def self.create_descending(field_name, ordering = OrderingType::String)
-      self.new(field_name, true, ordering)
+      new(field_name, true, ordering)
     end
 
     def initialize(field_name, descending = false, ordering = OrderingType::String)
@@ -360,11 +360,11 @@ module RavenDB
 
   class QueryOperatorToken < QueryToken
     def self.and
-      self.new(QueryOperator::And)
+      new(QueryOperator::And)
     end
 
     def self.or
-      self.new(QueryOperator::Or)
+      new(QueryOperator::Or)
     end
 
     def initialize(query_operator)
@@ -384,11 +384,11 @@ module RavenDB
                      "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
                    end
 
-      self.new(expression)
+      new(expression)
     end
 
     def self.wkt(shape_wkt_parameter_name)
-      self.new("wkt($#{shape_wkt_parameter_name})")
+      new("wkt($#{shape_wkt_parameter_name})")
     end
 
     def initialize(shape)
@@ -415,7 +415,7 @@ module RavenDB
                 :exact, :where_shape, :distance_error_pct
 
     def self.equals(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -424,7 +424,7 @@ module RavenDB
     end
 
     def self.not_equals(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -433,7 +433,7 @@ module RavenDB
     end
 
     def self.starts_with(field_name, parameter_name)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         where_operator: WhereOperator::StartsWith
@@ -441,7 +441,7 @@ module RavenDB
     end
 
     def self.ends_with(field_name, parameter_name)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         where_operator: WhereOperator::EndsWith
@@ -449,7 +449,7 @@ module RavenDB
     end
 
     def self.greater_than(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -458,7 +458,7 @@ module RavenDB
     end
 
     def self.greater_than_or_equal(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -467,7 +467,7 @@ module RavenDB
     end
 
     def self.less_than(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -476,7 +476,7 @@ module RavenDB
     end
 
     def self.less_than_or_equal(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -485,7 +485,7 @@ module RavenDB
     end
 
     def self.in(field_name, parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
@@ -494,7 +494,7 @@ module RavenDB
     end
 
     def self.all_in(field_name, parameter_name)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         where_operator: WhereOperator::AllIn
@@ -502,7 +502,7 @@ module RavenDB
     end
 
     def self.between(field_name, from_parameter_name, to_parameter_name, exact = false)
-      self.new(
+      new(
         field_name: field_name,
         from_parameter_name: from_parameter_name,
         to_parameter_name: to_parameter_name,
@@ -512,7 +512,7 @@ module RavenDB
     end
 
     def self.search(field_name, parameter_name, op = SearchOperator::And)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         search_operator: op,
@@ -521,7 +521,7 @@ module RavenDB
     end
 
     def self.lucene(field_name, parameter_name)
-      self.new(
+      new(
         field_name: field_name,
         parameter_name: parameter_name,
         where_operator: WhereOperator::Lucene
@@ -529,14 +529,14 @@ module RavenDB
     end
 
     def self.exists(field_name)
-      self.new(
+      new(
         field_name: field_name,
         where_operator: WhereOperator::Exists
       )
     end
 
     def self.within(field_name, shape, distance_error_pct)
-      self.new(
+      new(
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
@@ -545,7 +545,7 @@ module RavenDB
     end
 
     def self.contains(field_name, shape, distance_error_pct)
-      self.new(
+      new(
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
@@ -554,7 +554,7 @@ module RavenDB
     end
 
     def self.disjoint(field_name, shape, distance_error_pct)
-      self.new(
+      new(
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
@@ -563,7 +563,7 @@ module RavenDB
     end
 
     def self.intersects(field_name, shape, distance_error_pct)
-      self.new(
+      new(
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,

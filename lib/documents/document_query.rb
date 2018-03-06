@@ -30,7 +30,7 @@ module RavenDB
         nested_object_types = options[:nested_object_types] || {}
       end
 
-      self.new(
+      new(
         session, request_executor, collection, index_name, document_type,
         nested_object_types, with_statistics, index_query_options
       )

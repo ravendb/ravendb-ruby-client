@@ -59,20 +59,20 @@ module RavenDB
     end
 
     def self.create(urls, database = nil, auth_options = nil)
-      self.new(database,
-               without_topology: false,
-               first_topology_update_urls: urls.clone,
-               auth_options: auth_options)
+      new(database,
+          without_topology: false,
+          first_topology_update_urls: urls.clone,
+          auth_options: auth_options)
     end
 
     def self.create_for_single_node(url, database = nil, auth_options = nil)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
-      self.new(database,
-               without_topology: true,
-               single_node_topology: topology,
-               topology_etag: -2,
-               auth_options: auth_options)
+      new(database,
+          without_topology: true,
+          single_node_topology: topology,
+          topology_etag: -2,
+          auth_options: auth_options)
     end
 
     def execute(command)

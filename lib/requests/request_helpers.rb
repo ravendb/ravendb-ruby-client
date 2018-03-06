@@ -12,7 +12,7 @@ module RavenDB
     end
 
     def self.from_json(json)
-      node = self.new
+      node = new
       node.from_json(json)
 
       node
@@ -36,7 +36,7 @@ module RavenDB
     end
 
     def self.from_json(json)
-      topology = self.new
+      topology = new
 
       topology.from_json(json)
       topology
