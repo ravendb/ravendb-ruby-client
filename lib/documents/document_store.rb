@@ -6,6 +6,7 @@ require "database/exceptions"
 require "documents/hilo"
 require "documents/document_session"
 require "auth/auth_options"
+require "active_support/core_ext/array/wrap"
 
 module RavenDB
   class Configuration
@@ -193,11 +194,7 @@ module RavenDB
     def set_urls(url_or_urls)
       return if url_or_urls.nil?
 
-      @_urls = url_or_urls
-
-      return if url_or_urls.is_a?(Array)
-
-      @_urls = [@_urls]
+      @_urls = Array.wrap(url_or_urls)
     end
 
     def assert_configure
