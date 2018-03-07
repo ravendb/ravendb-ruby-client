@@ -1,0 +1,14 @@
+sudo: required 
+dist: trusty
+language: ruby
+rvm:
+  - "2.4.3"
+  - "2.5.0"
+script: bundle exec rake
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y libunwind8 wget libicu52 libssl-dev curl unzip gettext libcurl4-openssl-dev zlib1g uuid-dev bzip2
+  - wget https://daily-builds.s3.amazonaws.com/RavenDB-4.0.2-linux-x64.tar.bz2; tar -xjf RavenDB-4.0.2-linux-x64.tar.bz2
+  - sed -i 's/:0/:8080/' ./RavenDB/Server/settings.json
+  - ./RavenDB/Server/Raven.Server --non-interactive &
+  - sleep 1
