@@ -1,5 +1,6 @@
 # RavenDB client for Ruby
 
+[![build status](https://travis-ci.org/ravendb/ravendb-ruby-client.svg?branch=v4.0)](https://travis-ci.org/ravendb/ravendb-ruby-client)
 ## Installation
 
 For global install run:
