@@ -9,7 +9,7 @@ describe RavenDB::BatchCommand do
   @_delete_command = nil
   @_scripted_patch_command = nil
 
-  def setup
+  before do
     @__test = RavenDatabaseIndexesTest.new(nil)
     @__test.setup
 
@@ -21,33 +21,33 @@ describe RavenDB::BatchCommand do
     @_scripted_patch_command = RavenDB::PatchCommandData.new("Products/999", RavenDB::PatchRequest.new("this.Name = 'testing';"))
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def request_executor
+  let(:request_executor) do
     @__test.request_executor
   end
 
-  def test_should_be_success_with_one_command
-    result = request_executor.execute(RavenDB::BatchCommand.new([@_put_command1]))
-    assert_equal(1, result.size)
+  it "is success with one command" do
+    result = request_executor.execute(described_class.new([@_put_command1]))
+    expect(result.size).to(eq(1))
   end
 
-  def test_should_be_success_with_multi_commands
-    result = request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_put_command2, @_delete_command]))
-    assert_equal(3, result.size)
+  it "is success with multi commands" do
+    result = request_executor.execute(described_class.new([@_put_command1, @_put_command2, @_delete_command]))
+    expect(result.size).to(eq(3))
   end
 
-  def test_should_be_success_with_a_scripted_patch
-    request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_scripted_patch_command]))
+  it "is success with a scripted patch" do
+    request_executor.execute(described_class.new([@_put_command1, @_scripted_patch_command]))
     result = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/999"))
-    assert_equal("testing", result["Results"].first["Name"])
+    expect(result["Results"].first["Name"]).to(eq("testing"))
   end
 
-  def test_should_fail_the_test_with_invalid_command_data
-    assert_raises(RuntimeError) do
-      request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_put_command2, nil]))
-    end
+  it "fails the test with invalid command data" do
+    expect do
+      request_executor.execute(described_class.new([@_put_command1, @_put_command2, nil]))
+    end.to(raise_error(RuntimeError))
   end
 end
