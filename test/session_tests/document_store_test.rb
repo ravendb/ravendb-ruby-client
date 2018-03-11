@@ -2,16 +2,29 @@ require "date"
 require "ravendb"
 require "spec_helper"
 
-class DocumentStoreTest < RavenDatabaseTest
+describe RavenDB::DocumentStore do
+  def setup
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
+  end
+
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
   def test_should_store_without_id
     foo = nil
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.store(Foo.new(nil, "test", 10))
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(foo.id)
 
       assert_equal("test", foo.name)
@@ -22,12 +35,12 @@ class DocumentStoreTest < RavenDatabaseTest
     id = "TestingStore/1"
     foo = Foo.new(id, "test", 20)
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.store(foo, id)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(id)
 
       assert_equal("test", foo.name)
@@ -38,14 +51,14 @@ class DocumentStoreTest < RavenDatabaseTest
   def test_should_generate_id_and_set_collection
     product = Product.new(nil, "New Product")
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.store(product)
       session.save_changes
 
       assert(/^Products\/\d+(\-\w)?$/ =~ product.id)
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(product.id)
       metadata = product.instance_variable_get("@metadata")
 
@@ -58,12 +71,12 @@ class DocumentStoreTest < RavenDatabaseTest
   def test_should_not_store_id_inside_document_json_only_in_metadata
     product = Product.new(nil, "New Product")
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.store(product)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(product.id)
       cached_documents = session.instance_variable_get("@raw_entities_and_metadata")
       info = cached_documents[product]
@@ -81,12 +94,12 @@ class DocumentStoreTest < RavenDatabaseTest
     order = Order.new(nil, "New Order")
     order.instance_variable_set("@metadata", "@expires" => expiration)
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       order = session.store(order)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       order = session.load(order.id)
       metadata = order.instance_variable_get("@metadata")
 
@@ -99,13 +112,13 @@ class DocumentStoreTest < RavenDatabaseTest
     foo = nil
     key = "testingStore"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = Foo.new(key, "test", 20)
       session.store(foo)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.delete(key)
 
       assert_raises(RuntimeError) { session.store(foo) }
@@ -115,13 +128,13 @@ class DocumentStoreTest < RavenDatabaseTest
   def test_should_store_existing_doc_without_explicit_call
     key = "testingStore"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = Foo.new(key, "test", 20)
       session.store(foo)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(key)
       foo.name = "name changed"
       foo.order = 10
@@ -129,7 +142,7 @@ class DocumentStoreTest < RavenDatabaseTest
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(key)
 
       assert_equal("name changed", foo.name)
@@ -140,13 +153,13 @@ class DocumentStoreTest < RavenDatabaseTest
   def test_should_ignore_update_without_explicit_call_after_doc_deleted
     key = "testingStore"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = Foo.new(key, "test", 20)
       session.store(foo)
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(key)
       session.delete(foo)
 
@@ -156,7 +169,7 @@ class DocumentStoreTest < RavenDatabaseTest
       refute_raises(RuntimeError) { session.save_changes }
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       foo = session.load(key)
       assert_nil(foo)
     end
