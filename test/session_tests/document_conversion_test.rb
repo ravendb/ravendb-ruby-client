@@ -2,22 +2,32 @@ require "date"
 require "ravendb"
 require "spec_helper"
 
-class DocumentConversionTest < RavenDatabaseTest
+describe RavenDB::DocumentConventions do
   NOW = DateTime.now
 
   def setup
-    super
-    @_store.open_session do |session|
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
+
+    store.open_session do |session|
       session.store(make_document("TestConversions/1"))
       session.store(make_document("TestConversions/2", NOW.next_day))
       session.save_changes
     end
   end
 
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
   def test_should_convert_on_load
     id = "TestConversions/1"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = session.load(id)
       check_doc(id, doc)
     end
@@ -26,19 +36,19 @@ class DocumentConversionTest < RavenDatabaseTest
   def test_should_convert_on_store_then_reload
     id = "TestConversions/New"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.store(make_document(id))
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = session.load(id)
       check_doc(id, doc)
     end
   end
 
   def test_should_convert_on_query
-    @_store.open_session do |session|
+    store.open_session do |session|
       results = session.query(
         collection: "TestConversions"
       )
@@ -54,13 +64,13 @@ class DocumentConversionTest < RavenDatabaseTest
   def test_should_support_custom_id_property
     id = nil
 
-    @_store.conventions.add_id_property_resolver do |document_info|
+    store.conventions.add_id_property_resolver do |document_info|
       if document_info[:document_type] == TestCustomDocumentId.name
         "item_id"
       end
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = TestCustomDocumentId.new(nil, "New Item")
 
       session.store(doc)
@@ -68,7 +78,7 @@ class DocumentConversionTest < RavenDatabaseTest
       id = doc.item_id
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = session.load(id)
 
       assert_equal(id, doc.item_id)
@@ -79,15 +89,15 @@ class DocumentConversionTest < RavenDatabaseTest
   def test_should_support_custom_serializer
     id = nil
 
-    @_store.conventions.add_id_property_resolver do |document_info|
+    store.conventions.add_id_property_resolver do |document_info|
       if document_info[:document_type] == TestCustomSerializer.name
         "item_id"
       end
     end
 
-    @_store.conventions.add_attribute_serializer(CustomAttributeSerializer.new)
+    store.conventions.add_attribute_serializer(CustomAttributeSerializer.new)
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = TestCustomSerializer.new(nil, "New Item", [1, 2, 3])
 
       session.store(doc)
@@ -95,7 +105,7 @@ class DocumentConversionTest < RavenDatabaseTest
       id = doc.item_id
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       doc = session.load(id)
 
       assert_equal(doc.item_id, id)
