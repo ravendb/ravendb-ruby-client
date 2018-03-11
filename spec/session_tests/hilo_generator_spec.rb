@@ -4,25 +4,25 @@ require "spec_helper"
 describe RavenDB::HiloIdGenerator do
   COLLECTION = "Products".freeze
 
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
 
-    @generator = RavenDB::HiloIdGenerator.new(@__test.store, @__test.current_database, COLLECTION)
+    @generator = described_class.new(@__test.store, @__test.current_database, COLLECTION)
   end
 
-  def teardown
+  after do
     @generator.return_unused_range
     @__test.teardown
   end
 
-  def test_should_starts_from_1
+  it "starts from 1" do
     id = @generator.generate_document_id
 
-    assert_equal("Products/1-A", id)
+    expect(id).to(eq("Products/1-A"))
   end
 
-  def test_should_increment_by_1
+  it "increments by 1" do
     id = nil
     prev_id = nil
 
@@ -30,7 +30,7 @@ describe RavenDB::HiloIdGenerator do
       id = @generator.generate_document_id
 
       unless prev_id.nil?
-        assert_equal(range(id) - range(prev_id), 1)
+        expect((range(id) - range(prev_id))).to(eq(1))
       end
 
       prev_id = id
@@ -39,7 +39,7 @@ describe RavenDB::HiloIdGenerator do
     end
   end
 
-  def test_should_request_new_range
+  it "requests new range" do
     max_id = nil
 
     loop do
@@ -53,7 +53,7 @@ describe RavenDB::HiloIdGenerator do
     end
 
     @generator.generate_document_id
-    assert(@generator.range.min_id > max_id)
+    expect((@generator.range.min_id > max_id)).to(be_truthy)
   end
 
   protected
