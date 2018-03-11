@@ -14,7 +14,7 @@ class DocumentStoreTest < RavenDatabaseTest
     @_store.open_session do |session|
       foo = session.load(foo.id)
 
-      assert_equal(foo.name, "test")
+      assert_equal("test", foo.name)
     end
   end
 
@@ -30,8 +30,8 @@ class DocumentStoreTest < RavenDatabaseTest
     @_store.open_session do |session|
       foo = session.load(id)
 
-      assert_equal(foo.name, "test")
-      assert_equal(foo.order, 20)
+      assert_equal("test", foo.name)
+      assert_equal(20, foo.order)
     end
   end
 
@@ -49,9 +49,9 @@ class DocumentStoreTest < RavenDatabaseTest
       product = session.load(product.id)
       metadata = product.instance_variable_get("@metadata")
 
-      assert_equal(metadata["@id"], product.id)
-      assert_equal(metadata["@collection"], "Products")
-      assert_equal(metadata["Raven-Ruby-Type"], "Product")
+      assert_equal(product.id, metadata["@id"])
+      assert_equal("Products", metadata["@collection"])
+      assert_equal("Product", metadata["Raven-Ruby-Type"])
     end
   end
 
@@ -132,8 +132,8 @@ class DocumentStoreTest < RavenDatabaseTest
     @_store.open_session do |session|
       foo = session.load(key)
 
-      assert_equal(foo.name, "name changed")
-      assert_equal(foo.order, 10)
+      assert_equal("name changed", foo.name)
+      assert_equal(10, foo.order)
     end
   end
 
