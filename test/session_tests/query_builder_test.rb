@@ -2,9 +2,18 @@ require "date"
 require "ravendb"
 require "spec_helper"
 
-class QueryBuilderTest < RavenTest
+class QueryBuilderTest < Minitest::Test
+  def setup
+    @__test = RavenTest.new(nil)
+    @__test.setup
+  end
+
+  def teardown
+    @__test.teardown
+  end
+
   def store
-    @_store
+    @__test.store
   end
 
   def test_can_understand_equality

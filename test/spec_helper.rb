@@ -47,6 +47,10 @@ class RavenTest < Minitest::Test
     @_store = nil
     @_current_database = nil
   end
+
+  def store
+    @_store
+  end
 end
 
 class RavenDatabaseTest < RavenTest
