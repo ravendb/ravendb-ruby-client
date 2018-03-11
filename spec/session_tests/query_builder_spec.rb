@@ -2,7 +2,7 @@ require("date")
 require("ravendb")
 require("spec_helper")
 
-describe(RavenDB::QueryBuilder) do
+describe RavenDB::QueryBuilder do
   before do
     @__test = RavenTest.new(nil)
     @__test.setup

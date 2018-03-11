@@ -1,7 +1,7 @@
 require "ravendb"
 require "spec_helper"
 
-describe 'DocumentDelete' do
+describe RavenDB::DeleteDocumentCommand do
   IDS = [101, 10, 106, 107].freeze
 
   def setup
