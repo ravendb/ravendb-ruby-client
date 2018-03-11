@@ -11,8 +11,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE Name = $p0")
-    assert_equal(index_query.query_parameters[:p0], "red")
+    assert_equal("FROM Users WHERE Name = $p0", index_query.query)
+    assert_equal("red", index_query.query_parameters[:p0])
   end
 
   def test_can_understand_exact_equality
@@ -23,8 +23,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE exact(Name = $p0)")
-    assert_equal(index_query.query_parameters[:p0], "ayende")
+    assert_equal("FROM INDEX 'IndexName' WHERE exact(Name = $p0)", index_query.query)
+    assert_equal("ayende", index_query.query_parameters[:p0])
   end
 
   def test_can_understand_equal_on_date
@@ -37,8 +37,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Birthday = $p0")
-    assert_equal(index_query.query_parameters[:p0], "2010-05-15T00:00:00.0000000")
+    assert_equal("FROM INDEX 'IndexName' WHERE Birthday = $p0", index_query.query)
+    assert_equal("2010-05-15T00:00:00.0000000", index_query.query_parameters[:p0])
   end
 
   def test_can_understand_equal_on_bool
@@ -49,8 +49,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE Active = $p0")
-    assert_equal(index_query.query_parameters[:p0], false)
+    assert_equal("FROM Users WHERE Active = $p0", index_query.query)
+    assert_equal(false, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_not_equal
@@ -61,8 +61,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE Active != $p0")
-    assert_equal(index_query.query_parameters[:p0], false)
+    assert_equal("FROM Users WHERE Active != $p0", index_query.query)
+    assert_equal(false, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_in
@@ -73,8 +73,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Name IN ($p0)")
-    assert_equal(index_query.query_parameters[:p0], ["ryan", "heath"])
+    assert_equal("FROM INDEX 'IndexName' WHERE Name IN ($p0)", index_query.query)
+    assert_equal(["ryan", "heath"], index_query.query_parameters[:p0])
   end
 
   def test_no_conditions_should_produce_empty_where
@@ -84,7 +84,7 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName'")
+    assert_equal("FROM INDEX 'IndexName'", index_query.query)
   end
 
   def test_can_understand_and
@@ -97,9 +97,9 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Name = $p0 AND Email = $p1")
-    assert_equal(index_query.query_parameters[:p0], "ayende")
-    assert_equal(index_query.query_parameters[:p1], "ayende@ayende.com")
+    assert_equal("FROM INDEX 'IndexName' WHERE Name = $p0 AND Email = $p1", index_query.query)
+    assert_equal("ayende", index_query.query_parameters[:p0])
+    assert_equal("ayende@ayende.com", index_query.query_parameters[:p1])
   end
 
   def test_can_understand_or
@@ -112,9 +112,9 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Name = $p0 OR Email = $p1")
-    assert_equal(index_query.query_parameters[:p0], "ayende")
-    assert_equal(index_query.query_parameters[:p1], "ayende@ayende.com")
+    assert_equal("FROM INDEX 'IndexName' WHERE Name = $p0 OR Email = $p1", index_query.query)
+    assert_equal("ayende", index_query.query_parameters[:p0])
+    assert_equal("ayende@ayende.com", index_query.query_parameters[:p1])
   end
 
   def test_can_understand_less_than
@@ -125,8 +125,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age < $p0")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age < $p0", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_less_than_or_equal
@@ -137,8 +137,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age <= $p0")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age <= $p0", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_greater_than
@@ -149,8 +149,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age > $p0")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age > $p0", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_greater_than_or_equal
@@ -161,8 +161,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age >= $p0")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age >= $p0", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_projection_of_single_field
@@ -174,8 +174,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_projection_of_multiple_fields
@@ -187,8 +187,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name, Age")
-    assert_equal(index_query.query_parameters[:p0], 16)
+    assert_equal("FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name, Age", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
   end
 
   def test_can_understand_between
@@ -202,9 +202,9 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM IndexedUsers WHERE Rate BETWEEN $p0 AND $p1")
-    assert_equal(index_query.query_parameters[:p0], min)
-    assert_equal(index_query.query_parameters[:p1], max)
+    assert_equal("FROM IndexedUsers WHERE Rate BETWEEN $p0 AND $p1", index_query.query)
+    assert_equal(min, index_query.query_parameters[:p0])
+    assert_equal(max, index_query.query_parameters[:p1])
   end
 
   def test_can_understand_starts_with
@@ -215,8 +215,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE startsWith(Name, $p0)")
-    assert_equal(index_query.query_parameters[:p0], "foo")
+    assert_equal("FROM Users WHERE startsWith(Name, $p0)", index_query.query)
+    assert_equal("foo", index_query.query_parameters[:p0])
   end
 
   def test_can_understand_ends_with
@@ -227,8 +227,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE endsWith(Name, $p0)")
-    assert_equal(index_query.query_parameters[:p0], "foo")
+    assert_equal("FROM Users WHERE endsWith(Name, $p0)", index_query.query)
+    assert_equal("foo", index_query.query_parameters[:p0])
   end
 
   def test_should_wrap_first_not_with_true_token
@@ -241,8 +241,8 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE true AND NOT startsWith(Name, $p0)")
-    assert_equal(index_query.query_parameters[:p0], "foo")
+    assert_equal("FROM Users WHERE true AND NOT startsWith(Name, $p0)", index_query.query)
+    assert_equal("foo", index_query.query_parameters[:p0])
   end
 
   def test_can_understand_subclauses
@@ -261,9 +261,9 @@ class QueryBuilderTest < RavenTest
 
     index_query = query.get_index_query
 
-    assert_equal(index_query.query, "FROM Users WHERE Age >= $p0 AND (Name = $p1 OR Name = $p2)")
-    assert_equal(index_query.query_parameters[:p0], 16)
-    assert_equal(index_query.query_parameters[:p1], "rob")
-    assert_equal(index_query.query_parameters[:p2], "dave")
+    assert_equal("FROM Users WHERE Age >= $p0 AND (Name = $p1 OR Name = $p2)", index_query.query)
+    assert_equal(16, index_query.query_parameters[:p0])
+    assert_equal("rob", index_query.query_parameters[:p1])
+    assert_equal("dave", index_query.query_parameters[:p2])
   end
 end
