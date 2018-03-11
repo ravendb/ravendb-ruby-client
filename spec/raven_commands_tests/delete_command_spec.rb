@@ -7,7 +7,7 @@ describe RavenDB::DeleteDocumentCommand do
   @_change_vector = nil
   @_other_change_vector = nil
 
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
 
@@ -20,33 +20,27 @@ describe RavenDB::DeleteDocumentCommand do
     @_other_change_vector = response["Results"].first["@metadata"]["@change-vector"]
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def request_executor
+  let(:request_executor) do
     @__test.request_executor
   end
 
-  def test_should_delete_with_no_change_vector
-    command = RavenDB::DeleteDocumentCommand.new("Products/101")
-
-    refute_raises(RavenDB::RavenException) do
-      request_executor.execute(command)
-    end
+  it "deletes with no change vector" do
+    command = described_class.new("Products/101")
+    expect { request_executor.execute(command) }.not_to(raise_error(RavenDB::RavenException))
   end
 
-  def test_should_delete_with_change_vector
-    command = RavenDB::DeleteDocumentCommand.new("Products/102", @_other_change_vector)
-
-    refute_raises(RavenDB::RavenException) do
-      request_executor.execute(command)
-    end
+  it "deletes with change vector" do
+    command = described_class.new("Products/102", @_other_change_vector)
+    expect { request_executor.execute(command) }.not_to(raise_error(RavenDB::RavenException))
   end
 
-  def test_should_fail_delete_if_change_vector_mismatches
-    assert_raises(RavenDB::RavenException) do
-      request_executor.execute(RavenDB::DeleteDocumentCommand.new("Products/101", "#{@_change_vector}:BROKEN:VECTOR"))
-    end
+  it "fails delete if change vector mismatches" do
+    expect do
+      request_executor.execute(described_class.new("Products/101", "#{@_change_vector}:BROKEN:VECTOR"))
+    end.to(raise_error(RavenDB::RavenException))
   end
 end
