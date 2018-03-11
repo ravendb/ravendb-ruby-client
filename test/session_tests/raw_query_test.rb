@@ -21,10 +21,10 @@ class RawQueryTest < RavenDatabaseTest
                        .wait_for_non_stale_results
                        .all
 
-      assert_equal(results.size, 1)
-      assert_equal(results.first.name, "test101")
-      assert_equal(results.first.uid, 2)
-      assert_equal(results.first.ordering, "a")
+      assert_equal(1, results.size)
+      assert_equal("test101", results.first.name)
+      assert_equal(2, results.first.uid)
+      assert_equal("a", results.first.ordering)
     end
   end
 
