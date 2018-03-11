@@ -31,9 +31,7 @@ class DocumentQueryTest < RavenDatabaseTest
 
   def test_should_query_by_single_condition
     @_store.open_session do |session|
-      results = session.query(
-        collection: "Products"
-      )
+      results = session.query(collection: "Products")
                        .where_equals("name", "test101")
                        .wait_for_non_stale_results
                        .all
@@ -46,9 +44,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_few_conditions_joined_by_or
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .where_equals("name", "test101")
                 .where_equals("uid", 4)
                 .wait_for_non_stale_results
@@ -63,9 +59,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_few_conditions_joined_by_and
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .using_default_operator(RavenDB::QueryOperator::And)
                 .where_equals("name", "test107")
                 .where_equals("uid", 5)
@@ -83,9 +77,7 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .where_in("name", names)
                 .wait_for_non_stale_results
                 .all
@@ -101,9 +93,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_starts_with
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .where_starts_with("name", "n")
                 .wait_for_non_stale_results
                 .all
@@ -116,9 +106,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_ends_with
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .where_ends_with("name", "7")
                 .wait_for_non_stale_results
                 .all
@@ -131,9 +119,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_by_between
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Products"
-                )
+                .query(collection: "Products")
                 .where_between("uid", 2, 4)
                 .wait_for_non_stale_results
                 .all
@@ -173,10 +159,7 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       results = session
-                .query(
-                  index_name: "Testing_Sort",
-                  document_type: Product
-                )
+                .query(index_name: "Testing_Sort", document_type: Product)
                 .where_in("uid", uids)
                 .wait_for_non_stale_results
                 .all
@@ -218,9 +201,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_with_includes
     @_store.open_session do |session|
       session
-        .query(
-          collection: "Orders"
-        )
+        .query(collection: "Orders")
         .where_equals("uid", 92)
         .include("product_id")
         .wait_for_non_stale_results
@@ -234,9 +215,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_with_nested_objects
     @_store.open_session do |session|
       results = session
-                .query(
-                  collection: "Companies"
-                )
+                .query(collection: "Companies")
                 .where_equals("name", "withNesting")
                 .wait_for_non_stale_results
                 .all
@@ -253,9 +232,7 @@ class DocumentQueryTest < RavenDatabaseTest
 
     @_store.open_session do |session|
       total_count = session
-                    .query(
-                      collection: "Products"
-                    )
+                    .query(collection: "Products")
                     .where_exists("uid")
                     .wait_for_non_stale_results
                     .count
@@ -269,9 +246,7 @@ class DocumentQueryTest < RavenDatabaseTest
     (1..total_pages).to_a do |page|
       @_store.open_session do |session|
         products = session
-                   .query(
-                     collection: "Products"
-                   )
+                   .query(collection: "Products")
                    .where_exists("uid")
                    .order_by("uid")
                    .wait_for_non_stale_results
@@ -288,10 +263,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_query_select_fields
     @_store.open_session do |session|
       results = session
-                .query(
-                  index_name: "Testing_Sort",
-                  document_type: Product
-                )
+                .query(index_name: "Testing_Sort", document_type: Product)
                 .select_fields(["doc_id"])
                 .where_between("uid", 2, 4, true)
                 .wait_for_non_stale_results
@@ -304,10 +276,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_by_single_keyword
     @_store.open_session do |session|
       results = session
-                .query(
-                  index_name: LastFmAnalyzed.name,
-                  document_type: LastFm
-                )
+                .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
                 .search("query", "Me")
                 .wait_for_non_stale_results
                 .all
@@ -320,10 +289,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_by_two_keywords
     @_store.open_session do |session|
       results = session
-                .query(
-                  index_name: LastFmAnalyzed.name,
-                  document_type: LastFm
-                )
+                .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
                 .search("query", "Me Bobo")
                 .wait_for_non_stale_results
                 .all
@@ -339,10 +305,7 @@ class DocumentQueryTest < RavenDatabaseTest
   def test_should_search_full_text_with_boost
     @_store.open_session do |session|
       results = session
-                .query(
-                  index_name: LastFmAnalyzed.name,
-                  document_type: LastFm
-                )
+                .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
                 .search("query", "Me")
                 .boost(10)
                 .search("query", "Bobo")
