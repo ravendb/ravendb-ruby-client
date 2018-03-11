@@ -9,7 +9,7 @@ module RavenDB
       commands = @commands_array
       assert_node(server_node)
 
-      unless commands.all? { |data| data && data.is_a?(RavenCommandData) }
+      unless commands.all? { |data| data&.is_a?(RavenCommandData) }
         raise "Not a valid command"
       end
 

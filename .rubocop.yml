@@ -1,4 +1,5 @@
 inherit_from: .rubocop_todo.yml
+#require: rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 2.4
@@ -47,3 +48,11 @@ Style/GuardClause:
 
 Style/NumericPredicate:
   Enabled: false
+
+Layout/EmptyLines:
+  Enabled: true
+
+Metrics/BlockLength:
+  Exclude: 
+    - test/**/*.rb
+    - spec/**/*.rb
