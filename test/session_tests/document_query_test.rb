@@ -40,7 +40,7 @@ class DocumentQueryTest < RavenDatabaseTest
                        .wait_for_non_stale_results
                        .all
 
-      assert_equal(results.size, 1)
+      assert_equal(1, results.size)
       assert_equal(results.first.name, "test101")
     end
   end
@@ -54,7 +54,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 2)
+      assert_equal(2, results.size)
       assert(results.first.name.include?("test101") || results.last.name.include?("test101"))
       assert(results.first.uid == 2 || results.last.uid == 2)
     end
@@ -70,9 +70,9 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 1)
+      assert_equal(1, results.size)
       assert_equal(results.first.name, "test107")
-      assert_equal(results.first.uid, 5)
+      assert_equal(5, results.first.uid)
     end
   end
 
@@ -86,7 +86,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 4)
+      assert_equal(4, results.size)
 
       results.each do |result|
         assert(names.any? { |name| result.name == name })
@@ -102,7 +102,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 1)
+      assert_equal(1, results.size)
       assert_equal(results.first.name, "new_testing")
     end
   end
@@ -115,7 +115,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 2)
+      assert_equal(2, results.size)
       assert(results.all? { |result| result.name = "test107" })
     end
   end
@@ -128,7 +128,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 3)
+      assert_equal(3, results.size)
       assert(results.all? { |result| (2..4).to_a.include?(result.uid) })
     end
   end
@@ -168,7 +168,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 3)
+      assert_equal(3, results.size)
 
       results.each do |result|
         assert(uids.any? { |uid| result.uid == uid })
@@ -212,7 +212,7 @@ class DocumentQueryTest < RavenDatabaseTest
         .all
 
       session.load("Products/108")
-      assert_equal(session.number_of_requests_in_session, 1)
+      assert_equal(1, session.number_of_requests_in_session)
     end
   end
 
@@ -243,8 +243,8 @@ class DocumentQueryTest < RavenDatabaseTest
 
       total_pages = (total_count.to_f / page_size).ceil
 
-      assert_equal(total_pages, 4)
-      assert_equal(total_count, 7)
+      assert_equal(4, total_pages)
+      assert_equal(7, total_count)
     end
 
     (1..total_pages).to_a do |page|
@@ -285,7 +285,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 2)
+      assert_equal(2, results.size)
       results.each { |last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"]) }
     end
   end
@@ -298,7 +298,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 3)
+      assert_equal(3, results.size)
 
       results.each do |last_fm|
         @lastfm.check_fulltext_search_result(last_fm, ["Me", "Bobo"])
@@ -317,7 +317,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.size, 3)
+      assert_equal(3, results.size)
       assert_equal(results.last.title, "Spanish Grease")
 
       results.each do |last_fm|
