@@ -3,20 +3,20 @@ require "ravendb"
 require "spec_helper"
 
 describe RavenDB::DocumentStore do
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def store
+  let(:store) do
     @__test.store
   end
 
-  def test_should_store_without_id
+  it "stores without id" do
     foo = nil
 
     store.open_session do |session|
@@ -27,11 +27,11 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(foo.id)
 
-      assert_equal("test", foo.name)
+      expect(foo.name).to(eq("test"))
     end
   end
 
-  def test_should_store_with_id
+  it "stores with id" do
     id = "TestingStore/1"
     foo = Foo.new(id, "test", 20)
 
@@ -43,32 +43,32 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(id)
 
-      assert_equal("test", foo.name)
-      assert_equal(20, foo.order)
+      expect(foo.name).to(eq("test"))
+      expect(foo.order).to(eq(20))
     end
   end
 
-  def test_should_generate_id_and_set_collection
+  it "generates id and set collection" do
     product = Product.new(nil, "New Product")
 
     store.open_session do |session|
       session.store(product)
       session.save_changes
 
-      assert(/^Products\/\d+(\-\w)?$/ =~ product.id)
+      expect(/^Products\/\d+(\-\w)?$/ =~ product.id).to(be_truthy)
     end
 
     store.open_session do |session|
       product = session.load(product.id)
       metadata = product.instance_variable_get("@metadata")
 
-      assert_equal(product.id, metadata["@id"])
-      assert_equal("Products", metadata["@collection"])
-      assert_equal("Product", metadata["Raven-Ruby-Type"])
+      expect(metadata["@id"]).to(eq(product.id))
+      expect(metadata["@collection"]).to(eq("Products"))
+      expect(metadata["Raven-Ruby-Type"]).to(eq("Product"))
     end
   end
 
-  def test_should_not_store_id_inside_document_json_only_in_metadata
+  it "does not store id inside document json only in metadata" do
     product = Product.new(nil, "New Product")
 
     store.open_session do |session|
@@ -81,14 +81,14 @@ describe RavenDB::DocumentStore do
       cached_documents = session.instance_variable_get("@raw_entities_and_metadata")
       info = cached_documents[product]
 
-      refute(product.id.nil?)
-      refute(product.id.empty?)
-      assert_equal(info[:original_metadata]["@id"], product.id)
-      refute(info[:original_value].key?("id"))
+      expect(product.id.nil?).to(eq(false))
+      expect(product.id.empty?).to(eq(false))
+      expect(product.id).to(eq(info[:original_metadata]["@id"]))
+      expect(info[:original_value].key?("id")).to(eq(false))
     end
   end
 
-  def test_should_store_custom_fields_in_metadata
+  it "stores custom fields in metadata" do
     expiration = DateTime.now.next_day.iso8601
 
     order = Order.new(nil, "New Order")
@@ -103,12 +103,12 @@ describe RavenDB::DocumentStore do
       order = session.load(order.id)
       metadata = order.instance_variable_get("@metadata")
 
-      assert(metadata.key?("@expires"))
-      assert_equal(metadata["@expires"], expiration)
+      expect(metadata.key?("@expires")).to(eq(true))
+      expect(expiration).to(eq(metadata["@expires"]))
     end
   end
 
-  def test_should_fail_on_explicit_call_after_delete
+  it "fails on explicit call after delete" do
     foo = nil
     key = "testingStore"
 
@@ -121,11 +121,11 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       session.delete(key)
 
-      assert_raises(RuntimeError) { session.store(foo) }
+      expect { session.store(foo) }.to(raise_error(RuntimeError))
     end
   end
 
-  def test_should_store_existing_doc_without_explicit_call
+  it "stores existing doc without explicit call" do
     key = "testingStore"
 
     store.open_session do |session|
@@ -145,12 +145,12 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(key)
 
-      assert_equal("name changed", foo.name)
-      assert_equal(10, foo.order)
+      expect(foo.name).to(eq("name changed"))
+      expect(foo.order).to(eq(10))
     end
   end
 
-  def test_should_ignore_update_without_explicit_call_after_doc_deleted
+  it "ignores update without explicit call after doc deleted" do
     key = "testingStore"
 
     store.open_session do |session|
@@ -166,12 +166,12 @@ describe RavenDB::DocumentStore do
       foo.name = "name changed"
       foo.order = 10
 
-      refute_raises(RuntimeError) { session.save_changes }
+      expect { session.save_changes }.not_to(raise_error(RuntimeError))
     end
 
     store.open_session do |session|
       foo = session.load(key)
-      assert_nil(foo)
+      expect(foo).to(be_nil)
     end
   end
 end
