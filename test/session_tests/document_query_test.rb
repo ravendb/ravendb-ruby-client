@@ -41,7 +41,7 @@ class DocumentQueryTest < RavenDatabaseTest
                        .all
 
       assert_equal(1, results.size)
-      assert_equal(results.first.name, "test101")
+      assert_equal("test101", results.first.name)
     end
   end
 
@@ -71,7 +71,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(1, results.size)
-      assert_equal(results.first.name, "test107")
+      assert_equal("test107", results.first.name)
       assert_equal(5, results.first.uid)
     end
   end
@@ -103,7 +103,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(1, results.size)
-      assert_equal(results.first.name, "new_testing")
+      assert_equal("new_testing", results.first.name)
     end
   end
 
@@ -185,7 +185,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.first.ordering, "a")
+      assert_equal("a", results.first.ordering)
     end
   end
 
@@ -198,7 +198,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(results.first.ordering, "d")
+      assert_equal("d", results.first.ordering)
     end
   end
 
@@ -318,7 +318,7 @@ class DocumentQueryTest < RavenDatabaseTest
                 .all
 
       assert_equal(3, results.size)
-      assert_equal(results.last.title, "Spanish Grease")
+      assert_equal("Spanish Grease", results.last.title)
 
       results.each do |last_fm|
         @lastfm.check_fulltext_search_result(last_fm, ["Me", "Bobo"])

@@ -70,7 +70,7 @@ class DocumentSerializingTest < RavenTest
 
   def test_should_parse_scalars
     assert(@document.string_prop.is_a?(String))
-    assert_equal(@document.string_prop, "string")
+    assert_equal("string", @document.string_prop)
     assert(@document.number_prop.is_a?(Numeric))
     assert_equal(2, @document.number_prop)
     assert(@document.number_float_prop.is_a?(Numeric))
@@ -108,7 +108,7 @@ class DocumentSerializingTest < RavenTest
     assert(@document.hash_prop.key?("array_prop"))
 
     assert(@document.hash_prop["string_prop"].is_a?(String))
-    assert_equal(@document.hash_prop["string_prop"], "string")
+    assert_equal("string", @document.hash_prop["string_prop"])
     assert(@document.hash_prop["number_prop"].is_a?(Numeric))
     assert_equal(2, @document.hash_prop["number_prop"])
     assert(@document.hash_prop["number_float_prop"].is_a?(Numeric))
@@ -127,7 +127,7 @@ class DocumentSerializingTest < RavenTest
 
     assert(@document.deep_hash_prop.is_a?(Hash))
     assert(@document.deep_hash_prop.key?("some_prop"))
-    assert_equal(@document.deep_hash_prop["some_prop"], "someValue")
+    assert_equal("someValue", @document.deep_hash_prop["some_prop"])
 
     assert(deep.is_a?(Hash))
     assert(deep.key?("some_prop"))
@@ -142,7 +142,7 @@ class DocumentSerializingTest < RavenTest
 
     assert(deep_hash.is_a?(Hash))
     assert(deep_hash.key?("some_prop"))
-    assert_equal(deep_hash["some_prop"], "someValue")
+    assert_equal("someValue", deep_hash["some_prop"])
 
     assert(deep_array_in_hash.is_a?(Array))
     assert_equal(2, deep_array_in_hash.size)
@@ -155,7 +155,7 @@ class DocumentSerializingTest < RavenTest
 
     assert(deep_hash_in_array.is_a?(Hash))
     assert(deep_hash_in_array.key?("some_prop"))
-    assert_equal(deep_hash_in_array["some_prop"], "someValue")
+    assert_equal("someValue", deep_hash_in_array["some_prop"])
   end
 
   def test_should_parse_dates

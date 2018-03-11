@@ -43,8 +43,8 @@ class DocumentAttachmentsTest < RavenDatabaseTest
 
       assert_equal(attachment_result[:stream], attachment_raw)
       assert_equal(attachment_result[:attachment_details][:document_id], product.id)
-      assert_equal(attachment_result[:attachment_details][:content_type], "image/gif")
-      assert_equal(attachment_result[:attachment_details][:name], "1x1.gif")
+      assert_equal("image/gif", attachment_result[:attachment_details][:content_type])
+      assert_equal("1x1.gif", attachment_result[:attachment_details][:name])
       assert_equal(attachment_result[:attachment_details][:size], attachment_raw.size)
     end
   end

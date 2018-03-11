@@ -23,7 +23,7 @@ class DocumentLoadTest < RavenDatabaseTest
     @_store.open_session do |session|
       product = session.load("Products/101")
 
-      assert_equal(product.name, "test")
+      assert_equal("test", product.name)
     end
   end
 
@@ -57,7 +57,7 @@ class DocumentLoadTest < RavenDatabaseTest
       product = session.load("Products/101")
 
       assert(product.is_a?(Product))
-      assert_equal(product.instance_variable_get("@metadata")["Raven-Ruby-Type"], "Product")
+      assert_equal("Product", product.instance_variable_get("@metadata")["Raven-Ruby-Type"])
     end
   end
 
@@ -67,7 +67,7 @@ class DocumentLoadTest < RavenDatabaseTest
 
       assert(company.is_a?(Company))
       assert(company.product.is_a?(Product))
-      assert_equal(company.product.name, "testing_nested")
+      assert_equal("testing_nested", company.product.name)
     end
   end
 
