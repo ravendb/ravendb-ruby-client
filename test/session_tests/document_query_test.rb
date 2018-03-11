@@ -2,9 +2,10 @@ require "date"
 require "ravendb"
 require "spec_helper"
 
-class DocumentQueryTest < RavenDatabaseTest
+describe RavenDB::DocumentQuery do
   def setup
-    super
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
 
     @lastfm = LastFmAnalyzed.new(store, self)
 
@@ -27,6 +28,10 @@ class DocumentQueryTest < RavenDatabaseTest
 
       session.save_changes
     end
+  end
+
+  def teardown
+    @__test.teardown
   end
 
   def store
