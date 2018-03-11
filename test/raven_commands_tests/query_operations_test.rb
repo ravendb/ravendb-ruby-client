@@ -66,7 +66,7 @@ class QueryOperationsTest < RavenDatabaseTest
     response = @_request_executor.execute(query_command)
     assert(response.key?("Results"))
     assert(response["Results"].is_a?(Array))
-    assert_equal(response["Results"].length, 0)
+    assert_equal(0, response["Results"].length)
   end
 
   def test_delete_by_index_fail_on_unexisting_index

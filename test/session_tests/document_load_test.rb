@@ -39,7 +39,7 @@ class DocumentLoadTest < RavenDatabaseTest
     @_store.open_session do |session|
       products = session.load(["Products/101", "Products/10"])
 
-      assert_equal(products.size, 2)
+      assert_equal(2, products.size)
     end
   end
 
@@ -47,7 +47,7 @@ class DocumentLoadTest < RavenDatabaseTest
     @_store.open_session do |session|
       products = session.load(["Products/101", "Products/10", "Products/101"])
 
-      assert_equal(products.size, 3)
+      assert_equal(3, products.size)
       products.each { |product| refute(product.nil?) }
     end
   end
@@ -76,7 +76,7 @@ class DocumentLoadTest < RavenDatabaseTest
       session.load("Orders/105", includes: ["product_id"])
       session.load("Products/101")
 
-      assert_equal(session.number_of_requests_in_session, 1)
+      assert_equal(1, session.number_of_requests_in_session)
     end
   end
 end

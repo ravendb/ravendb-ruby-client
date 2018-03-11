@@ -72,7 +72,7 @@ class DocumentSerializingTest < RavenTest
     assert(@document.string_prop.is_a?(String))
     assert_equal(@document.string_prop, "string")
     assert(@document.number_prop.is_a?(Numeric))
-    assert_equal(@document.number_prop, 2)
+    assert_equal(2, @document.number_prop)
     assert(@document.number_float_prop.is_a?(Numeric))
     assert_equal(@document.number_float_prop, 2.5)
     assert(!!@document.boolean_prop == @document.boolean_prop)
@@ -82,7 +82,7 @@ class DocumentSerializingTest < RavenTest
 
   def test_should_parse_arrays
     assert(@document.array_prop.is_a?(Array))
-    assert_equal(@document.array_prop.size, 3)
+    assert_equal(3, @document.array_prop.size)
     assert_equal(@document.array_prop, [1, 2, 3])
   end
 
@@ -90,11 +90,11 @@ class DocumentSerializingTest < RavenTest
     deep = @document.deep_array_prop[2]
 
     assert(@document.deep_array_prop.is_a?(Array))
-    assert_equal(@document.deep_array_prop.size, 3)
+    assert_equal(3, @document.deep_array_prop.size)
     assert_equal(@document.deep_array_prop, [1, 2, [3, 4]])
 
     assert(deep.is_a?(Array))
-    assert_equal(deep.size, 2)
+    assert_equal(2, deep.size)
     assert_equal(deep, [3, 4])
   end
 
@@ -110,7 +110,7 @@ class DocumentSerializingTest < RavenTest
     assert(@document.hash_prop["string_prop"].is_a?(String))
     assert_equal(@document.hash_prop["string_prop"], "string")
     assert(@document.hash_prop["number_prop"].is_a?(Numeric))
-    assert_equal(@document.hash_prop["number_prop"], 2)
+    assert_equal(2, @document.hash_prop["number_prop"])
     assert(@document.hash_prop["number_float_prop"].is_a?(Numeric))
     assert_equal(@document.hash_prop["number_float_prop"], 2.5)
     assert(!!@document.hash_prop["boolean_prop"] == @document.hash_prop["boolean_prop"])
@@ -118,7 +118,7 @@ class DocumentSerializingTest < RavenTest
     assert(@document.hash_prop["nil_prop"].nil?)
 
     assert(@document.hash_prop["array_prop"].is_a?(Array))
-    assert_equal(@document.hash_prop["array_prop"].size, 3)
+    assert_equal(3, @document.hash_prop["array_prop"].size)
     assert_equal(@document.hash_prop["array_prop"], [1, 2, 3])
   end
 
@@ -145,13 +145,13 @@ class DocumentSerializingTest < RavenTest
     assert_equal(deep_hash["some_prop"], "someValue")
 
     assert(deep_array_in_hash.is_a?(Array))
-    assert_equal(deep_array_in_hash.size, 2)
+    assert_equal(2, deep_array_in_hash.size)
     assert_equal(deep_array_in_hash, [3, 4])
 
     assert(deep_array.is_a?(Array))
-    assert_equal(deep_array.size, 3)
-    assert_equal(deep_array[0], 7)
-    assert_equal(deep_array[1], 8)
+    assert_equal(3, deep_array.size)
+    assert_equal(7, deep_array[0])
+    assert_equal(8, deep_array[1])
 
     assert(deep_hash_in_array.is_a?(Hash))
     assert(deep_hash_in_array.key?("some_prop"))
