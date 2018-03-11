@@ -3,7 +3,7 @@ require "ravendb"
 require "spec_helper"
 
 describe RavenDB::DocumentQuery do
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
 
@@ -30,7 +30,7 @@ describe RavenDB::DocumentQuery do
     end
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
@@ -38,19 +38,20 @@ describe RavenDB::DocumentQuery do
     @__test.store
   end
 
-  def test_should_query_by_single_condition
+  it "queries by single condition" do
     store.open_session do |session|
-      results = session.query(collection: "Products")
-                       .where_equals("name", "test101")
-                       .wait_for_non_stale_results
-                       .all
+      results = session
+                .query(collection: "Products")
+                .where_equals("name", "test101")
+                .wait_for_non_stale_results
+                .all
 
-      assert_equal(1, results.size)
-      assert_equal("test101", results.first.name)
+      expect(results.size).to(eq(1))
+      expect(results.first.name).to(eq("test101"))
     end
   end
 
-  def test_should_query_by_few_conditions_joined_by_or
+  it "queries by few conditions joined by or" do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
@@ -59,13 +60,13 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(2, results.size)
-      assert(results.first.name.include?("test101") || results.last.name.include?("test101"))
-      assert(results.first.uid == 2 || results.last.uid == 2)
+      expect(results.size).to(eq(2))
+      expect((results.first.name.include?("test101") || results.last.name.include?("test101"))).to(be_truthy)
+      expect(((results.first.uid == 2) || (results.last.uid == 2))).to(be_truthy)
     end
   end
 
-  def test_should_query_by_few_conditions_joined_by_and
+  it "queries by few conditions joined by and" do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
@@ -75,13 +76,13 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(1, results.size)
-      assert_equal("test107", results.first.name)
-      assert_equal(5, results.first.uid)
+      expect(results.size).to(eq(1))
+      expect(results.first.name).to(eq("test107"))
+      expect(results.first.uid).to(eq(5))
     end
   end
 
-  def test_should_query_by_where_in
+  it "queries by where in" do
     names = ["test101", "test107", "test106"]
 
     store.open_session do |session|
@@ -91,15 +92,15 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(4, results.size)
+      expect(results.size).to(eq(4))
 
       results.each do |result|
-        assert(names.any? { |name| result.name == name })
+        expect(names).to(be_any { |name| (result.name == name) })
       end
     end
   end
 
-  def test_should_query_by_starts_with
+  it "queries by starts with" do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
@@ -107,12 +108,12 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(1, results.size)
-      assert_equal("new_testing", results.first.name)
+      expect(results.size).to(eq(1))
+      expect(results.first.name).to(eq("new_testing"))
     end
   end
 
-  def test_should_query_by_ends_with
+  it "queries by ends with" do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
@@ -120,12 +121,12 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(2, results.size)
-      assert(results.all? { |result| result.name = "test107" })
+      expect(results.size).to(eq(2))
+      expect(results).to(be_all { |result| result.name = "test107" })
     end
   end
 
-  def test_should_query_by_between
+  it "queries by between" do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
@@ -133,12 +134,12 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(3, results.size)
-      assert(results.all? { |result| (2..4).to_a.include?(result.uid) })
+      expect(results.size).to(eq(3))
+      expect(results).to(be_all { |result| (2..4).to_a.include?(result.uid) })
     end
   end
 
-  def test_should_query_by_exists
+  it "queries by exists" do
     store.open_session do |session|
       results = session
                 .query
@@ -146,24 +147,22 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.all? { |result| result.instance_variable_defined?("@ordering") })
+      expect(results).to(be_all { |result| result.instance_variable_defined?("@ordering") })
     end
   end
 
-  def test_should_fail_query_by_unexisting_index
+  it "fails query by unexisting index" do
     store.open_session do |session|
-      assert_raises(RavenDB::IndexDoesNotExistException) do
+      expect do
         session
-          .query(
-            index_name: "s"
-          )
+          .query(index_name: "s")
           .wait_for_non_stale_results
           .all
-      end
+      end.to(raise_error(RavenDB::IndexDoesNotExistException))
     end
   end
 
-  def test_should_query_by_index
+  it "queries by index" do
     uids = [4, 6, 90]
 
     store.open_session do |session|
@@ -173,15 +172,15 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(3, results.size)
+      expect(results.size).to(eq(3))
 
       results.each do |result|
-        assert(uids.any? { |uid| result.uid == uid })
+        expect(uids).to(be_any { |uid| (result.uid == uid) })
       end
     end
   end
 
-  def test_should_query_with_ordering
+  it "queries with ordering" do
     store.open_session do |session|
       results = session
                 .query
@@ -190,11 +189,11 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal("a", results.first.ordering)
+      expect(results.first.ordering).to(eq("a"))
     end
   end
 
-  def test_should_query_with_descending_ordering
+  it "queries with descending ordering" do
     store.open_session do |session|
       results = session
                 .query
@@ -203,25 +202,24 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal("d", results.first.ordering)
+      expect(results.first.ordering).to(eq("d"))
     end
   end
 
-  def test_should_query_with_includes
+  it "queries with includes" do
     store.open_session do |session|
-      session
-        .query(collection: "Orders")
-        .where_equals("uid", 92)
-        .include("product_id")
-        .wait_for_non_stale_results
-        .all
+      session.query(collection: "Orders")
+             .where_equals("uid", 92)
+             .include("product_id")
+             .wait_for_non_stale_results
+             .all
 
       session.load("Products/108")
-      assert_equal(1, session.number_of_requests_in_session)
+      expect(session.number_of_requests_in_session).to(eq(1))
     end
   end
 
-  def test_should_query_with_nested_objects
+  it "queries with nested objects" do
     store.open_session do |session|
       results = session
                 .query(collection: "Companies")
@@ -229,12 +227,12 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.first.is_a?(Company))
-      assert(results.first.product.is_a?(Product))
+      expect(results.first.is_a?(Company)).to(eq(true))
+      expect(results.first.product.is_a?(Product)).to(eq(true))
     end
   end
 
-  def test_should_paginate
+  it "paginates" do
     expected_uids = [[2, 3], [4, 5], [6, 90], [95]]
     page_size = 2
     total_pages = nil
@@ -248,8 +246,8 @@ describe RavenDB::DocumentQuery do
 
       total_pages = (total_count.to_f / page_size).ceil
 
-      assert_equal(4, total_pages)
-      assert_equal(7, total_count)
+      expect(total_pages).to(eq(4))
+      expect(total_count).to(eq(7))
     end
 
     (1..total_pages).to_a do |page|
@@ -259,17 +257,19 @@ describe RavenDB::DocumentQuery do
                    .where_exists("uid")
                    .order_by("uid")
                    .wait_for_non_stale_results
-                   .skip((page - 1) * page_size)
+                   .skip(((page - 1) * page_size))
                    .take(page_size)
                    .all
 
-        assert(products.size <= page_size)
-        products.each_index { |index| assert_equal(products[index].uid, expected_uids[page - 1][index]) }
+        expect((products.size <= page_size)).to(be_truthy)
+        products.each_index do |index|
+          expect(expected_uids[(page - 1)][index]).to(eq(products[index].uid))
+        end
       end
     end
   end
 
-  def test_should_query_select_fields
+  it "queries select fields" do
     store.open_session do |session|
       results = session
                 .query(index_name: "Testing_Sort", document_type: Product)
@@ -278,11 +278,11 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert(results.all? { |result| result.instance_variable_defined?("@doc_id") })
+      expect(results).to(be_all { |result| result.instance_variable_defined?("@doc_id") })
     end
   end
 
-  def test_should_search_by_single_keyword
+  it "searches by single keyword" do
     store.open_session do |session|
       results = session
                 .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
@@ -290,12 +290,14 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(2, results.size)
-      results.each { |last_fm| @lastfm.check_fulltext_search_result(last_fm, ["Me"]) }
+      expect(results.size).to(eq(2))
+      results.each do |last_fm|
+        check_fulltext_search_result(last_fm, ["Me"])
+      end
     end
   end
 
-  def test_should_search_by_two_keywords
+  it "searches by two keywords" do
     store.open_session do |session|
       results = session
                 .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
@@ -303,15 +305,15 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(3, results.size)
+      expect(results.size).to(eq(3))
 
       results.each do |last_fm|
-        @lastfm.check_fulltext_search_result(last_fm, ["Me", "Bobo"])
+        check_fulltext_search_result(last_fm, ["Me", "Bobo"])
       end
     end
   end
 
-  def test_should_search_full_text_with_boost
+  it "searches full text with boost" do
     store.open_session do |session|
       results = session
                 .query(index_name: LastFmAnalyzed.name, document_type: LastFm)
@@ -322,12 +324,30 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      assert_equal(3, results.size)
-      assert_equal("Spanish Grease", results.last.title)
+      expect(results.size).to(eq(3))
+      expect(results.last.title).to(eq("Spanish Grease"))
 
       results.each do |last_fm|
-        @lastfm.check_fulltext_search_result(last_fm, ["Me", "Bobo"])
+        check_fulltext_search_result(last_fm, ["Me", "Bobo"])
       end
+    end
+  end
+
+  def check_fulltext_search_result(last_fm, query)
+    search_in = []
+    fields = ["artist", "title"]
+
+    fields.each do |field|
+      query.each do |keyword|
+        search_in.push(
+          keyword: keyword,
+          sample: last_fm.instance_variable_get("@#{field}")
+        )
+      end
+    end
+
+    expect(search_in).to be_any do |comparsion|
+      comparsion[:sample].include?(comparsion[:keyword])
     end
   end
 end

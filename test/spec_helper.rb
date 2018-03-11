@@ -256,24 +256,6 @@ class LastFmAnalyzed
 
     self
   end
-
-  def check_fulltext_search_result(last_fm, query)
-    search_in = []
-    fields = ["artist", "title"]
-
-    fields.each do |field|
-      query.each do |keyword|
-        search_in.push(
-          keyword: keyword,
-          sample: last_fm.instance_variable_get("@#{field}")
-        )
-      end
-    end
-
-    @test.assert(search_in.any? do |comparsion|
-      comparsion[:sample].include?(comparsion[:keyword])
-    end)
-  end
 end
 
 class ProductsTestingSort
