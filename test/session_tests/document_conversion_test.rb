@@ -46,7 +46,7 @@ class DocumentConversionTest < RavenDatabaseTest
                        .wait_for_non_stale_results
                        .all
 
-      assert_equal(results.size, 1)
+      assert_equal(1, results.size)
       check_doc("TestConversions/2", results.first)
     end
   end
@@ -71,8 +71,8 @@ class DocumentConversionTest < RavenDatabaseTest
     @_store.open_session do |session|
       doc = session.load(id)
 
-      assert_equal(doc.item_id, id)
-      assert_equal(doc.item_title, "New Item")
+      assert_equal(id, doc.item_id)
+      assert_equal("New Item", doc.item_title)
     end
   end
 
@@ -106,8 +106,8 @@ class DocumentConversionTest < RavenDatabaseTest
       info = raw_entities_and_metadata[doc]
       raw_entity = info[:original_value]
 
-      assert_equal(raw_entity["itemTitle"], "New Item")
-      assert_equal(raw_entity["itemOptions"], "1,2,3")
+      assert_equal("New Item", raw_entity["itemTitle"])
+      assert_equal("1,2,3", raw_entity["itemOptions"])
     end
   end
 
@@ -123,14 +123,14 @@ class DocumentConversionTest < RavenDatabaseTest
 
   def check_foo(foo, id_of_foo = 1)
     assert(foo.is_a?(Foo))
-    assert_equal(foo.id, "Foos/#{id_of_foo}")
-    assert_equal(foo.name, "Foo ##{id_of_foo}")
-    assert_equal(foo.order, id_of_foo)
+    assert_equal("Foos/#{id_of_foo}", foo.id)
+    assert_equal("Foo ##{id_of_foo}", foo.name)
+    assert_equal(id_of_foo, foo.order)
   end
 
   def check_doc(id, doc)
     assert(doc.is_a?(TestConversion))
-    assert_equal(doc.id, id)
+    assert_equal(id, doc.id)
     assert(doc.date.is_a?(DateTime))
     assert(doc.foos.is_a?(Array))
 
