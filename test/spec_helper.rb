@@ -51,6 +51,10 @@ class RavenTest < Minitest::Test
   def store
     @_store
   end
+
+  def current_database
+    @_current_database
+  end
 end
 
 class RavenDatabaseTest < RavenTest

@@ -1,12 +1,19 @@
 require "ravendb"
 require "spec_helper"
 
-class HiloGeneratorTest < RavenDatabaseTest
+describe RavenDB::HiloIdGenerator do
   COLLECTION = "Products".freeze
 
   def setup
-    super
-    @generator = RavenDB::HiloIdGenerator.new(@_store, @_current_database, COLLECTION)
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
+
+    @generator = RavenDB::HiloIdGenerator.new(@__test.store, @__test.current_database, COLLECTION)
+  end
+
+  def teardown
+    @generator.return_unused_range
+    @__test.teardown
   end
 
   def test_should_starts_from_1
@@ -47,11 +54,6 @@ class HiloGeneratorTest < RavenDatabaseTest
 
     @generator.generate_document_id
     assert(@generator.range.min_id > max_id)
-  end
-
-  def teardown
-    @generator.return_unused_range
-    super
   end
 
   protected
