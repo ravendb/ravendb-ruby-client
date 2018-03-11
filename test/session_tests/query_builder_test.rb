@@ -3,8 +3,12 @@ require "ravendb"
 require "spec_helper"
 
 class QueryBuilderTest < RavenTest
+  def store
+    @_store
+  end
+
   def test_can_understand_equality
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_equals("Name", "red")
@@ -16,7 +20,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_exact_equality
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_equals("Name", "ayende", true)
@@ -30,7 +34,7 @@ class QueryBuilderTest < RavenTest
   def test_can_understand_equal_on_date
     date_time = DateTime.strptime("2010-05-15T00:00:00", "%Y-%m-%dT%H:%M:%S")
 
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_equals("Birthday", date_time)
@@ -42,7 +46,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_equal_on_bool
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_equals("Active", false)
@@ -54,7 +58,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_not_equal
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_not_equals("Active", false)
@@ -66,7 +70,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_in
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_in("Name", ["ryan", "heath"])
@@ -78,7 +82,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_no_conditions_should_produce_empty_where
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
 
@@ -88,7 +92,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_and
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_equals("Name", "ayende")
@@ -103,7 +107,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_or
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_equals("Name", "ayende")
@@ -118,7 +122,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_less_than
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_less_than("Age", 16)
@@ -130,7 +134,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_less_than_or_equal
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_less_than_or_equal("Age", 16)
@@ -142,7 +146,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_greater_than
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_greater_than("Age", 16)
@@ -154,7 +158,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_greater_than_or_equal
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_greater_than_or_equal("Age", 16)
@@ -166,7 +170,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_projection_of_single_field
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_greater_than_or_equal("Age", 16)
@@ -179,7 +183,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_projection_of_multiple_fields
-    query = @_store
+    query = store
             .open_session
             .query(index_name: "IndexName")
             .where_greater_than_or_equal("Age", 16)
@@ -195,7 +199,7 @@ class QueryBuilderTest < RavenTest
     min = 1224
     max = 1226
 
-    query = @_store
+    query = store
             .open_session
             .query(collection: "IndexedUsers")
             .where_between("Rate", min, max)
@@ -208,7 +212,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_starts_with
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_starts_with("Name", "foo")
@@ -220,7 +224,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_ends_with
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_ends_with("Name", "foo")
@@ -232,7 +236,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_should_wrap_first_not_with_true_token
-    query = @_store
+    query = store
             .open_session
             .query(collection: "Users")
             .where_true
@@ -246,7 +250,7 @@ class QueryBuilderTest < RavenTest
   end
 
   def test_can_understand_subclauses
-    query = @_store
+    query = store
             .open_session
             .query(
               collection: "Users"
