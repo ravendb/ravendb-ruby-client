@@ -1,6 +1,6 @@
-require("date")
-require("ravendb")
-require("spec_helper")
+require "date"
+require "ravendb"
+require "spec_helper"
 
 describe RavenDB::QueryBuilder do
   before do
