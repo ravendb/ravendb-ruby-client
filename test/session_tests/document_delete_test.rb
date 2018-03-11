@@ -1,29 +1,39 @@
 require "ravendb"
 require "spec_helper"
 
-class DocumentDeleteTest < RavenDatabaseTest
+describe 'DocumentDelete' do
   IDS = [101, 10, 106, 107].freeze
 
   def setup
-    super
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
+
     products = nil
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       IDS.each { |id| session.store(Product.new("Products/#{id}", "test")) }
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       products = session.load(IDS.map { |id| "Products/#{id}" })
     end
 
     @change_vectors = products.map { |product| product.instance_variable_get("@metadata")["@change-vector"] }
   end
 
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
   def test_should_delete_with_key_with_save_session
     id = "Products/101"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.delete(id)
       session.save_changes
 
@@ -35,7 +45,7 @@ class DocumentDeleteTest < RavenDatabaseTest
   def test_should_delete_with_key_without_save_session
     id = "Products/10"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.delete(id)
 
       product = session.load(id)
@@ -46,7 +56,7 @@ class DocumentDeleteTest < RavenDatabaseTest
   def test_should_delete_document_after_it_has_been_changed_and_save_session
     id = "Products/107"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(id)
       product.name = "Testing"
 
@@ -61,7 +71,7 @@ class DocumentDeleteTest < RavenDatabaseTest
   def test_should_fail_delete_document_by_id_after_it_has_been_changed
     id = "Products/107"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(id)
       product.name = "Testing"
 
@@ -70,7 +80,7 @@ class DocumentDeleteTest < RavenDatabaseTest
   end
 
   def test_should_delete_with_correct_change_vector
-    @_store.open_session do |session|
+    store.open_session do |session|
       refute_raises do
         IDS.each_index do |index|
           session.delete("Products/#{IDS[index]}", expected_change_vector: @change_vectors[index])
@@ -82,7 +92,7 @@ class DocumentDeleteTest < RavenDatabaseTest
   end
 
   def test_should_fail_delete_with_invalid_change_vector
-    @_store.open_session do |session|
+    store.open_session do |session|
       assert_raises do
         IDS.each_index do |index|
           session.delete("Products/#{IDS[index]}", expected_change_vector: "#{@change_vectors[index]}:BROKEN:VECTOR")
