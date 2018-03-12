@@ -48,7 +48,7 @@ describe RavenDB::QueryCommand do
 
     response = request_executor.execute(described_class.new(store.conventions, index_query))
     expect(response.key?("Results")).to eq(true)
-    expect(response["Results"].is_a?(Array)).to eq(true)
+    expect(response["Results"]).to be_kind_of(Array)
     expect((response["Results"].length < 100)).to be_falsey
   end
 
@@ -73,7 +73,7 @@ describe RavenDB::QueryCommand do
     query_command = described_class.new(store.conventions, index_query)
     response = request_executor.execute(query_command)
     expect(response.key?("Results")).to eq(true)
-    expect(response["Results"].is_a?(Array)).to eq(true)
+    expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).to eq(0)
   end
 

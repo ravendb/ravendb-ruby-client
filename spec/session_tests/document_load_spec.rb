@@ -62,7 +62,7 @@ describe RavenDB::DocumentSession do
     store.open_session do |session|
       product = session.load("Products/101")
 
-      expect(product.is_a?(Product)).to eq(true)
+      expect(product).to be_kind_of(Product)
       expect(product.instance_variable_get("@metadata")["Raven-Ruby-Type"]).to eq("Product")
     end
   end
@@ -71,8 +71,8 @@ describe RavenDB::DocumentSession do
     store.open_session do |session|
       company = session.load("Companies/1")
 
-      expect(company.is_a?(Company)).to eq(true)
-      expect(company.product.is_a?(Product)).to eq(true)
+      expect(company).to be_kind_of(Company)
+      expect(company.product).to be_kind_of(Product)
       expect(company.product.name).to eq("testing_nested")
     end
   end

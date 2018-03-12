@@ -223,8 +223,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.first.is_a?(Company)).to eq(true)
-      expect(results.first.product.is_a?(Product)).to eq(true)
+      expect(results.first).to be_kind_of(Company)
+      expect(results.first.product).to be_kind_of(Product)
     end
   end
 

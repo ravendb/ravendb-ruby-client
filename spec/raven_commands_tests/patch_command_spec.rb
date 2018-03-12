@@ -29,7 +29,7 @@ describe RavenDB::PatchRequest do
     expect(result).to include(:Status)
     expect(result).to include(:Document)
     expect(result[:Status]).to eq(RavenDB::PatchStatus::Patched)
-    expect(result[:Document].is_a?(Product)).to eq(true)
+    expect(result[:Document]).to be_kind_of(Product)
     expect(result[:Document].name).to eq("testing")
   end
 

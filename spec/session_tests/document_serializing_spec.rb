@@ -75,11 +75,11 @@ describe RavenDB::JsonSerializer do
   end
 
   it "parses scalars" do
-    expect(@document.string_prop.is_a?(String)).to eq(true)
+    expect(@document.string_prop).to be_kind_of(String)
     expect(@document.string_prop).to eq("string")
-    expect(@document.number_prop.is_a?(Numeric)).to eq(true)
+    expect(@document.number_prop).to be_kind_of(Numeric)
     expect(@document.number_prop).to eq(2)
-    expect(@document.number_float_prop.is_a?(Numeric)).to eq(true)
+    expect(@document.number_float_prop).to be_kind_of(Numeric)
     expect(@document.number_float_prop).to eq(2.5)
     expect(((!(!@document.boolean_prop)) == @document.boolean_prop)).to be_truthy
     expect(@document.boolean_prop).to eq(true)
@@ -87,7 +87,7 @@ describe RavenDB::JsonSerializer do
   end
 
   it "parses arrays" do
-    expect(@document.array_prop.is_a?(Array)).to eq(true)
+    expect(@document.array_prop).to be_kind_of(Array)
     expect(@document.array_prop.size).to eq(3)
     expect(@document.array_prop).to eq([1, 2, 3])
   end
@@ -95,17 +95,17 @@ describe RavenDB::JsonSerializer do
   it "parses deep arrays" do
     deep = @document.deep_array_prop[2]
 
-    expect(@document.deep_array_prop.is_a?(Array)).to eq(true)
+    expect(@document.deep_array_prop).to be_kind_of(Array)
     expect(@document.deep_array_prop.size).to eq(3)
     expect(@document.deep_array_prop).to eq([1, 2, [3, 4]])
 
-    expect(deep.is_a?(Array)).to eq(true)
+    expect(deep).to be_kind_of(Array)
     expect(deep.size).to eq(2)
     expect(deep).to eq([3, 4])
   end
 
   it "parses hashes" do
-    expect(@document.hash_prop.is_a?(Hash)).to eq(true)
+    expect(@document.hash_prop).to be_kind_of(Hash)
     expect(@document.hash_prop.key?("string_prop")).to eq(true)
     expect(@document.hash_prop.key?("number_prop")).to eq(true)
     expect(@document.hash_prop.key?("number_float_prop")).to eq(true)
@@ -113,17 +113,17 @@ describe RavenDB::JsonSerializer do
     expect(@document.hash_prop.key?("nil_prop")).to eq(true)
     expect(@document.hash_prop.key?("array_prop")).to eq(true)
 
-    expect(@document.hash_prop["string_prop"].is_a?(String)).to eq(true)
+    expect(@document.hash_prop["string_prop"]).to be_kind_of(String)
     expect(@document.hash_prop["string_prop"]).to eq("string")
-    expect(@document.hash_prop["number_prop"].is_a?(Numeric)).to eq(true)
+    expect(@document.hash_prop["number_prop"]).to be_kind_of(Numeric)
     expect(@document.hash_prop["number_prop"]).to eq(2)
-    expect(@document.hash_prop["number_float_prop"].is_a?(Numeric)).to eq(true)
+    expect(@document.hash_prop["number_float_prop"]).to be_kind_of(Numeric)
     expect(@document.hash_prop["number_float_prop"]).to eq(2.5)
     expect(((!(!@document.hash_prop["boolean_prop"])) == @document.hash_prop["boolean_prop"])).to be_truthy
     expect(@document.hash_prop["boolean_prop"]).to eq(true)
     expect(@document.hash_prop["nil_prop"].nil?).to eq(true)
 
-    expect(@document.hash_prop["array_prop"].is_a?(Array)).to eq(true)
+    expect(@document.hash_prop["array_prop"]).to be_kind_of(Array)
     expect(@document.hash_prop["array_prop"].size).to eq(3)
     expect(@document.hash_prop["array_prop"]).to eq([1, 2, 3])
   end
@@ -131,11 +131,11 @@ describe RavenDB::JsonSerializer do
   it "parses deep hashes" do
     deep = @document.deep_hash_prop["some_hash"]
 
-    expect(@document.deep_hash_prop.is_a?(Hash)).to eq(true)
+    expect(@document.deep_hash_prop).to be_kind_of(Hash)
     expect(@document.deep_hash_prop.key?("some_prop")).to eq(true)
     expect(@document.deep_hash_prop["some_prop"]).to eq("someValue")
 
-    expect(deep.is_a?(Hash)).to eq(true)
+    expect(deep).to be_kind_of(Hash)
     expect(deep.key?("some_prop")).to eq(true)
     expect(deep["some_prop"]).to be_truthy
   end
@@ -146,31 +146,31 @@ describe RavenDB::JsonSerializer do
     deep_array = @document.deep_array_hash_prop[4]
     deep_hash_in_array = deep_array[2]
 
-    expect(deep_hash.is_a?(Hash)).to eq(true)
+    expect(deep_hash).to be_kind_of(Hash)
     expect(deep_hash.key?("some_prop")).to eq(true)
     expect(deep_hash["some_prop"]).to eq("someValue")
 
-    expect(deep_array_in_hash.is_a?(Array)).to eq(true)
+    expect(deep_array_in_hash).to be_kind_of(Array)
     expect(deep_array_in_hash.size).to eq(2)
     expect(deep_array_in_hash).to eq([3, 4])
 
-    expect(deep_array.is_a?(Array)).to eq(true)
+    expect(deep_array).to be_kind_of(Array)
     expect(deep_array.size).to eq(3)
     expect(deep_array[0]).to eq(7)
     expect(deep_array[1]).to eq(8)
 
-    expect(deep_hash_in_array.is_a?(Hash)).to eq(true)
+    expect(deep_hash_in_array).to be_kind_of(Hash)
     expect(deep_hash_in_array.key?("some_prop")).to eq(true)
     expect(deep_hash_in_array["some_prop"]).to eq("someValue")
   end
 
   it "parses dates" do
-    expect(@document.date_prop.is_a?(DateTime)).to eq(true)
+    expect(@document.date_prop).to be_kind_of(DateTime)
     expect(RavenDB::TypeUtilities.stringify_date(@document.date_prop)).to be_truthy
   end
 
   it "parses deep objects and arrays according to specified nested objects types" do
-    expect(@document.deep_array_foo_prop.is_a?(Array)).to eq(true)
+    expect(@document.deep_array_foo_prop).to be_kind_of(Array)
 
     target = [@document.deep_foo_prop].concat(@document.deep_array_foo_prop)
     source = [@json["deep_foo_prop"]].concat(@json["deep_array_foo_prop"])
@@ -179,7 +179,7 @@ describe RavenDB::JsonSerializer do
       item = target[index]
       source_item = source[index]
 
-      expect(item.is_a?(Foo)).to eq(true)
+      expect(item).to be_kind_of(Foo)
       expect(source_item["id"]).to eq(item.id)
       expect(source_item["name"]).to eq(item.name)
       expect(source_item["order"]).to eq(item.order)
