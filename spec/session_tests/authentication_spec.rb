@@ -2,7 +2,7 @@ require "ravendb"
 require "spec_helper"
 
 describe RavenDB::DocumentStore do
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
 
@@ -55,32 +55,34 @@ describe RavenDB::DocumentStore do
 CERTIFICATE
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def default_url
+  let(:default_url) do
     @__test.default_url
   end
 
-  def test_should_raise_not_supported_exception_when_trying_to_connect_to_secured_server_without_auth_options
-    assert_raises(RavenDB::NotSupportedException) do
-      store = RavenDB::DocumentStore.new(
+  let(:current_database) do
+    @__test.current_database
+  end
+
+  it "raises not supported exception when trying to connect to secured server without auth options" do
+    expect do
+      store = described_class.new(
         ["https://secured.db.somedomain.com"], "SomeDatabase"
       )
 
       store.configure
-    end
+    end.to(raise_error(RavenDB::NotSupportedException))
   end
 
-  def test_should_raise_unauthorized_exception_when_trying_to_connect_to_secured_server_with_invalid_certificate
-    unless default_url.downcase.include?("https://")
-      return
-    end
+  it "raises unauthorized exception when trying to connect to secured server with invalid certificate" do
+    skip("HTTPS only test") unless default_url.downcase.include?("https://")
 
-    assert_raises(RavenDB::AuthorizationException) do
-      store = RavenDB::DocumentStore.new(
-        [default_url], @_current_database,
+    expect do
+      store = described_class.new(
+        [default_url], current_database,
         RavenDB::StoreAuthOptions.new(@_invalid_cert)
       )
 
@@ -88,6 +90,6 @@ CERTIFICATE
       store.open_session do |session|
         session.load("DocumentWillNotLoad/1")
       end
-    end
+    end.to(raise_error(RavenDB::AuthorizationException))
   end
 end
