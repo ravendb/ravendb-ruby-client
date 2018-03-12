@@ -1,6 +1,5 @@
 require "ravendb"
 require "securerandom"
-require "minitest/autorun"
 require "spec_helper"
 
 describe RavenDB::GetDocumentCommand do

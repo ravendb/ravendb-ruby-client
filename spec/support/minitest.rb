@@ -1,14 +1,16 @@
 require "ravendb"
 require "date"
 require "securerandom"
-require "minitest/autorun"
 require "active_support/inflector"
 
-class RavenTest < Minitest::Test
+class RavenTest
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
   CERT_FILE = ENV["CERTIFICATE"] || nil
   CERT_PASSPHRASE = ENV["PASSPHRASE"] || nil
+
+  def initialize(_unused)
+  end
 
   def setup
     @_current_database = "#{DEFAULT_DATABASE}__#{SecureRandom.uuid}"
