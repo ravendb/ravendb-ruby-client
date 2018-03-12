@@ -87,6 +87,10 @@ class RavenDatabaseTest < RavenTest
   def request_executor
     @_request_executor
   end
+
+  def index_map
+    @_index_map
+  end
 end
 
 class RavenDatabaseIndexesTest < RavenDatabaseTest
