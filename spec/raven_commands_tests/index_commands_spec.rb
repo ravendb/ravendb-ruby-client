@@ -4,61 +4,61 @@ require "minitest/autorun"
 require "spec_helper"
 
 describe RavenDB::PutIndexesOperation do
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def store
+  let(:store) do
     @__test.store
   end
 
-  def index_map
+  let(:index_map) do
     @__test.index_map
   end
 
-  def should_put_index_with_success
+  it "puts index with success" do
     @_index = RavenDB::IndexDefinition.new("region", index_map)
 
-    refute_raises(RavenDB::RavenException) do
-      store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-    end
+    expect do
+      store.operations.send(described_class.new(@_index))
+    end.not_to raise_error(RavenDB::RavenException)
   end
 
-  def test_should_get_index_with_success
+  it "gets index with success" do
     @_index = RavenDB::IndexDefinition.new("get_index", index_map)
-    store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
+    store.operations.send(described_class.new(@_index))
 
     result = store.operations.send(RavenDB::GetIndexOperation.new("get_index"))
-    refute_nil(result)
+    expect(result).not_to be_nil
   end
 
-  def test_should_get_index_with_fail
-    assert_raises(RavenDB::RavenException) do
+  it "gets index with fail" do
+    expect do
       store.operations.send(RavenDB::GetIndexOperation.new("non_existing_index"))
-    end
+    end.to(raise_error(RavenDB::RavenException))
   end
 
-  def test_should_delete_index_with_success
+  it "deletes index with success" do
     @_index = RavenDB::IndexDefinition.new("delete", index_map)
-    store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
+    store.operations.send(described_class.new(@_index))
 
-    refute_raises(RavenDB::RavenException) do
+    expect do
       store.operations.send(RavenDB::DeleteIndexOperation.new("delete"))
-    end
+    end.not_to(raise_error(RavenDB::RavenException))
 
-    assert_raises(RavenDB::RavenException) do
+    expect do
       store.operations.send(RavenDB::GetIndexOperation.new("delete"))
-    end
+    end.to(raise_error(RavenDB::RavenException))
   end
 
-  def test_should_delete_index_with_fail
-    assert_raises(RuntimeError) do
+  it "deletes index with fail" do
+    expect do
       store.operations.send(RavenDB::DeleteIndexOperation.new(nil))
-    end
+    end.to(raise_error(RuntimeError))
   end
 end
