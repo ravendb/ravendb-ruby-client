@@ -35,14 +35,13 @@ RSpec.configure do |config|
   end
 
   config.around :each, database: true do |example|
-    @__database_test = RavenDatabaseTest.new(self)
-    @__database_test.setup
+    RavenDatabaseTest.setup(self)
     example.run
-    @__database_test.teardown
+    RavenDatabaseTest.teardown(self)
   end
 
   config.around :each, database_indexes: true do |example|
-    @__database_indexes_test = RavenDatabaseIndexesTest.new(@__database_test)
+    @__database_indexes_test = RavenDatabaseIndexesTest.new(self)
     @__database_indexes_test.setup
     example.run
     @__database_indexes_test.teardown
