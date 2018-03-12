@@ -3,20 +3,33 @@ require "securerandom"
 require "minitest/autorun"
 require "spec_helper"
 
-class PatchCommandTest < RavenDatabaseIndexesTest
+describe RavenDB::PatchRequest do
   ID = "Products/10".freeze
   @_change_vector = nil
 
   def setup
-    super()
+    @__test = RavenDatabaseIndexesTest.new(nil)
+    @__test.setup
 
-    @_request_executor.execute(RavenDB::PutDocumentCommand.new(ID, "name" => "test", "@metadata" => {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}))
-    result = @_request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
+    request_executor.execute(RavenDB::PutDocumentCommand.new(ID, "name" => "test", "@metadata" => {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}))
+    result = request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
 
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
+  def request_executor
+    @__test.request_executor
+  end
+
   def test_should_patch_success_ignoring_missing
-    result = @_store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'")))
+    result = store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'")))
 
     assert(result.key?(:Status))
     assert(result.key?(:Document))
@@ -26,7 +39,7 @@ class PatchCommandTest < RavenDatabaseIndexesTest
   end
 
   def test_should_patch_success_not_ignoring_missing
-    result = @_store.operations.send(
+    result = store.operations.send(
       RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
                                   change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                   skip_patch_if_change_vector_mismatch: true
@@ -39,7 +52,7 @@ class PatchCommandTest < RavenDatabaseIndexesTest
 
   def test_should_patch_fail_not_ignoring_missing
     assert_raises(RavenDB::RavenException) do
-      @_store.operations.send(
+      store.operations.send(
         RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
                                     change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                     skip_patch_if_change_vector_mismatch: false
