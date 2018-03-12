@@ -41,7 +41,7 @@ describe RavenDB::QueryCommand do
     response = store.operations.send(patch_by_index_operation)
 
     expect(response).not_to be_nil
-    expect((response["Result"]["Total"] < 100)).to be_falsey
+    expect(response["Result"]["Total"]).not_to be < 100
 
     query = "from index 'Testing_Sort' where Name = $name"
     index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
@@ -49,7 +49,7 @@ describe RavenDB::QueryCommand do
     response = request_executor.execute(described_class.new(store.conventions, index_query))
     expect(response.key?("Results")).to eq(true)
     expect(response["Results"]).to be_kind_of(Array)
-    expect((response["Results"].length < 100)).to be_falsey
+    expect(response["Results"].length).not_to be < 100
   end
 
   it "update by index fail on unexisting index" do
