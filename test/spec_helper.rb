@@ -55,6 +55,10 @@ class RavenTest < Minitest::Test
   def current_database
     @_current_database
   end
+
+  def default_url
+    DEFAULT_URL
+  end
 end
 
 class RavenDatabaseTest < RavenTest
