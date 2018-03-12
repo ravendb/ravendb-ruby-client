@@ -29,14 +29,13 @@ RSpec.configure do |config|
   config.order = :random
 
   config.around do |example|
-    @__test = RavenTest.new
-    @__test.setup
+    RavenTest.setup(self)
     example.run
-    @__test.teardown
+    RavenTest.teardown(self)
   end
 
   config.around :each, database: true do |example|
-    @__database_test = RavenDatabaseTest.new(@__test)
+    @__database_test = RavenDatabaseTest.new(self)
     @__database_test.setup
     example.run
     @__database_test.teardown

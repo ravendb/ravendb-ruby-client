@@ -2,7 +2,7 @@ RSpec.describe RavenDB::HiloIdGenerator, database: true do
   COLLECTION = "Products".freeze
 
   before do
-    @generator = described_class.new(@__test.store, @__test.current_database, COLLECTION)
+    @generator = described_class.new(store, current_database, COLLECTION)
   end
 
   after do
