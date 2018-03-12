@@ -7,7 +7,7 @@ describe RavenDB::PatchRequest do
   ID = "Products/10".freeze
   @_change_vector = nil
 
-  def setup
+  before do
     @__test = RavenDatabaseIndexesTest.new(nil)
     @__test.setup
 
@@ -16,47 +16,47 @@ describe RavenDB::PatchRequest do
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def store
+  let(:store) do
     @__test.store
   end
 
-  def request_executor
+  let(:request_executor) do
     @__test.request_executor
   end
 
-  def test_should_patch_success_ignoring_missing
-    result = store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'")))
+  it "patches success ignoring missing" do
+    result = store.operations.send(RavenDB::PatchOperation.new(ID, described_class.new("this.name = 'testing'")))
 
-    assert(result.key?(:Status))
-    assert(result.key?(:Document))
-    assert_equal(result[:Status], RavenDB::PatchStatus::Patched)
-    assert(result[:Document].is_a?(Product))
-    assert_equal("testing", result[:Document].name)
+    expect(result.key?(:Status)).to(eq(true))
+    expect(result.key?(:Document)).to(eq(true))
+    expect(result[:Status]).to(eq(RavenDB::PatchStatus::Patched))
+    expect(result[:Document].is_a?(Product)).to(eq(true))
+    expect(result[:Document].name).to(eq("testing"))
   end
 
-  def test_should_patch_success_not_ignoring_missing
+  it "patches success not ignoring missing" do
     result = store.operations.send(
-      RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
+      RavenDB::PatchOperation.new(ID, described_class.new("this.name = 'testing'"),
                                   change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                   skip_patch_if_change_vector_mismatch: true
                                  ))
 
-    assert(result.key?(:Status))
-    refute(result.key?(:Document))
-    assert_equal(result[:Status], RavenDB::PatchStatus::NotModified)
+    expect(result.key?(:Status)).to(eq(true))
+    expect(result.key?(:Document)).to(eq(false))
+    expect(result[:Status]).to(eq(RavenDB::PatchStatus::NotModified))
   end
 
-  def test_should_patch_fail_not_ignoring_missing
-    assert_raises(RavenDB::RavenException) do
+  it "patches fail not ignoring missing" do
+    expect do
       store.operations.send(
-        RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
+        RavenDB::PatchOperation.new(ID, described_class.new("this.name = 'testing'"),
                                     change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                     skip_patch_if_change_vector_mismatch: false
                                    ))
-    end
+    end.to(raise_error(RavenDB::RavenException))
   end
 end
