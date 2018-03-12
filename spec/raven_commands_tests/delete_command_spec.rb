@@ -1,7 +1,4 @@
 describe RavenDB::DeleteDocumentCommand do
-  @_change_vector = nil
-  @_other_change_vector = nil
-
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

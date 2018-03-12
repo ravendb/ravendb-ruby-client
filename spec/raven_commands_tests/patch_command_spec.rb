@@ -1,6 +1,5 @@
 describe RavenDB::PatchRequest do
   ID = "Products/10".freeze
-  @_change_vector = nil
 
   before do
     @__test = RavenDatabaseIndexesTest.new(nil)

@@ -1,9 +1,4 @@
 describe RavenDB::BatchCommand do
-  @_put_command1 = nil
-  @_put_command2 = nil
-  @_delete_command = nil
-  @_scripted_patch_command = nil
-
   before do
     @__test = RavenDatabaseIndexesTest.new(nil)
     @__test.setup

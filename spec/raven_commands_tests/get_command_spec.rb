@@ -1,9 +1,4 @@
 describe RavenDB::GetDocumentCommand do
-  @_put_command = nil
-  @_other_put_command = nil
-  @_response = nil
-  @_other_response = nil
-
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
