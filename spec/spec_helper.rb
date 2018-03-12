@@ -41,10 +41,9 @@ RSpec.configure do |config|
   end
 
   config.around :each, database_indexes: true do |example|
-    @__database_indexes_test = RavenDatabaseIndexesTest.new(self)
-    @__database_indexes_test.setup
+    RavenDatabaseIndexesTest.setup(self)
     example.run
-    @__database_indexes_test.teardown
+    RavenDatabaseIndexesTest.teardown(self)
   end
 
   config.include RavenTestHelpers

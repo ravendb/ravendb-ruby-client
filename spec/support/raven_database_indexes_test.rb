@@ -1,14 +1,14 @@
-class RavenDatabaseIndexesTest
-  def initialize(parent)
-    @parent = parent
+module RavenDatabaseIndexesTest
+  def self.setup(context)
+    context.instance_eval do
+      @_index = RavenDB::IndexDefinition.new("Testing", index_map)
+      store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
+    end
   end
 
-  def setup
-    @_index = RavenDB::IndexDefinition.new("Testing", @parent.index_map)
-    @parent.store.operations.send(RavenDB::PutIndexesOperation.new(@_index))
-  end
-
-  def teardown
-    @_index = nil
+  def self.teardown(context)
+    context.instance_eval do
+      @_index = nil
+    end
   end
 end
