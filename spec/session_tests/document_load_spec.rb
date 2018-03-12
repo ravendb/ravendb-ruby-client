@@ -2,7 +2,7 @@ require "ravendb"
 require "spec_helper"
 
 describe RavenDB::DocumentSession do
-  def setup
+  before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
 
@@ -20,72 +20,72 @@ describe RavenDB::DocumentSession do
     end
   end
 
-  def teardown
+  after do
     @__test.teardown
   end
 
-  def store
+  let(:store) do
     @__test.store
   end
 
-  def test_should_load_existing_document
+  it "loads existing document" do
     store.open_session do |session|
       product = session.load("Products/101")
 
-      assert_equal("test", product.name)
+      expect(product.name).to(eq("test"))
     end
   end
 
-  def test_should_not_load_missing_document
+  it "does not load missing document" do
     store.open_session do |session|
       product = session.load("Products/0")
 
-      assert(product.nil?)
+      expect(product.nil?).to(eq(true))
     end
   end
 
-  def test_should_load_few_documents
+  it "loads few documents" do
     store.open_session do |session|
       products = session.load(["Products/101", "Products/10"])
 
-      assert_equal(2, products.size)
+      expect(products.size).to(eq(2))
     end
   end
 
-  def test_should_load_few_documents_with_duplicate_id
+  it "loads few documents with duplicate id" do
     store.open_session do |session|
       products = session.load(["Products/101", "Products/10", "Products/101"])
 
-      assert_equal(3, products.size)
-      products.each { |product| refute(product.nil?) }
+      expect(products.size).to(eq(3))
+      products.each { |product| expect(product.nil?).to(eq(false)) }
     end
   end
 
-  def test_should_load_track_entity
+  it "loads track entity" do
     store.open_session do |session|
       product = session.load("Products/101")
 
-      assert(product.is_a?(Product))
-      assert_equal("Product", product.instance_variable_get("@metadata")["Raven-Ruby-Type"])
+      expect(product.is_a?(Product)).to(eq(true))
+      expect(product.instance_variable_get("@metadata")["Raven-Ruby-Type"]).to(eq("Product"))
     end
   end
 
-  def test_should_load_track_entity_with_nested_object
+  it "loads track entity with nested object" do
     store.open_session do |session|
       company = session.load("Companies/1")
 
-      assert(company.is_a?(Company))
-      assert(company.product.is_a?(Product))
-      assert_equal("testing_nested", company.product.name)
+      expect(company.is_a?(Company)).to(eq(true))
+      expect(company.product.is_a?(Product)).to(eq(true))
+      expect(company.product.name).to(eq("testing_nested"))
     end
   end
 
-  def test_should_load_with_includes
+  it "loads with includes" do
     store.open_session do |session|
       session.load("Orders/105", includes: ["product_id"])
       session.load("Products/101")
 
-      assert_equal(1, session.number_of_requests_in_session)
+      expect(session.number_of_requests_in_session).to(eq(1))
     end
   end
 end
