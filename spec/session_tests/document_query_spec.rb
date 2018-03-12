@@ -91,7 +91,7 @@ describe RavenDB::DocumentQuery do
       expect(results.size).to eq(4)
 
       results.each do |result|
-        expect(names).to be_any { |name| (result.name == name) }
+        expect(names).to(be_any { |name| (result.name == name) })
       end
     end
   end
@@ -118,7 +118,7 @@ describe RavenDB::DocumentQuery do
                 .all
 
       expect(results.size).to eq(2)
-      expect(results).to be_all { |result| result.name = "test107" }
+      expect(results).to(be_all { |result| result.name = "test107" })
     end
   end
 
@@ -130,7 +130,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results).to be_all { |result| (2..4).to_a.include?(result.uid) }
+      expect(results).to(be_all { |result| (2..4).to_a.include?(result.uid) })
       expect(results.size).to eq(3)
     end
   end
@@ -143,7 +143,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results).to be_all { |result| result.instance_variable_defined?("@ordering") }
+      expect(results).to(be_all { |result| result.instance_variable_defined?("@ordering") })
     end
   end
 
@@ -171,7 +171,7 @@ describe RavenDB::DocumentQuery do
       expect(results.size).to eq(3)
 
       results.each do |result|
-        expect(uids).to be_any { |uid| (result.uid == uid) }
+        expect(uids).to(be_any { |uid| (result.uid == uid) })
       end
     end
   end
@@ -274,7 +274,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results).to be_all { |result| result.instance_variable_defined?("@doc_id") }
+      expect(results).to(be_all { |result| result.instance_variable_defined?("@doc_id") })
     end
   end
 
@@ -342,8 +342,6 @@ describe RavenDB::DocumentQuery do
       end
     end
 
-    expect(search_in).to be_any do |comparsion|
-      comparsion[:sample].include?(comparsion[:keyword])
-    end
+    expect(search_in).to(be_any { |comparsion| comparsion[:sample].include?(comparsion[:keyword]) })
   end
 end
