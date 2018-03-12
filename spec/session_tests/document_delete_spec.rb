@@ -37,7 +37,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.save_changes
 
       product = session.load(id)
-      expect(product.nil?).to eq(true)
+      expect(product).to be_nil
     end
   end
 
@@ -48,7 +48,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.delete(id)
 
       product = session.load(id)
-      expect(product.nil?).to eq(true)
+      expect(product).to be_nil
     end
   end
 
@@ -63,7 +63,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.save_changes
 
       product = session.load(id)
-      expect(product.nil?).to eq(true)
+      expect(product).to be_nil
     end
   end
 

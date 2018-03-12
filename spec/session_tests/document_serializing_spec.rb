@@ -83,7 +83,7 @@ describe RavenDB::JsonSerializer do
     expect(@document.number_float_prop).to eq(2.5)
     expect(((!(!@document.boolean_prop)) == @document.boolean_prop)).to be_truthy
     expect(@document.boolean_prop).to eq(true)
-    expect(@document.nil_prop.nil?).to eq(true)
+    expect(@document.nil_prop).to be_nil
   end
 
   it "parses arrays" do
@@ -121,7 +121,7 @@ describe RavenDB::JsonSerializer do
     expect(@document.hash_prop["number_float_prop"]).to eq(2.5)
     expect(((!(!@document.hash_prop["boolean_prop"])) == @document.hash_prop["boolean_prop"])).to be_truthy
     expect(@document.hash_prop["boolean_prop"]).to eq(true)
-    expect(@document.hash_prop["nil_prop"].nil?).to eq(true)
+    expect(@document.hash_prop["nil_prop"]).to be_nil
 
     expect(@document.hash_prop["array_prop"]).to be_kind_of(Array)
     expect(@document.hash_prop["array_prop"].size).to eq(3)

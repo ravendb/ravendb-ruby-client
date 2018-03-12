@@ -37,7 +37,7 @@ describe RavenDB::DocumentSession do
     store.open_session do |session|
       product = session.load("Products/0")
 
-      expect(product.nil?).to eq(true)
+      expect(product).to be_nil
     end
   end
 
