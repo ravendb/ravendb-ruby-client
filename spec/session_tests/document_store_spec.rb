@@ -23,7 +23,7 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(foo.id)
 
-      expect(foo.name).to(eq("test"))
+      expect(foo.name).to eq("test")
     end
   end
 
@@ -39,8 +39,8 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(id)
 
-      expect(foo.name).to(eq("test"))
-      expect(foo.order).to(eq(20))
+      expect(foo.name).to eq("test")
+      expect(foo.order).to eq(20)
     end
   end
 
@@ -51,16 +51,16 @@ describe RavenDB::DocumentStore do
       session.store(product)
       session.save_changes
 
-      expect(/^Products\/\d+(\-\w)?$/ =~ product.id).to(be_truthy)
+      expect(/^Products\/\d+(\-\w)?$/ =~ product.id).to be_truthy
     end
 
     store.open_session do |session|
       product = session.load(product.id)
       metadata = product.instance_variable_get("@metadata")
 
-      expect(metadata["@id"]).to(eq(product.id))
-      expect(metadata["@collection"]).to(eq("Products"))
-      expect(metadata["Raven-Ruby-Type"]).to(eq("Product"))
+      expect(metadata["@id"]).to eq(product.id)
+      expect(metadata["@collection"]).to eq("Products")
+      expect(metadata["Raven-Ruby-Type"]).to eq("Product")
     end
   end
 
@@ -77,10 +77,10 @@ describe RavenDB::DocumentStore do
       cached_documents = session.instance_variable_get("@raw_entities_and_metadata")
       info = cached_documents[product]
 
-      expect(product.id.nil?).to(eq(false))
-      expect(product.id.empty?).to(eq(false))
-      expect(product.id).to(eq(info[:original_metadata]["@id"]))
-      expect(info[:original_value].key?("id")).to(eq(false))
+      expect(product.id.nil?).to eq(false)
+      expect(product.id.empty?).to eq(false)
+      expect(product.id).to eq(info[:original_metadata]["@id"])
+      expect(info[:original_value].key?("id")).to eq(false)
     end
   end
 
@@ -99,8 +99,8 @@ describe RavenDB::DocumentStore do
       order = session.load(order.id)
       metadata = order.instance_variable_get("@metadata")
 
-      expect(metadata.key?("@expires")).to(eq(true))
-      expect(expiration).to(eq(metadata["@expires"]))
+      expect(metadata.key?("@expires")).to eq(true)
+      expect(expiration).to eq(metadata["@expires"])
     end
   end
 
@@ -117,7 +117,7 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       session.delete(key)
 
-      expect { session.store(foo) }.to(raise_error(RuntimeError))
+      expect { session.store(foo) }.to raise_error(RuntimeError)
     end
   end
 
@@ -141,8 +141,8 @@ describe RavenDB::DocumentStore do
     store.open_session do |session|
       foo = session.load(key)
 
-      expect(foo.name).to(eq("name changed"))
-      expect(foo.order).to(eq(10))
+      expect(foo.name).to eq("name changed")
+      expect(foo.order).to eq(10)
     end
   end
 
@@ -162,12 +162,12 @@ describe RavenDB::DocumentStore do
       foo.name = "name changed"
       foo.order = 10
 
-      expect { session.save_changes }.not_to(raise_error)
+      expect { session.save_changes }.not_to raise_error
     end
 
     store.open_session do |session|
       foo = session.load(key)
-      expect(foo).to(be_nil)
+      expect(foo).to be_nil
     end
   end
 end

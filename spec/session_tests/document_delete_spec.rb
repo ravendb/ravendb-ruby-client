@@ -37,7 +37,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.save_changes
 
       product = session.load(id)
-      expect(product.nil?).to(eq(true))
+      expect(product.nil?).to eq(true)
     end
   end
 
@@ -48,7 +48,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.delete(id)
 
       product = session.load(id)
-      expect(product.nil?).to(eq(true))
+      expect(product.nil?).to eq(true)
     end
   end
 
@@ -63,7 +63,7 @@ describe RavenDB::DeleteDocumentCommand do
       session.save_changes
 
       product = session.load(id)
-      expect(product.nil?).to(eq(true))
+      expect(product.nil?).to eq(true)
     end
   end
 
@@ -74,7 +74,7 @@ describe RavenDB::DeleteDocumentCommand do
       product = session.load(id)
       product.name = "Testing"
 
-      expect { session.delete(id) }.to(raise_error(RuntimeError))
+      expect { session.delete(id) }.to raise_error(RuntimeError)
     end
   end
 
@@ -86,7 +86,7 @@ describe RavenDB::DeleteDocumentCommand do
         end
 
         session.save_changes
-      end.not_to(raise_error)
+      end.not_to raise_error
     end
   end
 
@@ -98,7 +98,7 @@ describe RavenDB::DeleteDocumentCommand do
         end
 
         session.save_changes
-      end.to(raise_error(RavenDB::ConcurrencyException))
+      end.to raise_error(RavenDB::ConcurrencyException)
     end
   end
 end

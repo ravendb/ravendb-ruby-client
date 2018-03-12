@@ -51,7 +51,7 @@ describe RavenDB::DocumentConventions do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(1))
+      expect(results.size).to eq(1)
       check_doc("TestConversions/2", results.first)
     end
   end
@@ -76,8 +76,8 @@ describe RavenDB::DocumentConventions do
     store.open_session do |session|
       doc = session.load(id)
 
-      expect(doc.item_id).to(eq(id))
-      expect(doc.item_title).to(eq("New Item"))
+      expect(doc.item_id).to eq(id)
+      expect(doc.item_title).to eq("New Item")
     end
   end
 
@@ -103,16 +103,16 @@ describe RavenDB::DocumentConventions do
     store.open_session do |session|
       doc = session.load(id)
 
-      expect(id).to(eq(doc.item_id))
-      expect(doc.item_title).to(eq("New Item"))
-      expect(doc.item_options).to(eq([1, 2, 3]))
+      expect(id).to eq(doc.item_id)
+      expect(doc.item_title).to eq("New Item")
+      expect(doc.item_options).to eq([1, 2, 3])
 
       raw_entities_and_metadata = session.instance_variable_get("@raw_entities_and_metadata")
       info = raw_entities_and_metadata[doc]
       raw_entity = info[:original_value]
 
-      expect(raw_entity["itemTitle"]).to(eq("New Item"))
-      expect(raw_entity["itemOptions"]).to(eq("1,2,3"))
+      expect(raw_entity["itemTitle"]).to eq("New Item")
+      expect(raw_entity["itemOptions"]).to eq("1,2,3")
     end
   end
 
@@ -127,17 +127,17 @@ describe RavenDB::DocumentConventions do
   end
 
   def check_foo(foo, id_of_foo = 1)
-    expect(foo.is_a?(Foo)).to(eq(true))
-    expect(foo.id).to(eq("Foos/#{id_of_foo}"))
-    expect(foo.name).to(eq("Foo ##{id_of_foo}"))
-    expect(foo.order).to(eq(id_of_foo))
+    expect(foo.is_a?(Foo)).to eq(true)
+    expect(foo.id).to eq("Foos/#{id_of_foo}")
+    expect(foo.name).to eq("Foo ##{id_of_foo}")
+    expect(foo.order).to eq(id_of_foo)
   end
 
   def check_doc(id, doc)
-    expect(doc.is_a?(TestConversion)).to(eq(true))
-    expect(doc.id).to(eq(id))
-    expect(doc.date.is_a?(DateTime)).to(eq(true))
-    expect(doc.foos.is_a?(Array)).to(eq(true))
+    expect(doc.is_a?(TestConversion)).to eq(true)
+    expect(doc.id).to eq(id)
+    expect(doc.date.is_a?(DateTime)).to eq(true)
+    expect(doc.foos.is_a?(Array)).to eq(true)
 
     check_foo(doc.foo)
     doc.foos.each_index { |index| check_foo(doc.foos[index], (index + 2)) }

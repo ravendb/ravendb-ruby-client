@@ -25,17 +25,17 @@ describe RavenDB::DeleteDocumentCommand do
 
   it "deletes with no change vector" do
     command = described_class.new("Products/101")
-    expect { request_executor.execute(command) }.not_to(raise_error)
+    expect { request_executor.execute(command) }.not_to raise_error
   end
 
   it "deletes with change vector" do
     command = described_class.new("Products/102", @_other_change_vector)
-    expect { request_executor.execute(command) }.not_to(raise_error)
+    expect { request_executor.execute(command) }.not_to raise_error
   end
 
   it "fails delete if change vector mismatches" do
     expect do
       request_executor.execute(described_class.new("Products/101", "#{@_change_vector}:BROKEN:VECTOR"))
-    end.to(raise_error(RavenDB::RavenException))
+    end.to raise_error(RavenDB::RavenException)
   end
 end

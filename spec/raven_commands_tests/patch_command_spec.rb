@@ -26,11 +26,11 @@ describe RavenDB::PatchRequest do
   it "patches success ignoring missing" do
     result = store.operations.send(RavenDB::PatchOperation.new(ID, described_class.new("this.name = 'testing'")))
 
-    expect(result.key?(:Status)).to(eq(true))
-    expect(result.key?(:Document)).to(eq(true))
-    expect(result[:Status]).to(eq(RavenDB::PatchStatus::Patched))
-    expect(result[:Document].is_a?(Product)).to(eq(true))
-    expect(result[:Document].name).to(eq("testing"))
+    expect(result.key?(:Status)).to eq(true)
+    expect(result.key?(:Document)).to eq(true)
+    expect(result[:Status]).to eq(RavenDB::PatchStatus::Patched)
+    expect(result[:Document].is_a?(Product)).to eq(true)
+    expect(result[:Document].name).to eq("testing")
   end
 
   it "patches success not ignoring missing" do
@@ -40,9 +40,9 @@ describe RavenDB::PatchRequest do
                                   skip_patch_if_change_vector_mismatch: true
                                  ))
 
-    expect(result.key?(:Status)).to(eq(true))
-    expect(result.key?(:Document)).to(eq(false))
-    expect(result[:Status]).to(eq(RavenDB::PatchStatus::NotModified))
+    expect(result.key?(:Status)).to eq(true)
+    expect(result.key?(:Document)).to eq(false)
+    expect(result[:Status]).to eq(RavenDB::PatchStatus::NotModified)
   end
 
   it "patches fail not ignoring missing" do
@@ -52,6 +52,6 @@ describe RavenDB::PatchRequest do
                                     change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                     skip_patch_if_change_vector_mismatch: false
                                    ))
-    end.to(raise_error(RavenDB::RavenException))
+    end.to raise_error(RavenDB::RavenException)
   end
 end

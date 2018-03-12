@@ -24,7 +24,7 @@ describe RavenDB::AttachmentOperation do
       expect do
         store.operations.send(
           RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif", [ATTACHMENT].pack("H*"), "image/gif"))
-      end.not_to(raise_error)
+      end.not_to raise_error
     end
   end
 
@@ -42,11 +42,11 @@ describe RavenDB::AttachmentOperation do
       attachment_result = store.operations.send(
         RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::Document))
 
-      expect(attachment_result[:stream]).to(eq(attachment_raw))
-      expect(attachment_result[:attachment_details][:document_id]).to(eq(product.id))
-      expect(attachment_result[:attachment_details][:content_type]).to(eq("image/gif"))
-      expect(attachment_result[:attachment_details][:name]).to(eq("1x1.gif"))
-      expect(attachment_result[:attachment_details][:size]).to(eq(attachment_raw.size))
+      expect(attachment_result[:stream]).to eq(attachment_raw)
+      expect(attachment_result[:attachment_details][:document_id]).to eq(product.id)
+      expect(attachment_result[:attachment_details][:content_type]).to eq("image/gif")
+      expect(attachment_result[:attachment_details][:name]).to eq("1x1.gif")
+      expect(attachment_result[:attachment_details][:size]).to eq(attachment_raw.size)
     end
   end
 
@@ -66,7 +66,7 @@ describe RavenDB::AttachmentOperation do
       expect do
         store.operations.send(
           RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::Document))
-      end.to(raise_error(RavenDB::DocumentDoesNotExistException))
+      end.to raise_error(RavenDB::DocumentDoesNotExistException)
     end
   end
 end

@@ -41,15 +41,15 @@ describe RavenDB::QueryCommand do
     response = store.operations.send(patch_by_index_operation)
 
     expect(response).not_to be_nil
-    expect((response["Result"]["Total"] < 100)).to(be_falsey)
+    expect((response["Result"]["Total"] < 100)).to be_falsey
 
     query = "from index 'Testing_Sort' where Name = $name"
     index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
 
     response = request_executor.execute(described_class.new(store.conventions, index_query))
-    expect(response.key?("Results")).to(eq(true))
-    expect(response["Results"].is_a?(Array)).to(eq(true))
-    expect((response["Results"].length < 100)).to(be_falsey)
+    expect(response.key?("Results")).to eq(true)
+    expect(response["Results"].is_a?(Array)).to eq(true)
+    expect((response["Results"].length < 100)).to be_falsey
   end
 
   it "update by index fail on unexisting index" do
@@ -59,7 +59,7 @@ describe RavenDB::QueryCommand do
 
     expect do
       store.operations.send(patch_by_index_operation)
-    end.to(raise_error(RavenDB::IndexDoesNotExistException))
+    end.to raise_error(RavenDB::IndexDoesNotExistException)
   end
 
   it "delete by index success" do
@@ -68,13 +68,13 @@ describe RavenDB::QueryCommand do
     delete_by_index_operation = RavenDB::DeleteByQueryOperation.new(index_query, RavenDB::QueryOperationOptions.new(false))
 
     response = store.operations.send(delete_by_index_operation)
-    expect(response["Status"]).to(eq("Completed"))
+    expect(response["Status"]).to eq("Completed")
 
     query_command = described_class.new(store.conventions, index_query)
     response = request_executor.execute(query_command)
-    expect(response.key?("Results")).to(eq(true))
-    expect(response["Results"].is_a?(Array)).to(eq(true))
-    expect(response["Results"].length).to(eq(0))
+    expect(response.key?("Results")).to eq(true)
+    expect(response["Results"].is_a?(Array)).to eq(true)
+    expect(response["Results"].length).to eq(0)
   end
 
   it "delete by index fail on unexisting index" do
@@ -84,6 +84,6 @@ describe RavenDB::QueryCommand do
 
     expect do
       store.operations.send(delete_by_index_operation)
-    end.to(raise_error(RavenDB::IndexDoesNotExistException))
+    end.to raise_error(RavenDB::IndexDoesNotExistException)
   end
 end

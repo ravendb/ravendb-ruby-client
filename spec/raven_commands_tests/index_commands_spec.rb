@@ -35,7 +35,7 @@ describe RavenDB::PutIndexesOperation do
   it "gets index with fail" do
     expect do
       store.operations.send(RavenDB::GetIndexOperation.new("non_existing_index"))
-    end.to(raise_error(RavenDB::RavenException))
+    end.to raise_error(RavenDB::RavenException)
   end
 
   it "deletes index with success" do
@@ -44,16 +44,16 @@ describe RavenDB::PutIndexesOperation do
 
     expect do
       store.operations.send(RavenDB::DeleteIndexOperation.new("delete"))
-    end.not_to(raise_error)
+    end.not_to raise_error
 
     expect do
       store.operations.send(RavenDB::GetIndexOperation.new("delete"))
-    end.to(raise_error(RavenDB::RavenException))
+    end.to raise_error(RavenDB::RavenException)
   end
 
   it "deletes index with fail" do
     expect do
       store.operations.send(RavenDB::DeleteIndexOperation.new(nil))
-    end.to(raise_error(RuntimeError))
+    end.to raise_error(RuntimeError)
   end
 end

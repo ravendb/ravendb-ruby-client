@@ -42,8 +42,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(1))
-      expect(results.first.name).to(eq("test101"))
+      expect(results.size).to eq(1)
+      expect(results.first.name).to eq("test101")
     end
   end
 
@@ -56,9 +56,9 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(2))
-      expect((results.first.name.include?("test101") || results.last.name.include?("test101"))).to(be_truthy)
-      expect(((results.first.uid == 2) || (results.last.uid == 2))).to(be_truthy)
+      expect(results.size).to eq(2)
+      expect((results.first.name.include?("test101") || results.last.name.include?("test101"))).to be_truthy
+      expect(((results.first.uid == 2) || (results.last.uid == 2))).to be_truthy
     end
   end
 
@@ -72,9 +72,9 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(1))
-      expect(results.first.name).to(eq("test107"))
-      expect(results.first.uid).to(eq(5))
+      expect(results.size).to eq(1)
+      expect(results.first.name).to eq("test107")
+      expect(results.first.uid).to eq(5)
     end
   end
 
@@ -88,10 +88,10 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(4))
+      expect(results.size).to eq(4)
 
       results.each do |result|
-        expect(names).to(be_any { |name| (result.name == name) })
+        expect(names).to be_any { |name| (result.name == name) }
       end
     end
   end
@@ -104,8 +104,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(1))
-      expect(results.first.name).to(eq("new_testing"))
+      expect(results.size).to eq(1)
+      expect(results.first.name).to eq("new_testing")
     end
   end
 
@@ -117,8 +117,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(2))
-      expect(results).to(be_all { |result| result.name = "test107" })
+      expect(results.size).to eq(2)
+      expect(results).to be_all { |result| result.name = "test107" }
     end
   end
 
@@ -130,8 +130,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(3))
-      expect(results).to(be_all { |result| (2..4).to_a.include?(result.uid) })
+      expect(results).to be_all { |result| (2..4).to_a.include?(result.uid) }
+      expect(results.size).to eq(3)
     end
   end
 
@@ -143,7 +143,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results).to(be_all { |result| result.instance_variable_defined?("@ordering") })
+      expect(results).to be_all { |result| result.instance_variable_defined?("@ordering") }
     end
   end
 
@@ -154,7 +154,7 @@ describe RavenDB::DocumentQuery do
           .query(index_name: "s")
           .wait_for_non_stale_results
           .all
-      end.to(raise_error(RavenDB::IndexDoesNotExistException))
+      end.to raise_error(RavenDB::IndexDoesNotExistException)
     end
   end
 
@@ -168,10 +168,10 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(3))
+      expect(results.size).to eq(3)
 
       results.each do |result|
-        expect(uids).to(be_any { |uid| (result.uid == uid) })
+        expect(uids).to be_any { |uid| (result.uid == uid) }
       end
     end
   end
@@ -185,7 +185,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.first.ordering).to(eq("a"))
+      expect(results.first.ordering).to eq("a")
     end
   end
 
@@ -198,7 +198,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.first.ordering).to(eq("d"))
+      expect(results.first.ordering).to eq("d")
     end
   end
 
@@ -211,7 +211,7 @@ describe RavenDB::DocumentQuery do
              .all
 
       session.load("Products/108")
-      expect(session.number_of_requests_in_session).to(eq(1))
+      expect(session.number_of_requests_in_session).to eq(1)
     end
   end
 
@@ -223,8 +223,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.first.is_a?(Company)).to(eq(true))
-      expect(results.first.product.is_a?(Product)).to(eq(true))
+      expect(results.first.is_a?(Company)).to eq(true)
+      expect(results.first.product.is_a?(Product)).to eq(true)
     end
   end
 
@@ -242,8 +242,8 @@ describe RavenDB::DocumentQuery do
 
       total_pages = (total_count.to_f / page_size).ceil
 
-      expect(total_pages).to(eq(4))
-      expect(total_count).to(eq(7))
+      expect(total_pages).to eq(4)
+      expect(total_count).to eq(7)
     end
 
     (1..total_pages).to_a do |page|
@@ -257,9 +257,9 @@ describe RavenDB::DocumentQuery do
                    .take(page_size)
                    .all
 
-        expect((products.size <= page_size)).to(be_truthy)
+        expect((products.size <= page_size)).to be_truthy
         products.each_index do |index|
-          expect(expected_uids[(page - 1)][index]).to(eq(products[index].uid))
+          expect(expected_uids[(page - 1)][index]).to eq(products[index].uid)
         end
       end
     end
@@ -274,7 +274,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results).to(be_all { |result| result.instance_variable_defined?("@doc_id") })
+      expect(results).to be_all { |result| result.instance_variable_defined?("@doc_id") }
     end
   end
 
@@ -286,7 +286,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(2))
+      expect(results.size).to eq(2)
       results.each do |last_fm|
         check_fulltext_search_result(last_fm, ["Me"])
       end
@@ -301,7 +301,7 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(3))
+      expect(results.size).to eq(3)
 
       results.each do |last_fm|
         check_fulltext_search_result(last_fm, ["Me", "Bobo"])
@@ -320,8 +320,8 @@ describe RavenDB::DocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(3))
-      expect(results.last.title).to(eq("Spanish Grease"))
+      expect(results.size).to eq(3)
+      expect(results.last.title).to eq("Spanish Grease")
 
       results.each do |last_fm|
         check_fulltext_search_result(last_fm, ["Me", "Bobo"])

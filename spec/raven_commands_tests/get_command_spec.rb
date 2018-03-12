@@ -27,15 +27,15 @@ describe RavenDB::GetDocumentCommand do
   end
 
   it "document id should be equal after load" do
-    expect(@_response["Results"].first["@metadata"]["@id"]).to(eq("Products/101"))
+    expect(@_response["Results"].first["@metadata"]["@id"]).to eq("Products/101")
   end
 
   it "different document ids shouldnt be equals after load" do
-    expect(@_response["Results"].first["@metadata"]["@id"]).not_to(eq(@_other_response["Results"].first["@metadata"]["@id"]))
+    expect(@_response["Results"].first["@metadata"]["@id"]).not_to eq(@_other_response["Results"].first["@metadata"]["@id"])
   end
 
   it "unexisting document loading attempt should return empty response" do
     result = request_executor.execute(described_class.new("product"))
-    expect(result).to(be_nil)
+    expect(result).to be_nil
   end
 end

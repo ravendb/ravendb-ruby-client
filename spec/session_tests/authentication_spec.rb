@@ -71,7 +71,7 @@ CERTIFICATE
       )
 
       store.configure
-    end.to(raise_error(RavenDB::NotSupportedException))
+    end.to raise_error(RavenDB::NotSupportedException)
   end
 
   it "raises unauthorized exception when trying to connect to secured server with invalid certificate" do
@@ -87,6 +87,6 @@ CERTIFICATE
       store.open_session do |session|
         session.load("DocumentWillNotLoad/1")
       end
-    end.to(raise_error(RavenDB::AuthorizationException))
+    end.to raise_error(RavenDB::AuthorizationException)
   end
 end

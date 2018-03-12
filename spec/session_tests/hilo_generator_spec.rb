@@ -16,7 +16,7 @@ describe RavenDB::HiloIdGenerator do
   it "starts from 1" do
     id = @generator.generate_document_id
 
-    expect(id).to(eq("Products/1-A"))
+    expect(id).to eq("Products/1-A")
   end
 
   it "increments by 1" do
@@ -27,7 +27,7 @@ describe RavenDB::HiloIdGenerator do
       id = @generator.generate_document_id
 
       unless prev_id.nil?
-        expect((range(id) - range(prev_id))).to(eq(1))
+        expect((range(id) - range(prev_id))).to eq(1)
       end
 
       prev_id = id
@@ -50,7 +50,7 @@ describe RavenDB::HiloIdGenerator do
     end
 
     @generator.generate_document_id
-    expect((@generator.range.min_id > max_id)).to(be_truthy)
+    expect((@generator.range.min_id > max_id)).to be_truthy
   end
 
   protected

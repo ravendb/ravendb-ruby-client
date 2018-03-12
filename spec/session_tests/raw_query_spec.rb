@@ -25,10 +25,10 @@ describe RavenDB::RawDocumentQuery do
                 .wait_for_non_stale_results
                 .all
 
-      expect(results.size).to(eq(1))
-      expect(results.first.name).to(eq("test101"))
-      expect(results.first.uid).to(eq(2))
-      expect(results.first.ordering).to(eq("a"))
+      expect(results.size).to eq(1)
+      expect(results.first.name).to eq("test101")
+      expect(results.first.uid).to eq(2)
+      expect(results.first.ordering).to eq("a")
     end
   end
 
@@ -40,7 +40,7 @@ describe RavenDB::RawDocumentQuery do
           .raw_query("FROM Products WHERE")
           .wait_for_non_stale_results
           .all
-      end.to(raise_error(RavenDB::ParseException))
+      end.to raise_error(RavenDB::ParseException)
     end
   end
 end
