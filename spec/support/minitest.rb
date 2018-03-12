@@ -4,26 +4,6 @@ require "securerandom"
 require "minitest/autorun"
 require "active_support/inflector"
 
-module MiniTest
-  module Assertions
-    def refute_raises(*exp)
-      msg = exp.last.is_a?(String) ? exp.pop : "unexpected exception raised"
-
-      begin
-        yield
-      rescue MiniTest::Skip => e
-        return e if exp.include? MiniTest::Skip
-        raise e
-      rescue StandardError => e
-        flunk "#{msg}: #{e}"
-      end
-    end
-  end
-  module Expectations
-    infect_an_assertion :refute_raises, :wont_raise
-  end
-end
-
 class RavenTest < Minitest::Test
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"
