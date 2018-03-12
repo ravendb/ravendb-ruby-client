@@ -1,4 +1,4 @@
-RSpec.describe RavenDB::DocumentStore, database: true do
+RSpec.describe RavenDB::DocumentStore do
   before do
     @_invalid_cert = <<~CERTIFICATE
       -----BEGIN CERTIFICATE-----
