@@ -27,7 +27,7 @@ describe RavenDB::HiloIdGenerator do
       id = @generator.generate_document_id
 
       unless prev_id.nil?
-        expect((range(id) - range(prev_id))).to eq(1)
+        expect(range(id) - range(prev_id)).to eq(1)
       end
 
       prev_id = id
