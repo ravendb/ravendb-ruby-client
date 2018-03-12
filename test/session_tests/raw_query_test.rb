@@ -2,17 +2,27 @@ require "date"
 require "ravendb"
 require "spec_helper"
 
-class RawQueryTest < RavenDatabaseTest
+describe RavenDB::RawDocumentQuery do
   def setup
-    super
-    @_store.open_session do |session|
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
+
+    store.open_session do |session|
       session.store(Product.new("Products/101", "test101", 2, "a"))
       session.save_changes
     end
   end
 
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
   def test_should_do_raw_query
-    @_store.open_session do |session|
+    store.open_session do |session|
       results = session.advanced.raw_query(
         "FROM Products "\
         "WHERE name = $name",
@@ -29,7 +39,7 @@ class RawQueryTest < RavenDatabaseTest
   end
 
   def test_should_fail_query_with_invalid_rql
-    @_store.open_session do |session|
+    store.open_session do |session|
       assert_raises(RavenDB::ParseException) do
         session.advanced
                .raw_query("FROM Products WHERE")
