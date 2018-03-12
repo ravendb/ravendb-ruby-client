@@ -1,20 +1,9 @@
-RSpec.describe RavenDB::RawDocumentQuery do
+RSpec.describe RavenDB::RawDocumentQuery, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     store.open_session do |session|
       session.store(Product.new("Products/101", "test101", 2, "a"))
       session.save_changes
     end
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
   end
 
   it "does raw query" do

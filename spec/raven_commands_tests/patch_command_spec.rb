@@ -1,25 +1,10 @@
-RSpec.describe RavenDB::PatchRequest do
+RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
   ID = "Products/10".freeze
 
   before do
-    @__test = RavenDatabaseIndexesTest.new(nil)
-    @__test.setup
-
     request_executor.execute(RavenDB::PutDocumentCommand.new(ID, "name" => "test", "@metadata" => {"Raven-Ruby-Type" => "Product", "@collection" => "Products"}))
     result = request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
-  let(:request_executor) do
-    @__test.request_executor
   end
 
   it "patches success ignoring missing" do

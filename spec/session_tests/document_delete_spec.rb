@@ -1,10 +1,7 @@
-RSpec.describe RavenDB::DeleteDocumentCommand do
+RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
   IDS = [101, 10, 106, 107].freeze
 
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     products = nil
 
     store.open_session do |session|
@@ -19,14 +16,6 @@ RSpec.describe RavenDB::DeleteDocumentCommand do
     @change_vectors = products.map do |product|
       product.instance_variable_get("@metadata")["@change-vector"]
     end
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
   end
 
   it "deletes with key with save session" do

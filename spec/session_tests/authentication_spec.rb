@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::DocumentStore do
+RSpec.describe RavenDB::DocumentStore, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     @_invalid_cert = <<~CERTIFICATE
       -----BEGIN CERTIFICATE-----
       MIIC8DCCAdigAwIBAgIICkVNN5rIPb8wDQYJKoZIhvcNAQENBQAwKjEVMBMGA1UE
@@ -50,18 +47,6 @@ RSpec.describe RavenDB::DocumentStore do
       j32qw8tKsUBMO5zmCC6+IapqdBUr0F+BxJazO+mlQu2o9Ipas88=
       -----END RSA PRIVATE KEY-----
 CERTIFICATE
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:default_url) do
-    @__test.default_url
-  end
-
-  let(:current_database) do
-    @__test.current_database
   end
 
   it "raises not supported exception when trying to connect to secured server without auth options" do

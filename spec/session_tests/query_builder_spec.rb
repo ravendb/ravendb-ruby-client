@@ -1,17 +1,4 @@
 RSpec.describe RavenDB::QueryBuilder do
-  before do
-    @__test = RavenTest.new(nil)
-    @__test.setup
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
   it "can understand equality" do
     query = store
             .open_session

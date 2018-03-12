@@ -1,18 +1,5 @@
-RSpec.describe RavenDB::AttachmentOperation do
+RSpec.describe RavenDB::AttachmentOperation, database: true do
   ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b".freeze
-
-  before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
 
   it "puts attachment" do
     store.open_session do |session|

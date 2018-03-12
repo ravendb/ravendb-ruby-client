@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::DeleteDocumentCommand do
+RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     request_executor.execute(RavenDB::PutDocumentCommand.new("Products/101", "Name" => "test", "@metadata" => {}))
     response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/101"))
     @_change_vector = response["Results"].first["@metadata"]["@change-vector"]
@@ -10,14 +7,6 @@ RSpec.describe RavenDB::DeleteDocumentCommand do
     request_executor.execute(RavenDB::PutDocumentCommand.new("Products/102", "Name" => "test", "@metadata" => {}))
     response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/102"))
     @_other_change_vector = response["Results"].first["@metadata"]["@change-vector"]
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:request_executor) do
-    @__test.request_executor
   end
 
   it "deletes with no change vector" do

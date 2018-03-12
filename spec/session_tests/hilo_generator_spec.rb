@@ -1,16 +1,12 @@
-RSpec.describe RavenDB::HiloIdGenerator do
+RSpec.describe RavenDB::HiloIdGenerator, database: true do
   COLLECTION = "Products".freeze
 
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     @generator = described_class.new(@__test.store, @__test.current_database, COLLECTION)
   end
 
   after do
     @generator.return_unused_range
-    @__test.teardown
   end
 
   it "starts from 1" do

@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::QueryCommand do
+RSpec.describe RavenDB::QueryCommand, database: true, database_indexes: true do
   before do
-    @__test = RavenDatabaseIndexesTest.new(nil)
-    @__test.setup
-
     query = "from index 'Testing' where Tag = 'Products'"
 
     request_executor.execute(RavenDB::PutDocumentCommand.new("Products/10",
@@ -14,18 +11,6 @@ RSpec.describe RavenDB::QueryCommand do
 
     @_conventions = store.conventions
     @_index_query = RavenDB::IndexQuery.new(query, {}, nil, nil, wait_for_non_stale_results: true)
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
-  let(:request_executor) do
-    @__test.request_executor
   end
 
   it "does query" do

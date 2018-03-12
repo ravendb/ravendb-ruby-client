@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::DocumentSession do
+RSpec.describe RavenDB::DocumentSession, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     store.open_session do |session|
       product101 = Product.new("Products/101", "test")
       product10 = Product.new("Products/10", "test")
@@ -15,14 +12,6 @@ RSpec.describe RavenDB::DocumentSession do
       session.store(company)
       session.save_changes
     end
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
   end
 
   it "loads existing document" do

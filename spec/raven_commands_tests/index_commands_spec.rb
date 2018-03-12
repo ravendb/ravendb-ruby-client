@@ -1,21 +1,4 @@
-RSpec.describe RavenDB::PutIndexesOperation do
-  before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
-  let(:index_map) do
-    @__test.index_map
-  end
-
+RSpec.describe RavenDB::PutIndexesOperation, database: true do
   it "puts index with success" do
     @_index = RavenDB::IndexDefinition.new("region", index_map)
 

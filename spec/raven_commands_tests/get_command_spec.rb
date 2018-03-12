@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::GetDocumentCommand do
+RSpec.describe RavenDB::GetDocumentCommand, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     @_put_command = RavenDB::PutDocumentCommand.new("Products/101", "Name" => "test", "@metadata" => {})
     @_other_put_command = RavenDB::PutDocumentCommand.new("Products/10", "Name" => "test", "@metadata" => {})
 
@@ -11,14 +8,6 @@ RSpec.describe RavenDB::GetDocumentCommand do
 
     request_executor.execute(@_other_put_command)
     @_other_response = request_executor.execute(described_class.new("Products/10"))
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:request_executor) do
-    @__test.request_executor
   end
 
   it "document id should be equal after load" do

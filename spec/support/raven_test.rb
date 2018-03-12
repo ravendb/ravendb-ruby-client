@@ -4,7 +4,7 @@ class RavenTest
   CERT_FILE = ENV["CERTIFICATE"] || nil
   CERT_PASSPHRASE = ENV["PASSPHRASE"] || nil
 
-  def initialize(_unused)
+  def initialize(_unused = nil)
   end
 
   def setup
@@ -35,5 +35,19 @@ class RavenTest
 
   def default_url
     DEFAULT_URL
+  end
+end
+
+module RavenTestHelpers
+  def store
+    @__test.store
+  end
+
+  def current_database
+    @__test.current_database
+  end
+
+  def default_url
+    @__test.default_url
   end
 end

@@ -27,4 +27,28 @@ RSpec.configure do |config|
   end
 
   config.order = :random
+
+  config.around do |example|
+    @__test = RavenTest.new
+    @__test.setup
+    example.run
+    @__test.teardown
+  end
+
+  config.around :each, database: true do |example|
+    @__database_test = RavenDatabaseTest.new(@__test)
+    @__database_test.setup
+    example.run
+    @__database_test.teardown
+  end
+
+  config.around :each, database_indexes: true do |example|
+    @__database_indexes_test = RavenDatabaseIndexesTest.new(@__database_test)
+    @__database_indexes_test.setup
+    example.run
+    @__database_indexes_test.teardown
+  end
+
+  config.include RavenTestHelpers
+  config.include RavenDatabaseTestHelpers, database: true
 end

@@ -1,17 +1,4 @@
-RSpec.describe RavenDB::PutDocumentCommand do
-  before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  def request_executor
-    @__test.request_executor
-  end
-
+RSpec.describe RavenDB::PutDocumentCommand, database: true do
   it "puts successfully" do
     request_executor.execute(described_class.new("Testings/1", "name" => "test", "@metadata" => {:@id => "Testings/1", "@collection" => "testings"}))
     result = request_executor.execute(RavenDB::GetDocumentCommand.new("Testings/1"))

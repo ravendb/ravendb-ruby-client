@@ -1,17 +1,4 @@
-RSpec.describe RavenDB::DocumentStore do
-  before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
+RSpec.describe RavenDB::DocumentStore, database: true do
   it "stores without id" do
     foo = nil
 

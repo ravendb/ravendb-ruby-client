@@ -1,8 +1,5 @@
 RSpec.describe RavenDB::JsonSerializer do
   before do
-    @__test = RavenTest.new(nil)
-    @__test.setup
-
     @json = {
       "@metadata" => {},
       "string_prop" => "string",
@@ -64,14 +61,6 @@ RSpec.describe RavenDB::JsonSerializer do
 
     @document = SerializingTest.new
     described_class.from_json(@document, @json, {}, @nested_object_types, store.conventions)
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
   end
 
   it "parses scalars" do

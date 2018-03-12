@@ -1,23 +1,12 @@
-RSpec.describe RavenDB::DocumentConventions do
+RSpec.describe RavenDB::DocumentConventions, database: true do
   NOW = DateTime.now
 
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     store.open_session do |session|
       session.store(make_document("TestConversions/1"))
       session.store(make_document("TestConversions/2", NOW.next_day))
       session.save_changes
     end
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
   end
 
   it "converts on load" do

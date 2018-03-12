@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::QueryCommand do
+RSpec.describe RavenDB::QueryCommand, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     index_map =
       "from doc in docs.Testings "\
       "select new{"\
@@ -19,18 +16,6 @@ RSpec.describe RavenDB::QueryCommand do
     end
 
     request_executor.execute(described_class.new(store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, wait_for_non_stale_results: true)))
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  let(:store) do
-    @__test.store
-  end
-
-  let(:request_executor) do
-    @__test.request_executor
   end
 
   it "update by index success" do

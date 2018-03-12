@@ -1,8 +1,5 @@
-RSpec.describe RavenDB::DocumentQuery do
+RSpec.describe RavenDB::DocumentQuery, database: true do
   before do
-    @__test = RavenDatabaseTest.new(nil)
-    @__test.setup
-
     @lastfm = LastFmAnalyzed.new(store, self)
 
     @lastfm.execute
@@ -24,14 +21,6 @@ RSpec.describe RavenDB::DocumentQuery do
 
       session.save_changes
     end
-  end
-
-  after do
-    @__test.teardown
-  end
-
-  def store
-    @__test.store
   end
 
   it "queries by single condition" do
