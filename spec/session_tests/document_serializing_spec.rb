@@ -106,12 +106,12 @@ describe RavenDB::JsonSerializer do
 
   it "parses hashes" do
     expect(@document.hash_prop).to be_kind_of(Hash)
-    expect(@document.hash_prop.key?("string_prop")).to eq(true)
-    expect(@document.hash_prop.key?("number_prop")).to eq(true)
-    expect(@document.hash_prop.key?("number_float_prop")).to eq(true)
-    expect(@document.hash_prop.key?("boolean_prop")).to eq(true)
-    expect(@document.hash_prop.key?("nil_prop")).to eq(true)
-    expect(@document.hash_prop.key?("array_prop")).to eq(true)
+    expect(@document.hash_prop).to include("string_prop")
+    expect(@document.hash_prop).to include("number_prop")
+    expect(@document.hash_prop).to include("number_float_prop")
+    expect(@document.hash_prop).to include("boolean_prop")
+    expect(@document.hash_prop).to include("nil_prop")
+    expect(@document.hash_prop).to include("array_prop")
 
     expect(@document.hash_prop["string_prop"]).to be_kind_of(String)
     expect(@document.hash_prop["string_prop"]).to eq("string")
@@ -132,11 +132,11 @@ describe RavenDB::JsonSerializer do
     deep = @document.deep_hash_prop["some_hash"]
 
     expect(@document.deep_hash_prop).to be_kind_of(Hash)
-    expect(@document.deep_hash_prop.key?("some_prop")).to eq(true)
+    expect(@document.deep_hash_prop).to include("some_prop")
     expect(@document.deep_hash_prop["some_prop"]).to eq("someValue")
 
     expect(deep).to be_kind_of(Hash)
-    expect(deep.key?("some_prop")).to eq(true)
+    expect(deep).to include("some_prop")
     expect(deep["some_prop"]).to be_truthy
   end
 
@@ -147,7 +147,7 @@ describe RavenDB::JsonSerializer do
     deep_hash_in_array = deep_array[2]
 
     expect(deep_hash).to be_kind_of(Hash)
-    expect(deep_hash.key?("some_prop")).to eq(true)
+    expect(deep_hash).to include("some_prop")
     expect(deep_hash["some_prop"]).to eq("someValue")
 
     expect(deep_array_in_hash).to be_kind_of(Array)
@@ -160,7 +160,7 @@ describe RavenDB::JsonSerializer do
     expect(deep_array[1]).to eq(8)
 
     expect(deep_hash_in_array).to be_kind_of(Hash)
-    expect(deep_hash_in_array.key?("some_prop")).to eq(true)
+    expect(deep_hash_in_array).to include("some_prop")
     expect(deep_hash_in_array["some_prop"]).to eq("someValue")
   end
 

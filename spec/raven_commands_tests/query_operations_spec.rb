@@ -47,7 +47,7 @@ describe RavenDB::QueryCommand do
     index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
 
     response = request_executor.execute(described_class.new(store.conventions, index_query))
-    expect(response.key?("Results")).to eq(true)
+    expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).not_to be < 100
   end
@@ -72,7 +72,7 @@ describe RavenDB::QueryCommand do
 
     query_command = described_class.new(store.conventions, index_query)
     response = request_executor.execute(query_command)
-    expect(response.key?("Results")).to eq(true)
+    expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).to eq(0)
   end

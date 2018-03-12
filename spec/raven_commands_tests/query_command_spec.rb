@@ -31,7 +31,7 @@ describe RavenDB::QueryCommand do
   it "does query" do
     result = request_executor.execute(described_class.new(@_conventions, @_index_query))
 
-    expect(result["Results"].first.key?("Name")).to eq(true)
+    expect(result["Results"].first).to include("Name")
     expect(result["Results"].first["Name"]).to eq("test")
   end
 

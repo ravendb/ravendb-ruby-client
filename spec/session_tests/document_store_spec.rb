@@ -99,7 +99,7 @@ describe RavenDB::DocumentStore do
       order = session.load(order.id)
       metadata = order.instance_variable_get("@metadata")
 
-      expect(metadata.key?("@expires")).to eq(true)
+      expect(metadata).to include("@expires")
       expect(expiration).to eq(metadata["@expires"])
     end
   end
