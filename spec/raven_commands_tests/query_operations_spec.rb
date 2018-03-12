@@ -1,4 +1,4 @@
-describe RavenDB::QueryCommand do
+RSpec.describe RavenDB::QueryCommand do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

@@ -1,4 +1,4 @@
-describe RavenDB::DocumentSession do
+RSpec.describe RavenDB::DocumentSession do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

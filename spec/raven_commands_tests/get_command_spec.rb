@@ -1,4 +1,4 @@
-describe RavenDB::GetDocumentCommand do
+RSpec.describe RavenDB::GetDocumentCommand do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

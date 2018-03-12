@@ -1,4 +1,4 @@
-describe RavenDB::DocumentConventions do
+RSpec.describe RavenDB::DocumentConventions do
   NOW = DateTime.now
 
   before do

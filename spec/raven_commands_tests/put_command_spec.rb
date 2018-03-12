@@ -1,4 +1,4 @@
-describe RavenDB::PutDocumentCommand do
+RSpec.describe RavenDB::PutDocumentCommand do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

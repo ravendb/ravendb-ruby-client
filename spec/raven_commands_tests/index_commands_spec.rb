@@ -1,4 +1,4 @@
-describe RavenDB::PutIndexesOperation do
+RSpec.describe RavenDB::PutIndexesOperation do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

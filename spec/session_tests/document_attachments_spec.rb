@@ -1,4 +1,4 @@
-describe RavenDB::AttachmentOperation do
+RSpec.describe RavenDB::AttachmentOperation do
   ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b".freeze
 
   before do

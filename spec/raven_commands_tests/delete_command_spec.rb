@@ -1,4 +1,4 @@
-describe RavenDB::DeleteDocumentCommand do
+RSpec.describe RavenDB::DeleteDocumentCommand do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

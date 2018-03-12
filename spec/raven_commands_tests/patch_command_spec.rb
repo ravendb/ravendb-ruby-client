@@ -1,4 +1,4 @@
-describe RavenDB::PatchRequest do
+RSpec.describe RavenDB::PatchRequest do
   ID = "Products/10".freeze
 
   before do

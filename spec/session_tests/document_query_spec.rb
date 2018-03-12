@@ -1,4 +1,4 @@
-describe RavenDB::DocumentQuery do
+RSpec.describe RavenDB::DocumentQuery do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup

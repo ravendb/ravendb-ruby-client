@@ -1,4 +1,4 @@
-describe RavenDB::JsonSerializer do
+RSpec.describe RavenDB::JsonSerializer do
   before do
     @__test = RavenTest.new(nil)
     @__test.setup

@@ -1,4 +1,4 @@
-describe RavenDB::HiloIdGenerator do
+RSpec.describe RavenDB::HiloIdGenerator do
   COLLECTION = "Products".freeze
 
   before do

@@ -1,4 +1,4 @@
-describe RavenDB::BatchCommand do
+RSpec.describe RavenDB::BatchCommand do
   before do
     @__test = RavenDatabaseIndexesTest.new(nil)
     @__test.setup

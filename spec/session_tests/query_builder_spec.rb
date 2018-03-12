@@ -1,4 +1,4 @@
-describe RavenDB::QueryBuilder do
+RSpec.describe RavenDB::QueryBuilder do
   before do
     @__test = RavenTest.new(nil)
     @__test.setup

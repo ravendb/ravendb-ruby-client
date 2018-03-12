@@ -1,4 +1,4 @@
-describe RavenDB::DeleteDocumentCommand do
+RSpec.describe RavenDB::DeleteDocumentCommand do
   IDS = [101, 10, 106, 107].freeze
 
   before do

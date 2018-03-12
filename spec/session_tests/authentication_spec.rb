@@ -1,4 +1,4 @@
-describe RavenDB::DocumentStore do
+RSpec.describe RavenDB::DocumentStore do
   before do
     @__test = RavenDatabaseTest.new(nil)
     @__test.setup
