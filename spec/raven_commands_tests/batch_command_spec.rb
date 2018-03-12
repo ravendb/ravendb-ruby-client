@@ -1,7 +1,3 @@
-require "ravendb"
-require "securerandom"
-require "spec_helper"
-
 describe RavenDB::BatchCommand do
   @_put_command1 = nil
   @_put_command2 = nil

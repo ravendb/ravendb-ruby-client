@@ -1,7 +1,3 @@
-require "ravendb"
-require "securerandom"
-require "spec_helper"
-
 describe RavenDB::PutIndexesOperation do
   before do
     @__test = RavenDatabaseTest.new(nil)

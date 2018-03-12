@@ -1,7 +1,3 @@
-require "ravendb"
-require "securerandom"
-require "spec_helper"
-
 describe RavenDB::PatchRequest do
   ID = "Products/10".freeze
   @_change_vector = nil

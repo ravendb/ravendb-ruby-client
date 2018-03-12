@@ -1,7 +1,3 @@
-require "date"
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::DocumentStore do
   before do
     @__test = RavenDatabaseTest.new(nil)

@@ -1,6 +1,3 @@
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::DocumentSession do
   before do
     @__test = RavenDatabaseTest.new(nil)

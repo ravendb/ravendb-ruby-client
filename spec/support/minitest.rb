@@ -1,8 +1,3 @@
-require "ravendb"
-require "date"
-require "securerandom"
-require "active_support/inflector"
-
 class RavenTest
   DEFAULT_URL = ENV["URL"] || "http://localhost:8080"
   DEFAULT_DATABASE = ENV["DATABASE"] || "NorthWindTest"

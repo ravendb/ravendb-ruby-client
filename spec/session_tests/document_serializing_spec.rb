@@ -1,6 +1,3 @@
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::JsonSerializer do
   before do
     @__test = RavenTest.new(nil)

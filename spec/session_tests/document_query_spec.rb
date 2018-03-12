@@ -1,7 +1,3 @@
-require "date"
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::DocumentQuery do
   before do
     @__test = RavenDatabaseTest.new(nil)

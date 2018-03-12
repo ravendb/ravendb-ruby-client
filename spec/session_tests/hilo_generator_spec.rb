@@ -1,6 +1,3 @@
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::HiloIdGenerator do
   COLLECTION = "Products".freeze
 

@@ -1,7 +1,3 @@
-require "ravendb"
-require "securerandom"
-require "spec_helper"
-
 describe RavenDB::GetDocumentCommand do
   @_put_command = nil
   @_other_put_command = nil

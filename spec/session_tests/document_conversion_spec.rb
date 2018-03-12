@@ -1,7 +1,3 @@
-require "date"
-require "ravendb"
-require "spec_helper"
-
 describe RavenDB::DocumentConventions do
   NOW = DateTime.now
 

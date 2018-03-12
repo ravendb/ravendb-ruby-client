@@ -1,7 +1,3 @@
-require "ravendb"
-require "securerandom"
-require "spec_helper"
-
 describe RavenDB::DeleteDocumentCommand do
   @_change_vector = nil
   @_other_change_vector = nil
