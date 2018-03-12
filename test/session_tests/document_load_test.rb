@@ -1,11 +1,12 @@
 require "ravendb"
 require "spec_helper"
 
-class DocumentLoadTest < RavenDatabaseTest
+describe RavenDB::DocumentSession do
   def setup
-    super
+    @__test = RavenDatabaseTest.new(nil)
+    @__test.setup
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product101 = Product.new("Products/101", "test")
       product10 = Product.new("Products/10", "test")
       order = Order.new("Orders/105", "testing_order", 92, "Products/101")
@@ -19,8 +20,16 @@ class DocumentLoadTest < RavenDatabaseTest
     end
   end
 
+  def teardown
+    @__test.teardown
+  end
+
+  def store
+    @__test.store
+  end
+
   def test_should_load_existing_document
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load("Products/101")
 
       assert_equal("test", product.name)
@@ -28,7 +37,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_not_load_missing_document
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load("Products/0")
 
       assert(product.nil?)
@@ -36,7 +45,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_load_few_documents
-    @_store.open_session do |session|
+    store.open_session do |session|
       products = session.load(["Products/101", "Products/10"])
 
       assert_equal(2, products.size)
@@ -44,7 +53,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_load_few_documents_with_duplicate_id
-    @_store.open_session do |session|
+    store.open_session do |session|
       products = session.load(["Products/101", "Products/10", "Products/101"])
 
       assert_equal(3, products.size)
@@ -53,7 +62,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_load_track_entity
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load("Products/101")
 
       assert(product.is_a?(Product))
@@ -62,7 +71,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_load_track_entity_with_nested_object
-    @_store.open_session do |session|
+    store.open_session do |session|
       company = session.load("Companies/1")
 
       assert(company.is_a?(Company))
@@ -72,7 +81,7 @@ class DocumentLoadTest < RavenDatabaseTest
   end
 
   def test_should_load_with_includes
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.load("Orders/105", includes: ["product_id"])
       session.load("Products/101")
 
