@@ -162,7 +162,7 @@ describe RavenDB::DocumentStore do
       foo.name = "name changed"
       foo.order = 10
 
-      expect { session.save_changes }.not_to(raise_error(RuntimeError))
+      expect { session.save_changes }.not_to(raise_error)
     end
 
     store.open_session do |session|

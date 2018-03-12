@@ -98,7 +98,7 @@ describe RavenDB::DeleteDocumentCommand do
         end
 
         session.save_changes
-      end.to(raise_error)
+      end.to(raise_error(RavenDB::ConcurrencyException))
     end
   end
 end

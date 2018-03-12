@@ -21,7 +21,7 @@ describe RavenDB::PutIndexesOperation do
 
     expect do
       store.operations.send(described_class.new(@_index))
-    end.not_to raise_error(RavenDB::RavenException)
+    end.not_to raise_error
   end
 
   it "gets index with success" do
@@ -44,7 +44,7 @@ describe RavenDB::PutIndexesOperation do
 
     expect do
       store.operations.send(RavenDB::DeleteIndexOperation.new("delete"))
-    end.not_to(raise_error(RavenDB::RavenException))
+    end.not_to(raise_error)
 
     expect do
       store.operations.send(RavenDB::GetIndexOperation.new("delete"))
