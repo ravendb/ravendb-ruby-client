@@ -698,7 +698,7 @@ module RavenDB
 
         @where_shape.write_to(writer)
 
-        if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
+        if (@distance_error_pct.to_f - SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT).abs > Float::EPSILON
           writer.append(", ")
           writer.append(@distance_error_pct.to_s)
         end

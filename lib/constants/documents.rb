@@ -75,9 +75,9 @@ module RavenDB
   end
 
   class SpatialConstants
-    DefaultDistanceErrorPct = 0.025
-    EarthMeanRadiusKm = 6371.0087714
-    MilesToKm = 1.60934
+    DEFAULT_DISTANCE_ERROR_PCT = 0.025
+    EARTH_MEAN_RADIUS_KM = 6371.0087714
+    MILES_TO_KM = 1.60934
   end
 
   class SpatialUnit

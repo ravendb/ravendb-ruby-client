@@ -497,7 +497,7 @@ module RavenDB
 
     def within_radiusof(field_name, radius_parameter_name, latitude_parameter_name,
                         longitude_parameter_name, radius_units = SpatialUnits::Kilometers,
-                        dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+                        dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       field_name = ensure_valid_field_name(field_name)
 
       append_operator_if_needed(@where_tokens)

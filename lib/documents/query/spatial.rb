@@ -3,27 +3,27 @@ require "documents/query/query_tokens"
 
 module RavenDB
   class SpatialCriteria
-    def self.relates_to_shape(shape_wkt, relation, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.relates_to_shape(shape_wkt, relation, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       WktCriteria.new(shape_wkt, relation, dist_error_percent)
     end
 
-    def self.intersects(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.intersects(shape_wkt, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       relates_to_shape(shape_wkt, SpatialRelation::INTERSECTS, dist_error_percent)
     end
 
-    def self.contains(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.contains(shape_wkt, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       relates_to_shape(shape_wkt, SpatialRelation::CONTAINS, dist_error_percent)
     end
 
-    def self.disjoint(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.disjoint(shape_wkt, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       relates_to_shape(shape_wkt, SpatialRelation::DISJOINT, dist_error_percent)
     end
 
-    def self.within(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.within(shape_wkt, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       relates_to_shape(shape_wkt, SpatialRelation::WITHIN, dist_error_percent)
     end
 
-    def self.within_radius(radius, latitude, longitude, radius_units = nil, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+    def self.within_radius(radius, latitude, longitude, radius_units = nil, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       CircleCriteria.new(radius, latitude, longitude, radius_units, SpatialRelations::Within, dist_error_percent)
     end
 
