@@ -111,7 +111,7 @@ module RavenDB
   class FromToken < QueryToken
     attr_reader :index_name, :collection_name, :is_dynamic
 
-    WhiteSpaceChars = [
+    WHITE_SPACE_CHARS = [
       " ", "\t", "\r", "\n", "\v"
     ].freeze
 
@@ -138,7 +138,7 @@ module RavenDB
           .append(QueryKeyword::From)
           .append(" ")
 
-        if WhiteSpaceChars.any? { |char| @collection_name.include?(char) }
+        if WHITE_SPACE_CHARS.any? { |char| @collection_name.include?(char) }
           if @collection_name.include?('"')
             raise NotSupportedException,
                   "Collection name cannot contain a quote, but was: #{@collection_name}"
