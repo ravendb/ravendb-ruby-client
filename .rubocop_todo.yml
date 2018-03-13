@@ -73,17 +73,6 @@ Naming/AccessorMethodName:
     - 'lib/documents/query/query_builder.rb'
     - 'lib/requests/request_executor.rb'
 
-# Offense count: 102
-Naming/ConstantName:
-  Exclude:
-    - 'lib/constants/database.rb'
-    - 'lib/constants/documents.rb'
-    - 'lib/documents/conventions.rb'
-    - 'lib/documents/query/index_query.rb'
-    - 'lib/documents/query/query_tokens.rb'
-    - 'lib/requests/request_executor.rb'
-    - 'lib/requests/request_helpers.rb'
-
 # Offense count: 9
 # Configuration parameters: NamePrefix, NamePrefixBlacklist, NameWhitelist, MethodDefinitionMacros.
 # NamePrefix: is_, has_, have_
