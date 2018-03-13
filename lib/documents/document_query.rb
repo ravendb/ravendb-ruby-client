@@ -578,7 +578,7 @@ module RavenDB
       self
     end
 
-    def search(field_name, search_terms, operator = SearchOperator::Or)
+    def search(field_name, search_terms, operator = SearchOperator::OR)
       @builder.search(field_name, add_query_parameter(search_terms), operator)
 
       self

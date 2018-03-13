@@ -1,11 +1,11 @@
 module RavenDB
   class SearchOperator
-    Or = "OR".freeze
-    And = "AND".freeze
+    OR = "OR".freeze
+    AND = "AND".freeze
   end
 
   class QueryOperator < SearchOperator
-    Not = "NOT".freeze
+    NOT = "NOT".freeze
   end
 
   class QueryKeyword

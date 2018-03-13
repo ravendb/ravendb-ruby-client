@@ -167,7 +167,7 @@ query = session.query({
 ```ruby
 query
   .wait_for_non_stale_results
-  .using_default_operator(RavenDB::QueryOperator::And)  
+  .using_default_operator(RavenDB::QueryOperator::AND)
   .where_equals('manufacturer', 'Apple')
   .where_equals('in_stock', true)
   .where_between('last_update', DateTime.strptime('2017-10-01T00:00:00', '%Y-%m-%dT%H:%M:%S'), DateTime::now)
@@ -265,7 +265,7 @@ value, exact = nil)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">search(field_name, search_terms, 
-operator = RavenDB::SearchOperator::Or)</pre></td>
+operator = RavenDB::SearchOperator::OR)</pre></td>
         <td>Performs full-text search</td>
     </tr>
     <tr>

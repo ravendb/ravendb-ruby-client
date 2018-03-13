@@ -393,7 +393,7 @@ module RavenDB
       self
     end
 
-    def search(field_name, search_terms_parameter_name, operator = SearchOperator::Or)
+    def search(field_name, search_terms_parameter_name, operator = SearchOperator::OR)
       field_name = ensure_valid_field_name(field_name)
 
       append_operator_if_needed(@where_tokens)
@@ -614,7 +614,7 @@ module RavenDB
         current = current.previous
       end
 
-      token = if QueryOperator::And == @default_operator
+      token = if @default_operator == QueryOperator::AND
                 QueryOperatorToken.and
               else
                 QueryOperatorToken.or

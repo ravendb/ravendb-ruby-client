@@ -263,7 +263,7 @@ module RavenDB
     protected
 
     def token_text
-      QueryOperator::Not
+      QueryOperator::NOT
     end
   end
 
@@ -354,11 +354,11 @@ module RavenDB
 
   class QueryOperatorToken < QueryToken
     def self.and
-      new(QueryOperator::And)
+      new(QueryOperator::AND)
     end
 
     def self.or
-      new(QueryOperator::Or)
+      new(QueryOperator::OR)
     end
 
     def initialize(query_operator)
@@ -505,7 +505,7 @@ module RavenDB
       )
     end
 
-    def self.search(field_name, parameter_name, op = SearchOperator::And)
+    def self.search(field_name, parameter_name, op = SearchOperator::AND)
       new(
         field_name: field_name,
         parameter_name: parameter_name,
@@ -640,7 +640,7 @@ module RavenDB
           .append(" $")
           .append(@from_parameter_name)
           .append(" ")
-          .append(QueryOperator::And)
+          .append(QueryOperator::AND)
           .append(" $")
           .append(@to_parameter_name)
       when WhereOperator::Equals
@@ -672,7 +672,7 @@ module RavenDB
           .append(", $")
           .append(@parameter_name)
 
-        if @search_operator == SearchOperator::And
+        if @search_operator == SearchOperator::AND
           writer
             .append(", ")
             .append(@search_operator)
