@@ -62,7 +62,7 @@ module RavenDB
       @radius = radius
       @latitude = latitude
       @longitude = longitude
-      @radius_units = radius_units || SpatialUnits::Kilometers
+      @radius_units = radius_units || SpatialUnits::KILOMETERS
     end
 
     def get_shape_token(&spatial_parameter_name_generator)

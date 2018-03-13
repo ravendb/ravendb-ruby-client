@@ -81,8 +81,8 @@ module RavenDB
   end
 
   class SpatialUnit
-    Kilometers = "Kilometers".freeze
-    Miles = "Miles".freeze
+    KILOMETERS = "Kilometers".freeze
+    MILES = "Miles".freeze
   end
 
   class RavenServerEvent
