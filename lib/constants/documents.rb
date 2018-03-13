@@ -111,15 +111,15 @@ module RavenDB
   end
 
   class AttachmentType
-    Document = "Document".freeze
-    Revision = "Revision".freeze
+    DOCUMENT = "Document".freeze
+    REVISION = "Revision".freeze
 
     def self.is_document(type)
-      type == Document
+      type == DOCUMENT
     end
 
     def self.is_revision(type)
-      type == Revision
+      type == REVISION
     end
   end
 end

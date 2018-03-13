@@ -400,7 +400,7 @@ attachment_result = store.operations.send(
   RavenDB::GetAttachmentOperation.new(
     'Products/1-A', 
     file_name, 
-    RavenDB::AttachmentType::Document
+    RavenDB::AttachmentType::DOCUMENT
   )
 )
 
