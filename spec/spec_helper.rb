@@ -1,3 +1,6 @@
+require 'simplecov'
+SimpleCov.start
+
 require "ravendb"
 require "date"
 require "securerandom"
