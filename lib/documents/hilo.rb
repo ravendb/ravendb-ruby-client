@@ -53,7 +53,7 @@ module RavenDB
       @range = HiloRangeValue.new
       @generate_id_lock = Mutex.new
       @last_range_at = TypeUtilities.zero_date
-      @identity_parts_separator = DocumentConventions::IDENTITY_PARTS_SEPARATOR
+      @identity_parts_separator = DocumentConventions.identity_parts_separator
     end
 
     def generate_document_id

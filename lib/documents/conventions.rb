@@ -7,11 +7,19 @@ require "utilities/json"
 
 module RavenDB
   class DocumentConventions
-    MAX_NUMBER_OF_REQUEST_PER_SESSION = 30
-    REQUEST_TIMEOUT = 30
-    DEFAULT_USE_OPTIMISTIC_CONCURRENCY = true
-    MAX_LENGTH_OF_QUERY_USING_GET_URL = 1024 + 512
-    IDENTITY_PARTS_SEPARATOR = "/".freeze
+    @max_number_of_request_per_session = 30
+    @request_timeout = 30
+    @default_use_optimistic_concurrency = true
+    @max_length_of_query_using_get_url = 1024 + 512
+    @identity_parts_separator = "/".freeze
+
+    class << self
+      attr_accessor :max_number_of_request_per_session
+      attr_accessor :request_timeout
+      attr_accessor :default_use_optimistic_concurrency
+      attr_accessor :max_length_of_query_using_get_url
+      attr_accessor :identity_parts_separator
+    end
 
     attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
 
