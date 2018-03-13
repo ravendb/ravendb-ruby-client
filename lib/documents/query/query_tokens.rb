@@ -5,7 +5,7 @@ require "utilities/string_utility"
 
 module RavenDB
   class QueryToken
-    QueryKeywords = [
+    QUERY_KEYWORDS = [
       QueryKeyword::AS,
       QueryKeyword::SELECT,
       QueryKeyword::WHERE,
@@ -22,11 +22,11 @@ module RavenDB
     protected
 
     def write_field(writer, field)
-      is_keyword = QueryKeywords.include?(field)
+      is_keyword = QUERY_KEYWORDS.include?(field)
 
-      is_keyword && writer.append("''")
+      writer.append("''") if is_keyword
       writer.append(field)
-      is_keyword && writer.append("''")
+      writer.append("''") if is_keyword
     end
   end
 
