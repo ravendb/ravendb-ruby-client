@@ -106,3 +106,27 @@ Naming/PredicateName:
 # URISchemes: http, https
 Metrics/LineLength:
   Max: 185
+
+# rubocop 0.53.0
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+# rubocop 0.53.0
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+# rubocop-rspec
+RSpec/MultipleExpectations:
+  Enabled: false
+
+# rubocop-rspec
+RSpec/ExampleLength:
+  Enabled: false
+
+# rubocop-rspec
+RSpec/FilePath:
+  Enabled: false
+
+# rubocop-rspec
+RSpec/InstanceVariable:
+  Enabled: false

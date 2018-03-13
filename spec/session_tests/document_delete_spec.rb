@@ -1,52 +1,50 @@
-require "ravendb"
-require "spec_helper"
-
-class DocumentDeleteTest < RavenDatabaseTest
+RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
   IDS = [101, 10, 106, 107].freeze
 
-  def setup
-    super
+  before do
     products = nil
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       IDS.each { |id| session.store(Product.new("Products/#{id}", "test")) }
       session.save_changes
     end
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       products = session.load(IDS.map { |id| "Products/#{id}" })
     end
 
-    @change_vectors = products.map { |product| product.instance_variable_get("@metadata")["@change-vector"] }
+    @change_vectors = products.map do |product|
+      product.instance_variable_get("@metadata")["@change-vector"]
+    end
   end
 
-  def test_should_delete_with_key_with_save_session
+  it "deletes with key with save session" do
     id = "Products/101"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.delete(id)
       session.save_changes
 
       product = session.load(id)
-      assert(product.nil?)
+      expect(product).to be_nil
     end
   end
 
-  def test_should_delete_with_key_without_save_session
+  it "deletes with key without save session" do
     id = "Products/10"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       session.delete(id)
 
       product = session.load(id)
-      assert(product.nil?)
+      expect(product).to be_nil
     end
   end
 
-  def test_should_delete_document_after_it_has_been_changed_and_save_session
+  it "deletes document after it has been changed and save session" do
     id = "Products/107"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(id)
       product.name = "Testing"
 
@@ -54,42 +52,42 @@ class DocumentDeleteTest < RavenDatabaseTest
       session.save_changes
 
       product = session.load(id)
-      assert(product.nil?)
+      expect(product).to be_nil
     end
   end
 
-  def test_should_fail_delete_document_by_id_after_it_has_been_changed
+  it "fails delete document by id after it has been changed" do
     id = "Products/107"
 
-    @_store.open_session do |session|
+    store.open_session do |session|
       product = session.load(id)
       product.name = "Testing"
 
-      assert_raises(RuntimeError) { session.delete(id) }
+      expect { session.delete(id) }.to raise_error(RuntimeError)
     end
   end
 
-  def test_should_delete_with_correct_change_vector
-    @_store.open_session do |session|
-      refute_raises do
+  it "deletes with correct change vector" do
+    store.open_session do |session|
+      expect do
         IDS.each_index do |index|
           session.delete("Products/#{IDS[index]}", expected_change_vector: @change_vectors[index])
         end
 
         session.save_changes
-      end
+      end.not_to raise_error
     end
   end
 
-  def test_should_fail_delete_with_invalid_change_vector
-    @_store.open_session do |session|
-      assert_raises do
+  it "fails delete with invalid change vector" do
+    store.open_session do |session|
+      expect do
         IDS.each_index do |index|
           session.delete("Products/#{IDS[index]}", expected_change_vector: "#{@change_vectors[index]}:BROKEN:VECTOR")
         end
 
         session.save_changes
-      end
+      end.to raise_error(RavenDB::ConcurrencyException)
     end
   end
 end

@@ -1,21 +1,21 @@
-require "ravendb"
-require "spec_helper"
-
-class HiloGeneratorTest < RavenDatabaseTest
+RSpec.describe RavenDB::HiloIdGenerator, database: true do
   COLLECTION = "Products".freeze
 
-  def setup
-    super
-    @generator = RavenDB::HiloIdGenerator.new(@_store, @_current_database, COLLECTION)
+  before do
+    @generator = described_class.new(store, current_database, COLLECTION)
   end
 
-  def test_should_starts_from_1
+  after do
+    @generator.return_unused_range
+  end
+
+  it "starts from 1" do
     id = @generator.generate_document_id
 
-    assert_equal("Products/1-A", id)
+    expect(id).to eq("Products/1-A")
   end
 
-  def test_should_increment_by_1
+  it "increments by 1" do
     id = nil
     prev_id = nil
 
@@ -23,7 +23,7 @@ class HiloGeneratorTest < RavenDatabaseTest
       id = @generator.generate_document_id
 
       unless prev_id.nil?
-        assert_equal(range(id) - range(prev_id), 1)
+        expect(range(id) - range(prev_id)).to eq(1)
       end
 
       prev_id = id
@@ -32,7 +32,7 @@ class HiloGeneratorTest < RavenDatabaseTest
     end
   end
 
-  def test_should_request_new_range
+  it "requests new range" do
     max_id = nil
 
     loop do
@@ -46,12 +46,7 @@ class HiloGeneratorTest < RavenDatabaseTest
     end
 
     @generator.generate_document_id
-    assert(@generator.range.min_id > max_id)
-  end
-
-  def teardown
-    @generator.return_unused_range
-    super
+    expect((@generator.range.min_id > max_id)).to be_truthy
   end
 
   protected

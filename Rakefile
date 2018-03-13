@@ -1,6 +1,9 @@
 require "optparse"
 require "rake/testtask"
-require "ci/reporter/rake/minitest"
+require "ci/reporter/rake/rspec"
+require "rspec/core/rake_task"
+
+RSpec::Core::RakeTask.new(:spec)
 
 Rake::TestTask.new do |task|
   task.libs << "test"
@@ -9,5 +12,5 @@ Rake::TestTask.new do |task|
 end
 
 desc "Run unit tests"
-task default: :test
-task test_ci: ["ci:setup:minitest", :test]
+task default: :spec
+task test_ci: ["ci:setup:rspec", :test]
