@@ -60,18 +60,18 @@ module RavenDB
   end
 
   class FieldConstants
-    CustomSortFieldName = "__customSort".freeze
-    DocumentIdFieldName = "id()".freeze
-    ReduceKeyHashFieldName = "hash(key())".freeze
-    ReduceKeyValueFieldName = "key()".freeze
-    AllFields = "__all_fields".freeze
-    AllStoredFields = "__all_stored_fields".freeze
-    SpatialShapeFieldName = "spatial(shape)".freeze
-    RangeFieldSuffix = "_Range".freeze
-    RangeFieldSuffixLong = "_L_Range".freeze
-    RangeFieldSuffixDouble = "_D_Range".freeze
-    NullValue = "NULL_VALUE".freeze
-    EmptyString = "EMPTY_STRING".freeze
+    CUSTOM_SORT_FIELD_NAME = "__customSort".freeze
+    DOCUMENT_ID_FIELD_NAME = "id()".freeze
+    REDUCE_KEY_HASH_FIELD_NAME = "hash(key())".freeze
+    REDUCE_KEY_VALUE_FIELD_NAME = "key()".freeze
+    ALL_FIELDS = "__all_fields".freeze
+    ALL_STORED_FIELDS = "__all_stored_fields".freeze
+    SPATIAL_SHAPE_FIELD_NAME = "spatial(shape)".freeze
+    RANGE_FIELD_SUFFIX = "_Range".freeze
+    RANGE_FIELD_SUFFIX_LONG = "_L_Range".freeze
+    RANGE_FIELD_SUFFIX_DOUBLE = "_D_Range".freeze
+    NULL_VALUE = "NULL_VALUE".freeze
+    EMPTY_STRING = "EMPTY_STRING".freeze
   end
 
   class SpatialConstants

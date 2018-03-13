@@ -99,7 +99,7 @@ module RavenDB
     end
 
     def custom_sort_using(type_name, descending = false)
-      field_name = "#{FieldConstants::CustomSortFieldName};#{type_name}"
+      field_name = "#{FieldConstants::CUSTOM_SORT_FIELD_NAME};#{type_name}"
 
       if descending
         order_by_descending(field_name)
@@ -580,7 +580,7 @@ module RavenDB
 
       if @is_group_by && !is_nested_path
         if !@id_property_name.nil? && (field_name == @id_property_name)
-          result[:escaped_field_name] = FieldConstants::DocumentIdFieldName
+          result[:escaped_field_name] = FieldConstants::DOCUMENT_ID_FIELD_NAME
         end
 
         emit(RavenServerEvent::EVENT_QUERY_FIELD_VALIDATED, result)
