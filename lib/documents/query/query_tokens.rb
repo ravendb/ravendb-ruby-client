@@ -317,15 +317,15 @@ module RavenDB
       new("random('#{seed.gsub("'", "''")}')")
     end
 
-    def self.create_ascending(field_name, ordering = OrderingType::String)
+    def self.create_ascending(field_name, ordering = OrderingType::STRING)
       new(field_name, false, ordering)
     end
 
-    def self.create_descending(field_name, ordering = OrderingType::String)
+    def self.create_descending(field_name, ordering = OrderingType::STRING)
       new(field_name, true, ordering)
     end
 
-    def initialize(field_name, descending = false, ordering = OrderingType::String)
+    def initialize(field_name, descending = false, ordering = OrderingType::STRING)
       super()
 
       @field_name = field_name
@@ -336,7 +336,7 @@ module RavenDB
     def write_to(writer)
       write_field(writer, @field_name)
 
-      if !@ordering.nil? && (OrderingType::String != @ordering)
+      if !@ordering.nil? && (@ordering != OrderingType::STRING)
         writer
           .append(" ")
           .append(QueryKeyword::AS)

@@ -29,10 +29,10 @@ module RavenDB
   end
 
   class OrderingType
-    String = "string".freeze
-    Long = "long".freeze
-    Double = "double".freeze
-    AlphaNumeric = "alphaNumeric".freeze
+    STRING = "string".freeze
+    LONG = "long".freeze
+    DOUBLE = "double".freeze
+    ALPHA_NUMERIC = "alphaNumeric".freeze
   end
 
   class SpatialRelation
