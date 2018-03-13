@@ -97,11 +97,11 @@ module RavenDB
   end
 
   class PatchStatus
-    DocumentDoesNotExist = "DocumentDoesNotExist".freeze
-    Created = "Created".freeze
-    Patched = "Patched".freeze
-    Skipped = "Skipped".freeze
-    NotModified = "NotModified".freeze
+    DOCUMENT_DOES_NOT_EXIST = "DocumentDoesNotExist".freeze
+    CREATED = "Created".freeze
+    PATCHED = "Patched".freeze
+    SKIPPED = "Skipped".freeze
+    NOT_MODIFIED = "NotModified".freeze
   end
 
   class ConcurrencyCheckMode

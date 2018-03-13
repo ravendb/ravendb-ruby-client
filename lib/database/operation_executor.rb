@@ -176,11 +176,11 @@ module RavenDB
         case command.server_response
         when Net::HTTPNotModified
           patch_result = {
-            Status: PatchStatus::NotModified
+            Status: PatchStatus::NOT_MODIFIED
           }
         when Net::HTTPNotFound
           patch_result = {
-            Status: PatchStatus::DocumentDoesNotExist
+            Status: PatchStatus::DOCUMENT_DOES_NOT_EXIST
           }
         else
           document = nil

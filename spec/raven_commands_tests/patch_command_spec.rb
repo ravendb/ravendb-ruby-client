@@ -12,7 +12,7 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
 
     expect(result).to include(:Status)
     expect(result).to include(:Document)
-    expect(result[:Status]).to eq(RavenDB::PatchStatus::Patched)
+    expect(result[:Status]).to eq(RavenDB::PatchStatus::PATCHED)
     expect(result[:Document]).to be_kind_of(Product)
     expect(result[:Document].name).to eq("testing")
   end
@@ -26,7 +26,7 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
 
     expect(result).to include(:Status)
     expect(result).not_to include(:Document)
-    expect(result[:Status]).to eq(RavenDB::PatchStatus::NotModified)
+    expect(result[:Status]).to eq(RavenDB::PatchStatus::NOT_MODIFIED)
   end
 
   it "patches fail not ignoring missing" do
