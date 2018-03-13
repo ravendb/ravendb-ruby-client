@@ -704,9 +704,9 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Order)
+        .append(QueryKeyword::ORDER)
         .append(" ")
-        .append(QueryKeyword::By)
+        .append(QueryKeyword::BY)
         .append(" ")
 
       tokens.each do |item|
@@ -725,9 +725,9 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Group)
+        .append(QueryKeyword::GROUP)
         .append(" ")
-        .append(QueryKeyword::By)
+        .append(QueryKeyword::BY)
         .append(" ")
 
       tokens.each do |item|
@@ -746,7 +746,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Select)
+        .append(QueryKeyword::SELECT)
         .append(" ")
 
       if (tokens.count == 1) && tokens.first.value.is_a?(DistinctToken)
@@ -776,7 +776,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Include)
+        .append(QueryKeyword::INCLUDE)
         .append(" ")
 
       @includes.each_with_index do |include, index|
@@ -813,7 +813,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Where)
+        .append(QueryKeyword::WHERE)
         .append(" ")
 
       if @is_intersect

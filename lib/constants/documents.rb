@@ -9,23 +9,23 @@ module RavenDB
   end
 
   class QueryKeyword
-    Select = "SELECT".freeze
-    Distinct = "DISTINCT".freeze
-    As = "AS".freeze
-    From = "FROM".freeze
-    Index = "INDEX".freeze
-    Include = "INCLUDE".freeze
-    Where = "WHERE".freeze
-    Group = "GROUP".freeze
-    Order = "ORDER".freeze
-    Load = "LOAD".freeze
-    By = "BY".freeze
-    Asc = "ASC".freeze
-    Desc = "DESC".freeze
-    In = "IN".freeze
-    Between = "BETWEEN".freeze
-    All = "ALL".freeze
-    Update = "UPDATE".freeze
+    SELECT = "SELECT".freeze
+    DISTINCT = "DISTINCT".freeze
+    AS = "AS".freeze
+    FROM = "FROM".freeze
+    INDEX = "INDEX".freeze
+    INCLUDE = "INCLUDE".freeze
+    WHERE = "WHERE".freeze
+    GROUP = "GROUP".freeze
+    ORDER = "ORDER".freeze
+    LOAD = "LOAD".freeze
+    BY = "BY".freeze
+    ASC = "ASC".freeze
+    DESC = "DESC".freeze
+    IN = "IN".freeze
+    BETWEEN = "BETWEEN".freeze
+    ALL = "ALL".freeze
+    UPDATE = "UPDATE".freeze
   end
 
   class OrderingType

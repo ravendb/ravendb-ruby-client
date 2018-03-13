@@ -6,13 +6,13 @@ require "utilities/string_utility"
 module RavenDB
   class QueryToken
     QueryKeywords = [
-      QueryKeyword::As,
-      QueryKeyword::Select,
-      QueryKeyword::Where,
-      QueryKeyword::Load,
-      QueryKeyword::Group,
-      QueryKeyword::Order,
-      QueryKeyword::Include
+      QueryKeyword::AS,
+      QueryKeyword::SELECT,
+      QueryKeyword::WHERE,
+      QueryKeyword::LOAD,
+      QueryKeyword::GROUP,
+      QueryKeyword::ORDER,
+      QueryKeyword::INCLUDE
     ].freeze
 
     def write_to(writer)
@@ -58,7 +58,7 @@ module RavenDB
     protected
 
     def token_text
-      QueryKeyword::Distinct
+      QueryKeyword::DISTINCT
     end
   end
 
@@ -101,7 +101,7 @@ module RavenDB
         next if projection.nil? || (projection == field)
 
         writer.append(" ")
-        writer.append(QueryKeyword::As)
+        writer.append(QueryKeyword::AS)
         writer.append(" ")
         writer.append(projection)
       end
@@ -135,7 +135,7 @@ module RavenDB
 
       if @is_dynamic
         writer
-          .append(QueryKeyword::From)
+          .append(QueryKeyword::FROM)
           .append(" ")
 
         if WHITE_SPACE_CHARS.any? { |char| @collection_name.include?(char) }
@@ -153,9 +153,9 @@ module RavenDB
       end
 
       writer
-        .append(QueryKeyword::From)
+        .append(QueryKeyword::FROM)
         .append(" ")
-        .append(QueryKeyword::Index)
+        .append(QueryKeyword::INDEX)
         .append(" '")
         .append(@index_name)
         .append("'")
@@ -182,7 +182,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@field_name)
     end
@@ -208,7 +208,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@projected_name)
     end
@@ -233,7 +233,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@projected_name)
     end
@@ -339,7 +339,7 @@ module RavenDB
       if !@ordering.nil? && (OrderingType::String != @ordering)
         writer
           .append(" ")
-          .append(QueryKeyword::As)
+          .append(QueryKeyword::AS)
           .append(" ")
           .append(@ordering)
       end
@@ -347,7 +347,7 @@ module RavenDB
       if @descending
         writer
           .append(" ")
-          .append(QueryKeyword::Desc)
+          .append(QueryKeyword::DESC)
       end
     end
   end
@@ -620,23 +620,23 @@ module RavenDB
       when WhereOperator::In
         writer
           .append(" ")
-          .append(QueryKeyword::In)
+          .append(QueryKeyword::IN)
           .append(" ($")
           .append(@parameter_name)
           .append(")")
       when WhereOperator::AllIn
         writer
           .append(" ")
-          .append(QueryKeyword::All)
+          .append(QueryKeyword::ALL)
           .append(" ")
-          .append(QueryKeyword::In)
+          .append(QueryKeyword::IN)
           .append(" ($")
           .append(@parameter_name)
           .append(")")
       when WhereOperator::Between
         writer
           .append(" ")
-          .append(QueryKeyword::Between)
+          .append(QueryKeyword::BETWEEN)
           .append(" $")
           .append(@from_parameter_name)
           .append(" ")
