@@ -66,8 +66,8 @@ module RavenDB
   end
 
   class NodeStatus
-    MaxTimerPeriod = 60 * 5 * 1000
-    TimerPeriodStep = 0.1 * 1000
+    MAX_TIMER_PERIOD = 60 * 5 * 1000
+    TIMER_PERIOD_STEP = 0.1 * 1000
 
     attr_reader :node_index, :node
 
@@ -80,10 +80,10 @@ module RavenDB
     end
 
     def next_timer_period
-      max_period = MaxTimerPeriod
+      max_period = MAX_TIMER_PERIOD
 
       if @_timer_period < max_period
-        @_timer_period += TimerPeriodStep
+        @_timer_period += TIMER_PERIOD_STEP
       end
 
       [max_period, @_timer_period].min
