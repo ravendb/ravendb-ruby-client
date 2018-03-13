@@ -1,42 +1,42 @@
 module RavenDB
   class AccessMode
-    None = "None".freeze
-    ReadOnly = "ReadOnly".freeze
-    ReadWrite = "ReadWrite".freeze
-    Admin = "Admin".freeze
+    NONE = "None".freeze
+    READ_ONLY = "ReadOnly".freeze
+    READ_WRITE = "ReadWrite".freeze
+    ADMIN = "Admin".freeze
   end
 
   class FieldIndexingOption
-    No = "No".freeze
-    Search = "Search".freeze
-    Exact = "Exact".freeze
-    Default = "Default".freeze
+    NO = "No".freeze
+    SEARCH = "Search".freeze
+    EXACT = "Exact".freeze
+    DEFAULT = "Default".freeze
   end
 
   class FieldTermVectorOption
-    No = "No".freeze
-    Yes = "Yes".freeze
-    WithPositions = "WithPositions".freeze
-    WithOffsets = "WithOffsets".freeze
-    WithPositionsAndOffsets = "WithPositionsAndOffsets".freeze
+    NO = "No".freeze
+    YES = "Yes".freeze
+    WITH_POSITIONS = "WithPositions".freeze
+    WITH_OFFSETS = "WithOffsets".freeze
+    WITH_POSITIONS_AND_OFFSETS = "WithPositionsAndOffsets".freeze
   end
 
   class IndexLockMode
-    Unlock = "Unlock".freeze
-    LockedIgnore = "LockedIgnore".freeze
-    LockedError = "LockedError".freeze
-    SideBySide = "SideBySide".freeze
+    UNLOCK = "Unlock".freeze
+    LOCKED_IGNORE = "LockedIgnore".freeze
+    LOCKED_ERROR = "LockedError".freeze
+    SIDE_BY_SIDE = "SideBySide".freeze
   end
 
   class IndexPriority
-    Low = "Low".freeze
-    Normal = "Normal".freeze
-    High = "High".freeze
+    LOW = "Low".freeze
+    NORMAL = "Normal".freeze
+    HIGH = "High".freeze
   end
 
   class OperationStatus
-    Completed = "Completed".freeze
-    Faulted = "Faulted".freeze
-    Running = "Running".freeze
+    COMPLETED = "Completed".freeze
+    FAULTED = "Faulted".freeze
+    RUNNING = "Running".freeze
   end
 end
