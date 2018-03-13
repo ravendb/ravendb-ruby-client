@@ -313,19 +313,19 @@ module RavenDB
         document_id = id
         info = @raw_entities_and_metadata[document]
         metadata = document.instance_variable_get("@metadata")
-        check_mode = ConcurrencyCheckMode::Forced
+        check_mode = ConcurrencyCheckMode::FORCED
 
         if document_id.nil?
           document_id = conventions.get_id_from_document(document)
         end
 
         if change_vector.nil?
-          check_mode = ConcurrencyCheckMode::Disabled
+          check_mode = ConcurrencyCheckMode::DISABLED
         else
           info[:change_vector] = metadata["@change-vector"] = change_vector
 
           unless document_id.nil?
-            check_mode = ConcurrencyCheckMode::Auto
+            check_mode = ConcurrencyCheckMode::AUTO
           end
         end
 
@@ -374,8 +374,8 @@ module RavenDB
         raw_entity = conventions.convert_to_raw_entity(document)
 
         if (DocumentConventions::DEFAULT_USE_OPTIMISTIC_CONCURRENCY &&
-          (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
-           (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
+          (ConcurrencyCheckMode::DISABLED != info[:concurrency_check_mode])) ||
+           (ConcurrencyCheckMode::FORCED == info[:concurrency_check_mode])
           change_vector = info[:change_vector] ||
                           info[:metadata]["@change-vector"] ||
                           conventions.empty_change_vector
@@ -498,7 +498,7 @@ module RavenDB
         metadata: conversion_result[:metadata],
         change_vector: conversion_result[:metadata]["@change-vector"] || nil,
         id: document_id,
-        concurrency_check_mode: ConcurrencyCheckMode::Auto,
+        concurrency_check_mode: ConcurrencyCheckMode::AUTO,
         document_type: conversion_result[:document_type]
       }
     end

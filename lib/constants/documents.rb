@@ -105,9 +105,9 @@ module RavenDB
   end
 
   class ConcurrencyCheckMode
-    Auto = "Auto".freeze
-    Forced = "Forced".freeze
-    Disabled = "Disabled".freeze
+    AUTO = "Auto".freeze
+    FORCED = "Forced".freeze
+    DISABLED = "Disabled".freeze
   end
 
   class AttachmentType
