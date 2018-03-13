@@ -252,7 +252,7 @@ module RavenDB
     end
 
     def increment_requests_count
-      max_requests = DocumentConventions::MaxNumberOfRequestPerSession
+      max_requests = DocumentConventions::MAX_NUMBER_OF_REQUEST_PER_SESSION
 
       @number_of_requests_in_session += 1
 
@@ -261,7 +261,7 @@ module RavenDB
   "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
   "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
   "You can increase the limit by setting RavenDB::DocumentConventions::"\
-  "MaxNumberOfRequestPerSession, but it is advisable "\
+  "MAX_NUMBER_OF_REQUEST_PER_SESSION, but it is advisable "\
   "that you'll look into reducing the number of remote calls first, "\
   "since that will speed up your application significantly and result in a"\
   "more responsive application."
@@ -373,7 +373,7 @@ module RavenDB
         change_vector = nil
         raw_entity = conventions.convert_to_raw_entity(document)
 
-        if (DocumentConventions::DefaultUseOptimisticConcurrency &&
+        if (DocumentConventions::DEFAULT_USE_OPTIMISTIC_CONCURRENCY &&
           (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
            (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
           change_vector = info[:change_vector] ||
@@ -404,7 +404,7 @@ module RavenDB
 
           if info.key?(:expected_change_vector)
             change_vector = info[:expected_change_vector]
-          elsif DocumentConventions::DefaultUseOptimisticConcurrency
+          elsif DocumentConventions::DEFAULT_USE_OPTIMISTIC_CONCURRENCY
             change_vector = info[:change_vector] || info[:metadata]["@change-vector"]
           end
 
