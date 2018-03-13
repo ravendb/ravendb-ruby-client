@@ -413,7 +413,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::Equals
+        where_operator: WhereOperator::EQUALS
       )
     end
 
@@ -422,7 +422,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::NotEquals
+        where_operator: WhereOperator::NOT_EQUALS
       )
     end
 
@@ -430,7 +430,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::StartsWith
+        where_operator: WhereOperator::STARTS_WITH
       )
     end
 
@@ -438,7 +438,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::EndsWith
+        where_operator: WhereOperator::ENDS_WITH
       )
     end
 
@@ -447,7 +447,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::GreaterThan
+        where_operator: WhereOperator::GREATER_THAN
       )
     end
 
@@ -456,7 +456,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::GreaterThanOrEqual
+        where_operator: WhereOperator::GREATER_THAN_OR_EQUAL
       )
     end
 
@@ -465,7 +465,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::LessThan
+        where_operator: WhereOperator::LESS_THAN
       )
     end
 
@@ -474,7 +474,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::LessThanOrEqual
+        where_operator: WhereOperator::LESS_THAN_OR_EQUAL
       )
     end
 
@@ -483,7 +483,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::In
+        where_operator: WhereOperator::IN
       )
     end
 
@@ -491,7 +491,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::AllIn
+        where_operator: WhereOperator::ALL_IN
       )
     end
 
@@ -501,7 +501,7 @@ module RavenDB
         from_parameter_name: from_parameter_name,
         to_parameter_name: to_parameter_name,
         exact: exact,
-        where_operator: WhereOperator::Between
+        where_operator: WhereOperator::BETWEEN
       )
     end
 
@@ -510,7 +510,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         search_operator: op,
-        where_operator: WhereOperator::Search
+        where_operator: WhereOperator::SEARCH
       )
     end
 
@@ -518,14 +518,14 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::Lucene
+        where_operator: WhereOperator::LUCENE
       )
     end
 
     def self.exists(field_name)
       new(
         field_name: field_name,
-        where_operator: WhereOperator::Exists
+        where_operator: WhereOperator::EXISTS
       )
     end
 
@@ -534,7 +534,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Within
+        where_operator: WhereOperator::WITHIN
       )
     end
 
@@ -543,7 +543,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Contains
+        where_operator: WhereOperator::CONTAINS
       )
     end
 
@@ -552,7 +552,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Disjoint
+        where_operator: WhereOperator::DISJOINT
       )
     end
 
@@ -561,7 +561,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Intersects
+        where_operator: WhereOperator::INTERSECTS
       )
     end
 
@@ -600,15 +600,15 @@ module RavenDB
       end
 
       case @where_operator
-      when WhereOperator::Search,
-             WhereOperator::Lucene,
-             WhereOperator::StartsWith,
-             WhereOperator::EndsWith,
-             WhereOperator::Exists,
-             WhereOperator::Within,
-             WhereOperator::Contains,
-             WhereOperator::Disjoint,
-             WhereOperator::Intersects
+      when WhereOperator::SEARCH,
+             WhereOperator::LUCENE,
+             WhereOperator::STARTS_WITH,
+             WhereOperator::ENDS_WITH,
+             WhereOperator::EXISTS,
+             WhereOperator::WITHIN,
+             WhereOperator::CONTAINS,
+             WhereOperator::DISJOINT,
+             WhereOperator::INTERSECTS
         writer
           .append(@where_operator)
           .append("(")
@@ -617,14 +617,14 @@ module RavenDB
       write_field(writer, @field_name)
 
       case @where_operator
-      when WhereOperator::In
+      when WhereOperator::IN
         writer
           .append(" ")
           .append(QueryKeyword::IN)
           .append(" ($")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::AllIn
+      when WhereOperator::ALL_IN
         writer
           .append(" ")
           .append(QueryKeyword::ALL)
@@ -633,7 +633,7 @@ module RavenDB
           .append(" ($")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::Between
+      when WhereOperator::BETWEEN
         writer
           .append(" ")
           .append(QueryKeyword::BETWEEN)
@@ -643,31 +643,31 @@ module RavenDB
           .append(QueryOperator::AND)
           .append(" $")
           .append(@to_parameter_name)
-      when WhereOperator::Equals
+      when WhereOperator::EQUALS
         writer
           .append(" = $")
           .append(@parameter_name)
-      when WhereOperator::NotEquals
+      when WhereOperator::NOT_EQUALS
         writer
           .append(" != $")
           .append(@parameter_name)
-      when WhereOperator::GreaterThan
+      when WhereOperator::GREATER_THAN
         writer
           .append(" > $")
           .append(@parameter_name)
-      when WhereOperator::GreaterThanOrEqual
+      when WhereOperator::GREATER_THAN_OR_EQUAL
         writer
           .append(" >= $")
           .append(@parameter_name)
-      when WhereOperator::LessThan
+      when WhereOperator::LESS_THAN
         writer
           .append(" < $")
           .append(@parameter_name)
-      when WhereOperator::LessThanOrEqual
+      when WhereOperator::LESS_THAN_OR_EQUAL
         writer
           .append(" <= $")
           .append(@parameter_name)
-      when WhereOperator::Search
+      when WhereOperator::SEARCH
         writer
           .append(", $")
           .append(@parameter_name)
@@ -679,20 +679,20 @@ module RavenDB
         end
 
         writer.append(")")
-      when WhereOperator::Lucene,
-             WhereOperator::StartsWith,
-             WhereOperator::EndsWith
+      when WhereOperator::LUCENE,
+             WhereOperator::STARTS_WITH,
+             WhereOperator::ENDS_WITH
         writer
           .append(", $")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::Exists
+      when WhereOperator::EXISTS
         writer
           .append(")")
-      when WhereOperator::Within,
-             WhereOperator::Contains,
-             WhereOperator::Disjoint,
-             WhereOperator::Intersects
+      when WhereOperator::WITHIN,
+             WhereOperator::CONTAINS,
+             WhereOperator::DISJOINT,
+             WhereOperator::INTERSECTS
         writer
           .append(", ")
 

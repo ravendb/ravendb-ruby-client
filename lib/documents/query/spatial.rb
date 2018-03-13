@@ -8,19 +8,19 @@ module RavenDB
     end
 
     def self.intersects(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
-      relates_to_shape(shape_wkt, SpatialRelation::Intersects, dist_error_percent)
+      relates_to_shape(shape_wkt, SpatialRelation::INTERSECTS, dist_error_percent)
     end
 
     def self.contains(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
-      relates_to_shape(shape_wkt, SpatialRelation::Contains, dist_error_percent)
+      relates_to_shape(shape_wkt, SpatialRelation::CONTAINS, dist_error_percent)
     end
 
     def self.disjoint(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
-      relates_to_shape(shape_wkt, SpatialRelation::Disjoint, dist_error_percent)
+      relates_to_shape(shape_wkt, SpatialRelation::DISJOINT, dist_error_percent)
     end
 
     def self.within(shape_wkt, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
-      relates_to_shape(shape_wkt, SpatialRelation::Within, dist_error_percent)
+      relates_to_shape(shape_wkt, SpatialRelation::WITHIN, dist_error_percent)
     end
 
     def self.within_radius(radius, latitude, longitude, radius_units = nil, dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)

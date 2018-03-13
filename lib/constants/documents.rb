@@ -36,27 +36,27 @@ module RavenDB
   end
 
   class SpatialRelation
-    Within = "within".freeze
-    Contains = "contains".freeze
-    Disjoint = "disjoint".freeze
-    Intersects = "intersects".freeze
+    WITHIN = "within".freeze
+    CONTAINS = "contains".freeze
+    DISJOINT = "disjoint".freeze
+    INTERSECTS = "intersects".freeze
   end
 
   class WhereOperator < SpatialRelation
-    Equals = "equals".freeze
-    NotEquals = "notEquals".freeze
-    GreaterThan = "greaterThan".freeze
-    GreaterThanOrEqual = "greaterThanOrEqual".freeze
-    LessThan = "lessThan".freeze
-    LessThanOrEqual = "lessThanOrEqual".freeze
-    In = "in".freeze
-    AllIn = "allIn".freeze
-    Between = "between".freeze
-    Search = "search".freeze
-    Lucene = "lucene".freeze
-    StartsWith = "startsWith".freeze
-    EndsWith = "endsWith".freeze
-    Exists = "exists".freeze
+    EQUALS = "equals".freeze
+    NOT_EQUALS = "notEquals".freeze
+    GREATER_THAN = "greaterThan".freeze
+    GREATER_THAN_OR_EQUAL = "greaterThanOrEqual".freeze
+    LESS_THAN = "lessThan".freeze
+    LESS_THAN_OR_EQUAL = "lessThanOrEqual".freeze
+    IN = "in".freeze
+    ALL_IN = "allIn".freeze
+    BETWEEN = "between".freeze
+    SEARCH = "search".freeze
+    LUCENE = "lucene".freeze
+    STARTS_WITH = "startsWith".freeze
+    ENDS_WITH = "endsWith".freeze
+    EXISTS = "exists".freeze
   end
 
   class FieldConstants
