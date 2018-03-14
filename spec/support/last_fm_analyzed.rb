@@ -14,7 +14,7 @@ class LastFmAnalyzed
     @index_definition = RavenDB::IndexDefinition.new(
       self.class.name, index_map, nil,
       fields: {
-        "query" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::Search)
+        "query" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::SEARCH)
       }
     )
   end

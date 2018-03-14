@@ -252,7 +252,7 @@ module RavenDB
     end
 
     def increment_requests_count
-      max_requests = DocumentConventions::MaxNumberOfRequestPerSession
+      max_requests = DocumentConventions.max_number_of_request_per_session
 
       @number_of_requests_in_session += 1
 
@@ -260,8 +260,8 @@ module RavenDB
         raise "The maximum number of requests (#{max_requests}) allowed for this session has been reached. Raven limits the number "\
   "of remote calls that a session is allowed to make as an early warning system. Sessions are expected to "\
   "be short lived, and Raven provides facilities like batch saves (call save_changes only once) "\
-  "You can increase the limit by setting RavenDB::DocumentConventions::"\
-  "MaxNumberOfRequestPerSession, but it is advisable "\
+  "You can increase the limit by setting RavenDB::DocumentConventions."\
+  "max_number_of_request_per_session, but it is advisable "\
   "that you'll look into reducing the number of remote calls first, "\
   "since that will speed up your application significantly and result in a"\
   "more responsive application."
@@ -313,19 +313,19 @@ module RavenDB
         document_id = id
         info = @raw_entities_and_metadata[document]
         metadata = document.instance_variable_get("@metadata")
-        check_mode = ConcurrencyCheckMode::Forced
+        check_mode = ConcurrencyCheckMode::FORCED
 
         if document_id.nil?
           document_id = conventions.get_id_from_document(document)
         end
 
         if change_vector.nil?
-          check_mode = ConcurrencyCheckMode::Disabled
+          check_mode = ConcurrencyCheckMode::DISABLED
         else
           info[:change_vector] = metadata["@change-vector"] = change_vector
 
           unless document_id.nil?
-            check_mode = ConcurrencyCheckMode::Auto
+            check_mode = ConcurrencyCheckMode::AUTO
           end
         end
 
@@ -373,9 +373,9 @@ module RavenDB
         change_vector = nil
         raw_entity = conventions.convert_to_raw_entity(document)
 
-        if (DocumentConventions::DefaultUseOptimisticConcurrency &&
-          (ConcurrencyCheckMode::Disabled != info[:concurrency_check_mode])) ||
-           (ConcurrencyCheckMode::Forced == info[:concurrency_check_mode])
+        if (DocumentConventions.default_use_optimistic_concurrency &&
+          (ConcurrencyCheckMode::DISABLED != info[:concurrency_check_mode])) ||
+           (ConcurrencyCheckMode::FORCED == info[:concurrency_check_mode])
           change_vector = info[:change_vector] ||
                           info[:metadata]["@change-vector"] ||
                           conventions.empty_change_vector
@@ -404,7 +404,7 @@ module RavenDB
 
           if info.key?(:expected_change_vector)
             change_vector = info[:expected_change_vector]
-          elsif DocumentConventions::DefaultUseOptimisticConcurrency
+          elsif DocumentConventions.default_use_optimistic_concurrency
             change_vector = info[:change_vector] || info[:metadata]["@change-vector"]
           end
 
@@ -498,7 +498,7 @@ module RavenDB
         metadata: conversion_result[:metadata],
         change_vector: conversion_result[:metadata]["@change-vector"] || nil,
         id: document_id,
-        concurrency_check_mode: ConcurrencyCheckMode::Auto,
+        concurrency_check_mode: ConcurrencyCheckMode::AUTO,
         document_type: conversion_result[:document_type]
       }
     end

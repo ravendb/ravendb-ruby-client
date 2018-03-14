@@ -64,7 +64,7 @@ module RavenDB
         "Name" => @_name,
         "Reduce" => @reduce,
         "OutputReduceToCollection" => nil,
-        "Priority" => @priority || IndexPriority::Normal,
+        "Priority" => @priority || IndexPriority::NORMAL,
         "Type" => type
       }
     end

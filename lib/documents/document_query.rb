@@ -84,7 +84,7 @@ module RavenDB
       @index_query_options = @index_query_options.merge(
         cut_off_etag: nil,
         wait_for_non_stale_results: true,
-        wait_for_non_stale_results_timeout: IndexQuery::DefaultTimeout
+        wait_for_non_stale_results_timeout: IndexQuery::DEFAULT_TIMEOUT
       )
 
       self
@@ -94,7 +94,7 @@ module RavenDB
       @index_query_options = @index_query_options.merge(
         cut_off_etag: cut_off_etag,
         wait_for_non_stale_results: true,
-        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DefaultTimeout
+        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DEFAULT_TIMEOUT
       )
 
       self
@@ -105,7 +105,7 @@ module RavenDB
         cut_off_etag: nil,
         wait_for_non_stale_results: true,
         wait_for_non_stale_results_as_of_now: true,
-        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DefaultTimeout
+        wait_for_non_stale_results_timeout: wait_timeout || IndexQuery::DEFAULT_TIMEOUT
       )
 
       self
@@ -125,7 +125,7 @@ module RavenDB
 
     def get_index_query
       skip = 0
-      take = IndexQuery::DefaultPageSize
+      take = IndexQuery::DEFAULT_PAGE_SIZE
       query = @builder.to_string
 
       unless @skip.nil?
@@ -578,7 +578,7 @@ module RavenDB
       self
     end
 
-    def search(field_name, search_terms, operator = SearchOperator::Or)
+    def search(field_name, search_terms, operator = SearchOperator::OR)
       @builder.search(field_name, add_query_parameter(search_terms), operator)
 
       self

@@ -33,18 +33,18 @@ module RavenDB
 
         if @timeout && ((Time.now.to_f - start_time) > @timeout)
           return {
-            status: OperationStatus::Faulted,
+            status: OperationStatus::FAULTED,
             exception: DatabaseLoadTimeoutException.new("The operation did not finish before the timeout end")
           }
         end
 
         case response["Status"]
-        when OperationStatus::Completed
+        when OperationStatus::COMPLETED
           return {
             status: response["Status"],
             response: response
           }
-        when OperationStatus::Faulted
+        when OperationStatus::FAULTED
           exception = ExceptionsFactory.create_from(response["Result"])
 
           if exception.nil?
@@ -57,12 +57,12 @@ module RavenDB
           }
         else
           return {
-            status: OperationStatus::Running
+            status: OperationStatus::RUNNING
           }
         end
       rescue StandardError => exception
         return {
-          status: OperationStatus::Faulted,
+          status: OperationStatus::FAULTED,
           exception: exception
         }
       end
@@ -70,9 +70,9 @@ module RavenDB
 
     def on_next(result)
       case result[:status]
-      when OperationStatus::Completed
+      when OperationStatus::COMPLETED
         result[:response]
-      when OperationStatus::Faulted
+      when OperationStatus::FAULTED
         raise result[:exception]
       else
         sleep 0.5
@@ -176,11 +176,11 @@ module RavenDB
         case command.server_response
         when Net::HTTPNotModified
           patch_result = {
-            Status: PatchStatus::NotModified
+            Status: PatchStatus::NOT_MODIFIED
           }
         when Net::HTTPNotFound
           patch_result = {
-            Status: PatchStatus::DocumentDoesNotExist
+            Status: PatchStatus::DOCUMENT_DOES_NOT_EXIST
           }
         else
           document = nil

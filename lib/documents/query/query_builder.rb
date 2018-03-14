@@ -99,7 +99,7 @@ module RavenDB
     end
 
     def custom_sort_using(type_name, descending = false)
-      field_name = "#{FieldConstants::CustomSortFieldName};#{type_name}"
+      field_name = "#{FieldConstants::CUSTOM_SORT_FIELD_NAME};#{type_name}"
 
       if descending
         order_by_descending(field_name)
@@ -393,7 +393,7 @@ module RavenDB
       self
     end
 
-    def search(field_name, search_terms_parameter_name, operator = SearchOperator::Or)
+    def search(field_name, search_terms_parameter_name, operator = SearchOperator::OR)
       field_name = ensure_valid_field_name(field_name)
 
       append_operator_if_needed(@where_tokens)
@@ -496,8 +496,8 @@ module RavenDB
     end
 
     def within_radiusof(field_name, radius_parameter_name, latitude_parameter_name,
-                        longitude_parameter_name, radius_units = SpatialUnits::Kilometers,
-                        dist_error_percent = SpatialConstants::DefaultDistanceErrorPct)
+                        longitude_parameter_name, radius_units = SpatialUnits::KILOMETERS,
+                        dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
       field_name = ensure_valid_field_name(field_name)
 
       append_operator_if_needed(@where_tokens)
@@ -580,7 +580,7 @@ module RavenDB
 
       if @is_group_by && !is_nested_path
         if !@id_property_name.nil? && (field_name == @id_property_name)
-          result[:escaped_field_name] = FieldConstants::DocumentIdFieldName
+          result[:escaped_field_name] = FieldConstants::DOCUMENT_ID_FIELD_NAME
         end
 
         emit(RavenServerEvent::EVENT_QUERY_FIELD_VALIDATED, result)
@@ -614,7 +614,7 @@ module RavenDB
         current = current.previous
       end
 
-      token = if QueryOperator::And == @default_operator
+      token = if @default_operator == QueryOperator::AND
                 QueryOperatorToken.and
               else
                 QueryOperatorToken.or
@@ -704,9 +704,9 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Order)
+        .append(QueryKeyword::ORDER)
         .append(" ")
-        .append(QueryKeyword::By)
+        .append(QueryKeyword::BY)
         .append(" ")
 
       tokens.each do |item|
@@ -725,9 +725,9 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Group)
+        .append(QueryKeyword::GROUP)
         .append(" ")
-        .append(QueryKeyword::By)
+        .append(QueryKeyword::BY)
         .append(" ")
 
       tokens.each do |item|
@@ -746,7 +746,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Select)
+        .append(QueryKeyword::SELECT)
         .append(" ")
 
       if (tokens.count == 1) && tokens.first.value.is_a?(DistinctToken)
@@ -776,7 +776,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Include)
+        .append(QueryKeyword::INCLUDE)
         .append(" ")
 
       @includes.each_with_index do |include, index|
@@ -813,7 +813,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::Where)
+        .append(QueryKeyword::WHERE)
         .append(" ")
 
       if @is_intersect

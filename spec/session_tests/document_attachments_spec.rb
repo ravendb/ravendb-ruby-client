@@ -27,7 +27,7 @@ RSpec.describe RavenDB::AttachmentOperation, database: true do
         RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif", attachment_raw, "image/gif"))
 
       attachment_result = store.operations.send(
-        RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::Document))
+        RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::DOCUMENT))
 
       expect(attachment_result[:stream]).to eq(attachment_raw)
       expect(attachment_result[:attachment_details][:document_id]).to eq(product.id)
@@ -52,7 +52,7 @@ RSpec.describe RavenDB::AttachmentOperation, database: true do
 
       expect do
         store.operations.send(
-          RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::Document))
+          RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::DOCUMENT))
       end.to raise_error(RavenDB::DocumentDoesNotExistException)
     end
   end

@@ -15,7 +15,7 @@ module RavenDB
   class RequestExecutor
     include Observable
 
-    MaxFirstTopologyUpdatesTries = 5
+    MAX_FIRST_TOPOLOGY_UPDATES_TRIES = 5
     attr_reader :initial_database
 
     def initialize(database, options = {})
@@ -100,7 +100,7 @@ module RavenDB
     protected
 
     def is_first_topology_update_tries_expired?
-      @_first_topology_updates_tries >= MaxFirstTopologyUpdatesTries
+      @_first_topology_updates_tries >= MAX_FIRST_TOPOLOGY_UPDATES_TRIES
     end
 
     def await_first_topology_update

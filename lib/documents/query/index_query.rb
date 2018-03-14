@@ -1,16 +1,16 @@
 module RavenDB
   class IndexQuery
-    DefaultTimeout = 15 * 1000
-    DefaultPageSize = 2**31 - 1
+    DEFAULT_TIMEOUT = 15 * 1000
+    DEFAULT_PAGE_SIZE = 2**31 - 1
 
     attr_accessor :start, :page_size
     attr_reader :query, :query_parameters, :wait_for_non_stale_results,
                 :wait_for_non_stale_results_as_of_now, :wait_for_non_stale_results_timeout
 
-    def initialize(query = "", query_parameters = {}, page_size = DefaultPageSize, skipped_results = 0, options = {})
+    def initialize(query = "", query_parameters = {}, page_size = DEFAULT_PAGE_SIZE, skipped_results = 0, options = {})
       @query = query
       @query_parameters = query_parameters || {}
-      @page_size = page_size || DefaultPageSize
+      @page_size = page_size || DEFAULT_PAGE_SIZE
       @start = skipped_results || 0
       @cut_off_etag = options[:cut_off_etag] || nil
       @wait_for_non_stale_results = options[:wait_for_non_stale_results] || false
@@ -18,14 +18,14 @@ module RavenDB
       @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
 
       unless @page_size.is_a?(Numeric)
-        @page_size = DefaultPageSize
+        @page_size = DEFAULT_PAGE_SIZE
       end
 
       if (@wait_for_non_stale_results ||
           @wait_for_non_stale_results_as_of_now) &&
          !@wait_for_non_stale_results_timeout
 
-        @wait_for_non_stale_results_timeout = DefaultTimeout
+        @wait_for_non_stale_results_timeout = DEFAULT_TIMEOUT
       end
     end
 

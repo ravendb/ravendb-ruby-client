@@ -5,14 +5,14 @@ require "utilities/string_utility"
 
 module RavenDB
   class QueryToken
-    QueryKeywords = [
-      QueryKeyword::As,
-      QueryKeyword::Select,
-      QueryKeyword::Where,
-      QueryKeyword::Load,
-      QueryKeyword::Group,
-      QueryKeyword::Order,
-      QueryKeyword::Include
+    QUERY_KEYWORDS = [
+      QueryKeyword::AS,
+      QueryKeyword::SELECT,
+      QueryKeyword::WHERE,
+      QueryKeyword::LOAD,
+      QueryKeyword::GROUP,
+      QueryKeyword::ORDER,
+      QueryKeyword::INCLUDE
     ].freeze
 
     def write_to(writer)
@@ -22,11 +22,11 @@ module RavenDB
     protected
 
     def write_field(writer, field)
-      is_keyword = QueryKeywords.include?(field)
+      is_keyword = QUERY_KEYWORDS.include?(field)
 
-      is_keyword && writer.append("''")
+      writer.append("''") if is_keyword
       writer.append(field)
-      is_keyword && writer.append("''")
+      writer.append("''") if is_keyword
     end
   end
 
@@ -58,7 +58,7 @@ module RavenDB
     protected
 
     def token_text
-      QueryKeyword::Distinct
+      QueryKeyword::DISTINCT
     end
   end
 
@@ -101,7 +101,7 @@ module RavenDB
         next if projection.nil? || (projection == field)
 
         writer.append(" ")
-        writer.append(QueryKeyword::As)
+        writer.append(QueryKeyword::AS)
         writer.append(" ")
         writer.append(projection)
       end
@@ -111,7 +111,7 @@ module RavenDB
   class FromToken < QueryToken
     attr_reader :index_name, :collection_name, :is_dynamic
 
-    WhiteSpaceChars = [
+    WHITE_SPACE_CHARS = [
       " ", "\t", "\r", "\n", "\v"
     ].freeze
 
@@ -135,10 +135,10 @@ module RavenDB
 
       if @is_dynamic
         writer
-          .append(QueryKeyword::From)
+          .append(QueryKeyword::FROM)
           .append(" ")
 
-        if WhiteSpaceChars.any? { |char| @collection_name.include?(char) }
+        if WHITE_SPACE_CHARS.any? { |char| @collection_name.include?(char) }
           if @collection_name.include?('"')
             raise NotSupportedException,
                   "Collection name cannot contain a quote, but was: #{@collection_name}"
@@ -153,9 +153,9 @@ module RavenDB
       end
 
       writer
-        .append(QueryKeyword::From)
+        .append(QueryKeyword::FROM)
         .append(" ")
-        .append(QueryKeyword::Index)
+        .append(QueryKeyword::INDEX)
         .append(" '")
         .append(@index_name)
         .append("'")
@@ -182,7 +182,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@field_name)
     end
@@ -208,7 +208,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@projected_name)
     end
@@ -233,7 +233,7 @@ module RavenDB
 
       writer
         .append(" ")
-        .append(QueryKeyword::As)
+        .append(QueryKeyword::AS)
         .append(" ")
         .append(@projected_name)
     end
@@ -263,7 +263,7 @@ module RavenDB
     protected
 
     def token_text
-      QueryOperator::Not
+      QueryOperator::NOT
     end
   end
 
@@ -317,15 +317,15 @@ module RavenDB
       new("random('#{seed.gsub("'", "''")}')")
     end
 
-    def self.create_ascending(field_name, ordering = OrderingType::String)
+    def self.create_ascending(field_name, ordering = OrderingType::STRING)
       new(field_name, false, ordering)
     end
 
-    def self.create_descending(field_name, ordering = OrderingType::String)
+    def self.create_descending(field_name, ordering = OrderingType::STRING)
       new(field_name, true, ordering)
     end
 
-    def initialize(field_name, descending = false, ordering = OrderingType::String)
+    def initialize(field_name, descending = false, ordering = OrderingType::STRING)
       super()
 
       @field_name = field_name
@@ -336,10 +336,10 @@ module RavenDB
     def write_to(writer)
       write_field(writer, @field_name)
 
-      if !@ordering.nil? && (OrderingType::String != @ordering)
+      if !@ordering.nil? && (@ordering != OrderingType::STRING)
         writer
           .append(" ")
-          .append(QueryKeyword::As)
+          .append(QueryKeyword::AS)
           .append(" ")
           .append(@ordering)
       end
@@ -347,18 +347,18 @@ module RavenDB
       if @descending
         writer
           .append(" ")
-          .append(QueryKeyword::Desc)
+          .append(QueryKeyword::DESC)
       end
     end
   end
 
   class QueryOperatorToken < QueryToken
     def self.and
-      new(QueryOperator::And)
+      new(QueryOperator::AND)
     end
 
     def self.or
-      new(QueryOperator::Or)
+      new(QueryOperator::OR)
     end
 
     def initialize(query_operator)
@@ -413,7 +413,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::Equals
+        where_operator: WhereOperator::EQUALS
       )
     end
 
@@ -422,7 +422,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::NotEquals
+        where_operator: WhereOperator::NOT_EQUALS
       )
     end
 
@@ -430,7 +430,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::StartsWith
+        where_operator: WhereOperator::STARTS_WITH
       )
     end
 
@@ -438,7 +438,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::EndsWith
+        where_operator: WhereOperator::ENDS_WITH
       )
     end
 
@@ -447,7 +447,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::GreaterThan
+        where_operator: WhereOperator::GREATER_THAN
       )
     end
 
@@ -456,7 +456,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::GreaterThanOrEqual
+        where_operator: WhereOperator::GREATER_THAN_OR_EQUAL
       )
     end
 
@@ -465,7 +465,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::LessThan
+        where_operator: WhereOperator::LESS_THAN
       )
     end
 
@@ -474,7 +474,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::LessThanOrEqual
+        where_operator: WhereOperator::LESS_THAN_OR_EQUAL
       )
     end
 
@@ -483,7 +483,7 @@ module RavenDB
         field_name: field_name,
         parameter_name: parameter_name,
         exact: exact,
-        where_operator: WhereOperator::In
+        where_operator: WhereOperator::IN
       )
     end
 
@@ -491,7 +491,7 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::AllIn
+        where_operator: WhereOperator::ALL_IN
       )
     end
 
@@ -501,16 +501,16 @@ module RavenDB
         from_parameter_name: from_parameter_name,
         to_parameter_name: to_parameter_name,
         exact: exact,
-        where_operator: WhereOperator::Between
+        where_operator: WhereOperator::BETWEEN
       )
     end
 
-    def self.search(field_name, parameter_name, op = SearchOperator::And)
+    def self.search(field_name, parameter_name, op = SearchOperator::AND)
       new(
         field_name: field_name,
         parameter_name: parameter_name,
         search_operator: op,
-        where_operator: WhereOperator::Search
+        where_operator: WhereOperator::SEARCH
       )
     end
 
@@ -518,14 +518,14 @@ module RavenDB
       new(
         field_name: field_name,
         parameter_name: parameter_name,
-        where_operator: WhereOperator::Lucene
+        where_operator: WhereOperator::LUCENE
       )
     end
 
     def self.exists(field_name)
       new(
         field_name: field_name,
-        where_operator: WhereOperator::Exists
+        where_operator: WhereOperator::EXISTS
       )
     end
 
@@ -534,7 +534,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Within
+        where_operator: WhereOperator::WITHIN
       )
     end
 
@@ -543,7 +543,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Contains
+        where_operator: WhereOperator::CONTAINS
       )
     end
 
@@ -552,7 +552,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Disjoint
+        where_operator: WhereOperator::DISJOINT
       )
     end
 
@@ -561,7 +561,7 @@ module RavenDB
         field_name: field_name,
         where_shape: shape,
         distance_error_pct: distance_error_pct,
-        where_operator: WhereOperator::Intersects
+        where_operator: WhereOperator::INTERSECTS
       )
     end
 
@@ -600,15 +600,15 @@ module RavenDB
       end
 
       case @where_operator
-      when WhereOperator::Search,
-             WhereOperator::Lucene,
-             WhereOperator::StartsWith,
-             WhereOperator::EndsWith,
-             WhereOperator::Exists,
-             WhereOperator::Within,
-             WhereOperator::Contains,
-             WhereOperator::Disjoint,
-             WhereOperator::Intersects
+      when WhereOperator::SEARCH,
+             WhereOperator::LUCENE,
+             WhereOperator::STARTS_WITH,
+             WhereOperator::ENDS_WITH,
+             WhereOperator::EXISTS,
+             WhereOperator::WITHIN,
+             WhereOperator::CONTAINS,
+             WhereOperator::DISJOINT,
+             WhereOperator::INTERSECTS
         writer
           .append(@where_operator)
           .append("(")
@@ -617,88 +617,88 @@ module RavenDB
       write_field(writer, @field_name)
 
       case @where_operator
-      when WhereOperator::In
+      when WhereOperator::IN
         writer
           .append(" ")
-          .append(QueryKeyword::In)
+          .append(QueryKeyword::IN)
           .append(" ($")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::AllIn
+      when WhereOperator::ALL_IN
         writer
           .append(" ")
-          .append(QueryKeyword::All)
+          .append(QueryKeyword::ALL)
           .append(" ")
-          .append(QueryKeyword::In)
+          .append(QueryKeyword::IN)
           .append(" ($")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::Between
+      when WhereOperator::BETWEEN
         writer
           .append(" ")
-          .append(QueryKeyword::Between)
+          .append(QueryKeyword::BETWEEN)
           .append(" $")
           .append(@from_parameter_name)
           .append(" ")
-          .append(QueryOperator::And)
+          .append(QueryOperator::AND)
           .append(" $")
           .append(@to_parameter_name)
-      when WhereOperator::Equals
+      when WhereOperator::EQUALS
         writer
           .append(" = $")
           .append(@parameter_name)
-      when WhereOperator::NotEquals
+      when WhereOperator::NOT_EQUALS
         writer
           .append(" != $")
           .append(@parameter_name)
-      when WhereOperator::GreaterThan
+      when WhereOperator::GREATER_THAN
         writer
           .append(" > $")
           .append(@parameter_name)
-      when WhereOperator::GreaterThanOrEqual
+      when WhereOperator::GREATER_THAN_OR_EQUAL
         writer
           .append(" >= $")
           .append(@parameter_name)
-      when WhereOperator::LessThan
+      when WhereOperator::LESS_THAN
         writer
           .append(" < $")
           .append(@parameter_name)
-      when WhereOperator::LessThanOrEqual
+      when WhereOperator::LESS_THAN_OR_EQUAL
         writer
           .append(" <= $")
           .append(@parameter_name)
-      when WhereOperator::Search
+      when WhereOperator::SEARCH
         writer
           .append(", $")
           .append(@parameter_name)
 
-        if @search_operator == SearchOperator::And
+        if @search_operator == SearchOperator::AND
           writer
             .append(", ")
             .append(@search_operator)
         end
 
         writer.append(")")
-      when WhereOperator::Lucene,
-             WhereOperator::StartsWith,
-             WhereOperator::EndsWith
+      when WhereOperator::LUCENE,
+             WhereOperator::STARTS_WITH,
+             WhereOperator::ENDS_WITH
         writer
           .append(", $")
           .append(@parameter_name)
           .append(")")
-      when WhereOperator::Exists
+      when WhereOperator::EXISTS
         writer
           .append(")")
-      when WhereOperator::Within,
-             WhereOperator::Contains,
-             WhereOperator::Disjoint,
-             WhereOperator::Intersects
+      when WhereOperator::WITHIN,
+             WhereOperator::CONTAINS,
+             WhereOperator::DISJOINT,
+             WhereOperator::INTERSECTS
         writer
           .append(", ")
 
         @where_shape.write_to(writer)
 
-        if (@distance_error_pct.to_f - SpatialConstants::DefaultDistanceErrorPct).abs > Float::EPSILON
+        if (@distance_error_pct.to_f - SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT).abs > Float::EPSILON
           writer.append(", ")
           writer.append(@distance_error_pct.to_s)
         end

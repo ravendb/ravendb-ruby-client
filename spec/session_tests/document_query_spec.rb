@@ -55,7 +55,7 @@ RSpec.describe RavenDB::DocumentQuery, database: true do
     store.open_session do |session|
       results = session
                 .query(collection: "Products")
-                .using_default_operator(RavenDB::QueryOperator::And)
+                .using_default_operator(RavenDB::QueryOperator::AND)
                 .where_equals("name", "test107")
                 .where_equals("uid", 5)
                 .wait_for_non_stale_results
