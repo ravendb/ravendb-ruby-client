@@ -21,7 +21,7 @@ module RavenDB
     protected
 
     def cert_wrapper
-      @_cert_wrapper ||= Certificate.create(@certificate, @password)
+      @_cert_wrapper ||= Certificate.new(@certificate, @password)
     end
   end
 
