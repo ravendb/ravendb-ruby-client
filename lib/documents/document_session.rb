@@ -124,7 +124,7 @@ module RavenDB
       if document_or_id.is_a?(String)
         id = document_or_id
 
-        if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
+        if @documents_by_id.key?(id) && document_changed?(@documents_by_id[id])
           raise "Can't delete changed document using identifier. Pass document instance instead"
         end
       else
@@ -365,7 +365,7 @@ module RavenDB
 
     def prepare_update_commands(changes)
       @raw_entities_and_metadata.each do |document, info|
-        unless is_document_changed(document)
+        unless document_changed?(document)
           return nil
         end
 
@@ -439,7 +439,7 @@ module RavenDB
       end
     end
 
-    def is_document_changed(document)
+    def document_changed?(document)
       unless @raw_entities_and_metadata.key?(document)
         return false
       end

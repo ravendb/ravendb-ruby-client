@@ -82,7 +82,6 @@ Naming/AccessorMethodName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'lib/documents/document_session.rb'
     - 'lib/documents/indexes.rb'
     - 'lib/documents/query/query_builder.rb'
     - 'lib/requests/request_executor.rb'
