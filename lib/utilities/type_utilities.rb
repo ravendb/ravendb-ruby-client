@@ -1,6 +1,7 @@
 require "date"
 require "active_support/core_ext/object/deep_dup"
 require "database/exceptions"
+require "active_support/core_ext/object/blank"
 
 module RavenDB
   class TypeUtilities
@@ -55,10 +56,6 @@ module RavenDB
       copy.delete_if { |key| keys.include?(key) }
 
       copy
-    end
-
-    def self.nil_or_whitespace?(string)
-      string.nil? || string.strip.empty?
     end
   end
 end
