@@ -2,6 +2,7 @@
 *.rbc
 /.vscode
 /.idea
+*.sublime-project
 /.config
 /tryouts
 /coverage/
