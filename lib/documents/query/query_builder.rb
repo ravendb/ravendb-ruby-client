@@ -32,7 +32,7 @@ module RavenDB
       @current_clause_depth = 0
     end
 
-    def is_dynamic_map_reduce
+    def dynamic_map_reduce?
       !@group_by_tokens.empty?
     end
 

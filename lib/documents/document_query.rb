@@ -309,8 +309,8 @@ module RavenDB
       self
     end
 
-    def is_dynamic_map_reduce
-      @builder.is_dynamic_map_reduce
+    def dynamic_map_reduce?
+      @builder.dynamic_map_reduce?
     end
 
     def select_fields(fields, projections = nil)
