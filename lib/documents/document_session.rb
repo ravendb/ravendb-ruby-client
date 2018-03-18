@@ -424,7 +424,7 @@ module RavenDB
         document = changes.get_document(index - changes.deferred_commands_count)
 
         next unless @raw_entities_and_metadata.key?(document)
-        metadata = TypeUtilities.omit_keys(command_result, ["Type"])
+        metadata = command_result.except("Type")
         info = @raw_entities_and_metadata[document]
 
         info = info.merge(

@@ -150,7 +150,7 @@ module RavenDB
       metadata = raw_entity.fetch("@metadata", {})
       original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
-      attributes = TypeUtilities.omit_keys(raw_entity, ["@metadata"])
+      attributes = raw_entity.except("@metadata")
       document = JsonSerializer.from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
       set_id_on_document(document, metadata["@id"] || nil)

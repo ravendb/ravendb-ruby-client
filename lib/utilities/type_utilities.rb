@@ -42,20 +42,5 @@ module RavenDB
     def self.zero_date
       DateTime.new(1, 1, 1, 0, 0, 0)
     end
-
-    def self.omit_keys(hash, keys = [])
-      unless hash.is_a?(Hash)
-        raise "Invalid hash argument passed. Should be an Hash"
-      end
-
-      unless keys.is_a?(Array)
-        raise "Invalid keys argument passed. Should be an Array"
-      end
-
-      copy = hash.deep_dup
-      copy.delete_if { |key| keys.include?(key) }
-
-      copy
-    end
   end
 end
