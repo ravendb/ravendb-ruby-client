@@ -60,7 +60,7 @@ module RavenDB
       end
 
       if options.is_a?(Hash)
-        includes = options[:includes] || nil
+        includes = options[:includes]
         nested_object_types = options[:nested_object_types] || {}
       end
 
@@ -118,7 +118,7 @@ module RavenDB
       end
 
       if options.is_a?(Hash)
-        expected_change_vector = options[:expected_change_vector] || nil
+        expected_change_vector = options[:expected_change_vector]
       end
 
       if document_or_id.is_a?(String)
@@ -158,7 +158,7 @@ module RavenDB
       @known_missing_ids.add(id)
       @included_raw_entities_by_id.delete(id)
 
-      document || nil
+      document
     end
 
     def store(document, id = nil, options = nil)
@@ -496,7 +496,7 @@ module RavenDB
         original_value: original_value_source.deep_dup,
         original_metadata: conversion_result[:original_metadata],
         metadata: conversion_result[:metadata],
-        change_vector: conversion_result[:metadata]["@change-vector"] || nil,
+        change_vector: conversion_result[:metadata]["@change-vector"],
         id: document_id,
         concurrency_check_mode: ConcurrencyCheckMode::AUTO,
         document_type: conversion_result[:document_type]

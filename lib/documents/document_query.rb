@@ -23,9 +23,9 @@ module RavenDB
 
       if options.is_a?(Hash)
         with_statistics = options[:with_statistics] || false
-        index_name = options[:index_name] || nil
+        index_name = options[:index_name]
         collection = options[:collection] || "@all_docs"
-        document_type = options[:document_type] || nil
+        document_type = options[:document_type]
         index_query_options = options[:index_query_options] || {}
         nested_object_types = options[:nested_object_types] || {}
       end

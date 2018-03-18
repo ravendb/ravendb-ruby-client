@@ -114,7 +114,7 @@ module RavenDB
               document_type: document_type,
               document_class: document_class,
               document: document_instance
-            ) || nil
+            )
           rescue StandardError
             found_id_property = nil
           end
@@ -153,7 +153,7 @@ module RavenDB
       attributes = raw_entity.except("@metadata")
       document = JsonSerializer.from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
-      set_id_on_document(document, metadata["@id"] || nil)
+      set_id_on_document(document, metadata["@id"])
 
       {
         raw_entity: raw_entity,
@@ -253,7 +253,7 @@ module RavenDB
         id = metadata["@id"]
       end
 
-      id || nil
+      id
     end
 
     def get_type_from_document(document)

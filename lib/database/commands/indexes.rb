@@ -2,7 +2,7 @@ module RavenDB
   class DeleteIndexCommand < RavenCommand
     def initialize(index_name)
       super("", Net::HTTP::Delete::METHOD)
-      @index_name = index_name || nil
+      @index_name = index_name
     end
 
     def create_request(server_node)
@@ -48,7 +48,7 @@ module RavenDB
   class GetIndexCommand < GetIndexesCommand
     def initialize(index_name)
       super()
-      @index_name = index_name || nil
+      @index_name = index_name
     end
 
     def create_request(server_node)

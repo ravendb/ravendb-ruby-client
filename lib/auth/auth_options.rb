@@ -5,7 +5,7 @@ module RavenDB
     attr_reader :certificate, :password
 
     def initialize(certificate, password = nil)
-      @certificate = certificate || nil
+      @certificate = certificate
       @password = password
       @_cert_wrapper = nil
     end

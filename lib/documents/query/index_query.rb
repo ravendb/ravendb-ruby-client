@@ -12,10 +12,10 @@ module RavenDB
       @query_parameters = query_parameters || {}
       @page_size = page_size || DEFAULT_PAGE_SIZE
       @start = skipped_results || 0
-      @cut_off_etag = options[:cut_off_etag] || nil
+      @cut_off_etag = options[:cut_off_etag]
       @wait_for_non_stale_results = options[:wait_for_non_stale_results] || false
       @wait_for_non_stale_results_as_of_now = options[:wait_for_non_stale_results_as_of_now] || false
-      @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout] || nil
+      @wait_for_non_stale_results_timeout = options[:wait_for_non_stale_results_timeout]
 
       unless @page_size.is_a?(Numeric)
         @page_size = DEFAULT_PAGE_SIZE

@@ -2,7 +2,7 @@ module RavenDB
   class CreateDatabaseOperation < ServerOperation
     def initialize(database_document, replication_factor = 1)
       super()
-      @database_document = database_document || nil
+      @database_document = database_document
       @replication_factor = replication_factor || 1
     end
 
@@ -15,8 +15,8 @@ module RavenDB
     def initialize(database_id, hard_delete = false, from_node = nil)
       super()
 
-      @from_node = from_node || nil
-      @database_id = database_id || nil
+      @from_node = from_node
+      @database_id = database_id
       @hard_delete = hard_delete || false
 
       if from_node.is_a?(ServerNode)

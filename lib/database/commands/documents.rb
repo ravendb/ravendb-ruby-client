@@ -3,7 +3,7 @@ module RavenDB
     def initialize(id, change_vector = nil)
       super("", Net::HTTP::Delete::METHOD)
 
-      @id = id || nil
+      @id = id
       @change_vector = change_vector
     end
 
@@ -104,10 +104,10 @@ module RavenDB
       super("", Net::HTTP::Patch::METHOD)
       opts = options || {}
 
-      @id = id || nil
-      @patch = patch || nil
-      @change_vector = opts[:change_vector] || nil
-      @patch_if_missing = opts[:patch_if_missing] || nil
+      @id = id
+      @patch = patch
+      @change_vector = opts[:change_vector]
+      @patch_if_missing = opts[:patch_if_missing]
       @skip_patch_if_change_vector_mismatch = opts[:skip_patch_if_change_vector_mismatch] || false
       @return_debug_information = opts[:return_debug_information] || false
     end
@@ -163,7 +163,7 @@ module RavenDB
     def initialize(id, document, change_vector = nil)
       super(id, change_vector)
 
-      @document = document || nil
+      @document = document
       @method = Net::HTTP::Put::METHOD
     end
 

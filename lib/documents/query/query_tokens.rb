@@ -573,13 +573,13 @@ module RavenDB
       @proximity = nil
       @field_name = where_options[:field_name]
       @where_operator = where_options[:where_operator]
-      @search_operator = where_options[:search_operator] || nil
-      @parameter_name = where_options[:parameter_name] || nil
-      @from_parameter_name = where_options[:from_parameter_name] || nil
-      @to_parameter_name = where_options[:to_parameter_name] || nil
+      @search_operator = where_options[:search_operator]
+      @parameter_name = where_options[:parameter_name]
+      @from_parameter_name = where_options[:from_parameter_name]
+      @to_parameter_name = where_options[:to_parameter_name]
       @exact = where_options[:exact] || false
-      @distance_error_pct = where_options[:distance_error_pct] || nil
-      @where_shape = where_options[:where_shape] || nil
+      @distance_error_pct = where_options[:distance_error_pct]
+      @where_shape = where_options[:where_shape]
     end
 
     def write_to(writer)

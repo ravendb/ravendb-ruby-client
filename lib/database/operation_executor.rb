@@ -11,8 +11,8 @@ require "auth/auth_options"
 module RavenDB
   class OperationAwaiter
     def initialize(request_executor, operation_id, timeout = nil)
-      @request_executor = request_executor || nil
-      @operation_id = operation_id || nil
+      @request_executor = request_executor
+      @operation_id = operation_id
       @timeout = timeout
     end
 

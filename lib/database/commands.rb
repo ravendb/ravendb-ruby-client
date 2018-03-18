@@ -118,7 +118,7 @@ module RavenDB
   class QueryBasedCommand < RavenCommand
     def initialize(method, query, options = nil)
       super("", method)
-      @query = query || nil
+      @query = query
       @options = options || QueryOperationOptions.new
     end
 
@@ -152,7 +152,7 @@ module RavenDB
   class RavenCommandData
     def initialize(id, change_vector)
       @id = id
-      @change_vector = change_vector || nil
+      @change_vector = change_vector
       @type = nil
     end
 

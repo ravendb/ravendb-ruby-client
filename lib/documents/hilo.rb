@@ -90,7 +90,7 @@ module RavenDB
 
       @prefix = response["prefix"]
       @last_batch_size = response["last_size"]
-      @server_tag = response["server_tag"] || nil
+      @server_tag = response["server_tag"]
       @last_range_at = TypeUtilities.parse_date(response["last_range_at"])
 
       HiloRangeValue.new(response["low"], response["high"])
