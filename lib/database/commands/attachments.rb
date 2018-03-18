@@ -93,7 +93,7 @@ module RavenDB
       if response.json(false).nil?
         @_last_response = response
       else
-        super.set_response(response)
+        super(response)
       end
 
       attachment = response.body.force_encoding("ASCII-8BIT")
