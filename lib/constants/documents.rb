@@ -114,11 +114,11 @@ module RavenDB
     DOCUMENT = "Document".freeze
     REVISION = "Revision".freeze
 
-    def self.is_document(type)
+    def self.document?(type)
       type == DOCUMENT
     end
 
-    def self.is_revision(type)
+    def self.revision?(type)
       type == REVISION
     end
   end

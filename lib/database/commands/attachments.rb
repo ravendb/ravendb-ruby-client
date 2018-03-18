@@ -74,7 +74,7 @@ module RavenDB
       super(document_id, name, change_vector)
 
       raise ArgumentError, "Change Vector cannot be null for non-document attachment type" if
-        @_change_vector.nil? && !AttachmentType.is_document(type)
+        @_change_vector.nil? && !AttachmentType.document?(type)
 
       @_type = type
     end
@@ -82,7 +82,7 @@ module RavenDB
     def create_request(server_node)
       super(server_node)
 
-      return if AttachmentType.is_document(@_type)
+      return if AttachmentType.document?(@_type)
 
       @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
       @method = Net::HTTP::Post::METHOD
