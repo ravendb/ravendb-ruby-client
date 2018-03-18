@@ -82,8 +82,6 @@ Naming/AccessorMethodName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'lib/documents/query/query_builder.rb'
-    - 'lib/requests/request_executor.rb'
     - 'lib/utilities/type_utilities.rb'
 
 # Offense count: 294
