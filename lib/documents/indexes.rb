@@ -32,7 +32,7 @@ module RavenDB
       result
     end
 
-    def is_map_reduce
+    def map_reduce?
       @reduce > 0
     end
 
