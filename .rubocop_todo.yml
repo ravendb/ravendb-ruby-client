@@ -58,7 +58,6 @@ Metrics/PerceivedComplexity:
 # Offense count: 26
 Naming/AccessorMethodName:
   Exclude:
-    - 'lib/auth/auth_options.rb'
     - 'lib/database/commands.rb'
     - 'lib/database/commands/attachments.rb'
     - 'lib/database/commands/batch.rb'

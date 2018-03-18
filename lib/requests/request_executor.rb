@@ -347,8 +347,8 @@ module RavenDB
           end
 
           client.use_ssl = true
-          client.key = @_auth_options.get_rsa_key
-          client.cert = @_auth_options.get_x509_certificate
+          client.key = @_auth_options.rsa_key
+          client.cert = @_auth_options.x509_certificate
         end
 
         @_http_clients[url] = client
