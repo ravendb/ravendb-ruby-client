@@ -86,7 +86,7 @@ module RavenDB
       document_class = nil
       document_instance = document
 
-      if TypeUtilities.is_document?(document_or_class)
+      if TypeUtilities.document?(document_or_class)
         document_class = document_or_class.class
         document_instance = document_or_class
       elsif document_or_class.is_a?(Class)
@@ -257,7 +257,7 @@ module RavenDB
     end
 
     def get_type_from_document(document)
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 
@@ -282,7 +282,7 @@ module RavenDB
       metadata = {}
       nested_types = {}
 
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 
@@ -321,7 +321,7 @@ module RavenDB
         return "date"
       end
 
-      if TypeUtilities.is_document?(instance_variable_value)
+      if TypeUtilities.document?(instance_variable_value)
         return get_document_type(instance_variable_value.class)
       end
 

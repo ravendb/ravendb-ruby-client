@@ -4,10 +4,10 @@ module RavenDB
       super("", Net::HTTP::Get::METHOD)
 
       raise ArgumentError, "Document ID can't be empty" if
-        TypeUtilities.is_nil_or_whitespace?(document_id)
+        TypeUtilities.nil_or_whitespace?(document_id)
 
       raise ArgumentError, "Attachment name can't be empty" if
-        TypeUtilities.is_nil_or_whitespace?(name)
+        TypeUtilities.nil_or_whitespace?(name)
 
       @_document_id = document_id
       @_name = name
@@ -43,7 +43,7 @@ module RavenDB
         @headers["If-Match"] = "\"#{@_change_vector}\""
       end
 
-      return if TypeUtilities.is_nil_or_whitespace?(@_content_type)
+      return if TypeUtilities.nil_or_whitespace?(@_content_type)
 
       @headers["Content-Type"] = @_content_type
       @params["contentType"] = @_content_type

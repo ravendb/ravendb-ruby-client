@@ -82,7 +82,6 @@ Naming/AccessorMethodName:
 Naming/PredicateName:
   Exclude:
     - 'spec/**/*'
-    - 'lib/utilities/type_utilities.rb'
 
 # Offense count: 294
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

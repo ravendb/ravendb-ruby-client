@@ -13,7 +13,7 @@ module RavenDB
       Array, Range, Date, DateTime
     ].freeze
 
-    def self.is_document?(object)
+    def self.document?(object)
       object.is_a?(Object) && (!!object != object)
       BASIC_TYPES.all? do |basic_type|
         !object.is_a?(basic_type)
@@ -57,7 +57,7 @@ module RavenDB
       copy
     end
 
-    def self.is_nil_or_whitespace?(string)
+    def self.nil_or_whitespace?(string)
       string.nil? || string.strip.empty?
     end
   end

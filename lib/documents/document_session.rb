@@ -113,7 +113,7 @@ module RavenDB
       document = nil
       expected_change_vector = nil
 
-      unless document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id)
+      unless document_or_id.is_a?(String) || TypeUtilities.document?(document_or_id)
         raise "Invalid argument passed. Should be document model instance or document id string"
       end
 
@@ -295,7 +295,7 @@ module RavenDB
     end
 
     def check_document_and_metadata_before_store(document = nil)
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 

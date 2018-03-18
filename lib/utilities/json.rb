@@ -39,7 +39,7 @@ module RavenDB
     def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil)
       mappings = {}
 
-      unless TypeUtilities.is_document?(target)
+      unless TypeUtilities.document?(target)
         raise "Invalid target passed. Should be a user-defined class instance"
       end
 
@@ -101,7 +101,7 @@ module RavenDB
     def self.to_json(source, conventions = nil, parent_path = nil)
       json = {}
 
-      unless TypeUtilities.is_document?(source)
+      unless TypeUtilities.document?(source)
         raise "Invalid source passed. Should be a user-defined class instance"
       end
 
@@ -225,7 +225,7 @@ module RavenDB
           return TypeUtilities.stringify_date(variable_value)
         end
 
-        if TypeUtilities.is_document?(variable_value)
+        if TypeUtilities.document?(variable_value)
           return to_json(variable_value, conventions, build_path(variable, parent_path))
         end
 
