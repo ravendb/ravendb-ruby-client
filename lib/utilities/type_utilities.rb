@@ -1,6 +1,7 @@
 require "date"
 require "active_support/core_ext/object/deep_dup"
 require "database/exceptions"
+require "active_support/core_ext/object/blank"
 
 module RavenDB
   class TypeUtilities
@@ -13,7 +14,7 @@ module RavenDB
       Array, Range, Date, DateTime
     ].freeze
 
-    def self.is_document?(object)
+    def self.document?(object)
       object.is_a?(Object) && (!!object != object)
       BASIC_TYPES.all? do |basic_type|
         !object.is_a?(basic_type)
@@ -40,25 +41,6 @@ module RavenDB
 
     def self.zero_date
       DateTime.new(1, 1, 1, 0, 0, 0)
-    end
-
-    def self.omit_keys(hash, keys = [])
-      unless hash.is_a?(Hash)
-        raise "Invalid hash argument passed. Should be an Hash"
-      end
-
-      unless keys.is_a?(Array)
-        raise "Invalid keys argument passed. Should be an Array"
-      end
-
-      copy = hash.deep_dup
-      copy.delete_if { |key| keys.include?(key) }
-
-      copy
-    end
-
-    def self.is_nil_or_whitespace?(string)
-      string.nil? || string.strip.empty?
     end
   end
 end

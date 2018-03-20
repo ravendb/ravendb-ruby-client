@@ -7,8 +7,8 @@ module RavenDB
       @_name = name
       @configuration = configuration || {}
       @reduce = init_options[:reduce] || 0
-      @lock_mode = init_options[:lock_mode] || nil
-      @priority = init_options[:priority] || nil
+      @lock_mode = init_options[:lock_mode]
+      @priority = init_options[:priority]
       @is_test_index = init_options[:is_test_index] || false
       @fields = init_options[:fields] || {}
       @maps = index_map.is_a?(Array) ? index_map : [index_map]
@@ -32,7 +32,7 @@ module RavenDB
       result
     end
 
-    def is_map_reduce
+    def map_reduce?
       @reduce > 0
     end
 
@@ -84,11 +84,11 @@ module RavenDB
 
       {
         "Analyzer" => @analyzer,
-        "Indexing" => @indexing || nil,
+        "Indexing" => @indexing,
         "Spatial" => nil,
         "Storage" => storage,
         "Suggestions" => @suggestions,
-        "TermVector" => @term_vector || nil
+        "TermVector" => @term_vector
       }
     end
   end

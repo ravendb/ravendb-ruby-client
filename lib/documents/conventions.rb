@@ -86,7 +86,7 @@ module RavenDB
       document_class = nil
       document_instance = document
 
-      if TypeUtilities.is_document?(document_or_class)
+      if TypeUtilities.document?(document_or_class)
         document_class = document_or_class.class
         document_instance = document_or_class
       elsif document_or_class.is_a?(Class)
@@ -114,7 +114,7 @@ module RavenDB
               document_type: document_type,
               document_class: document_class,
               document: document_instance
-            ) || nil
+            )
           rescue StandardError
             found_id_property = nil
           end
@@ -150,10 +150,10 @@ module RavenDB
       metadata = raw_entity.fetch("@metadata", {})
       original_metadata = metadata.deep_dup
       doc_ctor = get_document_constructor(doc_type)
-      attributes = TypeUtilities.omit_keys(raw_entity, ["@metadata"])
+      attributes = raw_entity.except("@metadata")
       document = JsonSerializer.from_json(doc_ctor.new, attributes, metadata, nested_object_types, self)
 
-      set_id_on_document(document, metadata["@id"] || nil)
+      set_id_on_document(document, metadata["@id"])
 
       {
         raw_entity: raw_entity,
@@ -253,11 +253,11 @@ module RavenDB
         id = metadata["@id"]
       end
 
-      id || nil
+      id
     end
 
     def get_type_from_document(document)
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 
@@ -282,7 +282,7 @@ module RavenDB
       metadata = {}
       nested_types = {}
 
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 
@@ -321,7 +321,7 @@ module RavenDB
         return "date"
       end
 
-      if TypeUtilities.is_document?(instance_variable_value)
+      if TypeUtilities.document?(instance_variable_value)
         return get_document_type(instance_variable_value.class)
       end
 

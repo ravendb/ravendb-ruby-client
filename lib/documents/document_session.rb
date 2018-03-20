@@ -60,7 +60,7 @@ module RavenDB
       end
 
       if options.is_a?(Hash)
-        includes = options[:includes] || nil
+        includes = options[:includes]
         nested_object_types = options[:nested_object_types] || {}
       end
 
@@ -113,18 +113,18 @@ module RavenDB
       document = nil
       expected_change_vector = nil
 
-      unless document_or_id.is_a?(String) || TypeUtilities.is_document?(document_or_id)
+      unless document_or_id.is_a?(String) || TypeUtilities.document?(document_or_id)
         raise "Invalid argument passed. Should be document model instance or document id string"
       end
 
       if options.is_a?(Hash)
-        expected_change_vector = options[:expected_change_vector] || nil
+        expected_change_vector = options[:expected_change_vector]
       end
 
       if document_or_id.is_a?(String)
         id = document_or_id
 
-        if @documents_by_id.key?(id) && is_document_changed(@documents_by_id[id])
+        if @documents_by_id.key?(id) && document_changed?(@documents_by_id[id])
           raise "Can't delete changed document using identifier. Pass document instance instead"
         end
       else
@@ -158,7 +158,7 @@ module RavenDB
       @known_missing_ids.add(id)
       @included_raw_entities_by_id.delete(id)
 
-      document || nil
+      document
     end
 
     def store(document, id = nil, options = nil)
@@ -295,7 +295,7 @@ module RavenDB
     end
 
     def check_document_and_metadata_before_store(document = nil)
-      unless TypeUtilities.is_document?(document)
+      unless TypeUtilities.document?(document)
         raise "Invalid argument passed. Should be an document"
       end
 
@@ -365,7 +365,7 @@ module RavenDB
 
     def prepare_update_commands(changes)
       @raw_entities_and_metadata.each do |document, info|
-        unless is_document_changed(document)
+        unless document_changed?(document)
           return nil
         end
 
@@ -424,7 +424,7 @@ module RavenDB
         document = changes.get_document(index - changes.deferred_commands_count)
 
         next unless @raw_entities_and_metadata.key?(document)
-        metadata = TypeUtilities.omit_keys(command_result, ["Type"])
+        metadata = command_result.except("Type")
         info = @raw_entities_and_metadata[document]
 
         info = info.merge(
@@ -439,7 +439,7 @@ module RavenDB
       end
     end
 
-    def is_document_changed(document)
+    def document_changed?(document)
       unless @raw_entities_and_metadata.key?(document)
         return false
       end
@@ -496,7 +496,7 @@ module RavenDB
         original_value: original_value_source.deep_dup,
         original_metadata: conversion_result[:original_metadata],
         metadata: conversion_result[:metadata],
-        change_vector: conversion_result[:metadata]["@change-vector"] || nil,
+        change_vector: conversion_result[:metadata]["@change-vector"],
         id: document_id,
         concurrency_check_mode: ConcurrencyCheckMode::AUTO,
         document_type: conversion_result[:document_type]

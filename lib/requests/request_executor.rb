@@ -99,7 +99,7 @@ module RavenDB
 
     protected
 
-    def is_first_topology_update_tries_expired?
+    def first_topology_update_tries_expired?
       @_first_topology_updates_tries >= MAX_FIRST_TOPOLOGY_UPDATES_TRIES
     end
 
@@ -123,7 +123,7 @@ module RavenDB
 
       if @_first_topology_update_exception.is_a?(AuthorizationException)
         raise @_first_topology_update_exception
-      elsif is_first_topology_update_tries_expired?
+      elsif first_topology_update_tries_expired?
         raise DatabaseLoadFailureException, "Max topology update tries reached"
       else
         sleep 0.1
@@ -202,7 +202,7 @@ module RavenDB
     end
 
     def start_first_topology_update(urls = [])
-      if is_first_topology_update_tries_expired?
+      if first_topology_update_tries_expired?
         return
       end
 
@@ -347,8 +347,8 @@ module RavenDB
           end
 
           client.use_ssl = true
-          client.key = @_auth_options.get_rsa_key
-          client.cert = @_auth_options.get_x509_certificate
+          client.key = @_auth_options.rsa_key
+          client.cert = @_auth_options.x509_certificate
         end
 
         @_http_clients[url] = client

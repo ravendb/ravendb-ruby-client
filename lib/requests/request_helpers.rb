@@ -116,7 +116,7 @@ module RavenDB
 
     def initialize(script, values = nil)
       @values = values || {}
-      @script = script || nil
+      @script = script
     end
 
     def to_json

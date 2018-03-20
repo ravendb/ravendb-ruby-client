@@ -40,7 +40,7 @@ module RavenDB
       super(id, change_vector)
 
       @type = Net::HTTP::Patch::METHOD
-      @scripted_patch = scripted_patch || nil
+      @scripted_patch = scripted_patch
       @patch_if_missing = patch_if_missing
       @debug_mode = debug_mode
       @additional_data = nil
@@ -65,7 +65,7 @@ module RavenDB
       super(id, change_vector)
 
       @type = Net::HTTP::Put::METHOD
-      @document = document || nil
+      @document = document
       @metadata = metadata
     end
 

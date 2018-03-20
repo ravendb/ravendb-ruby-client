@@ -2,7 +2,7 @@ module RavenDB
   class DeleteIndexOperation < AdminOperation
     def initialize(index_name)
       super()
-      @index_name = index_name || nil
+      @index_name = index_name
     end
 
     def get_command(conventions)
@@ -25,7 +25,7 @@ module RavenDB
   class GetIndexOperation < AdminOperation
     def initialize(index_name)
       super()
-      @index_name = index_name || nil
+      @index_name = index_name
     end
 
     def get_command(conventions)

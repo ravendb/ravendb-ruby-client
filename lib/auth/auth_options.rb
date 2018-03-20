@@ -5,24 +5,23 @@ module RavenDB
     attr_reader :certificate, :password
 
     def initialize(certificate, password = nil)
-      @certificate = certificate || nil
+      @certificate = certificate
       @password = password
       @_cert_wrapper = nil
     end
 
-    def get_rsa_key
-      get_cert_wrapper.rsa_key
+    def rsa_key
+      cert_wrapper.rsa_key
     end
 
-    def get_x509_certificate
-      get_cert_wrapper.x509_cert
+    def x509_certificate
+      cert_wrapper.x509_cert
     end
 
     protected
 
-    def get_cert_wrapper
-      @_cert_wrapper ||= Certificate
-                         .create(@certificate, @password)
+    def cert_wrapper
+      @_cert_wrapper ||= Certificate.new(@certificate, @password)
     end
   end
 

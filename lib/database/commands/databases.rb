@@ -3,7 +3,7 @@ module RavenDB
     attr_reader :database_id, :settings
 
     def initialize(database_id, settings = {}, disabled = false, encrypted = false)
-      @database_id = database_id || nil
+      @database_id = database_id
       @settings = settings
       @disabled = disabled
       @encrypted = encrypted
@@ -22,7 +22,7 @@ module RavenDB
   class CreateDatabaseCommand < RavenCommand
     def initialize(database_document, replication_factor = 1)
       super("", Net::HTTP::Put::METHOD)
-      @database_document = database_document || nil
+      @database_document = database_document
       @replication_factor = replication_factor || 1
     end
 
@@ -51,9 +51,9 @@ module RavenDB
       super("", Net::HTTP::Delete::METHOD)
 
       @database_id = database_id
-      @from_node = from_node || nil
+      @from_node = from_node
       @hard_delete = hard_delete || false
-      @time_to_wait_for_confirmation = time_to_wait_for_confirmation || nil
+      @time_to_wait_for_confirmation = time_to_wait_for_confirmation
 
       @from_node = from_node.cluster_tag if @from_node.is_a?(ServerNode)
     end
@@ -104,7 +104,7 @@ module RavenDB
   class GetOperationStateCommand < RavenCommand
     def initialize(id)
       super("", Net::HTTP::Get::METHOD)
-      @id = id || nil
+      @id = id
     end
 
     def create_request(server_node)
