@@ -3,12 +3,12 @@ require "constants/database"
 
 module RavenDB
   class IndexDefinition
-    def initialize(name:, index_map:, configuration: {}, reduce: 0, lock_mode: nil, init_options: {})
+    def initialize(name:, index_map:, configuration: {}, reduce: 0, lock_mode: nil, priority: nil, init_options: {})
       @_name = name
       @configuration = configuration
       @reduce = reduce
       @lock_mode = lock_mode
-      @priority = init_options[:priority]
+      @priority = priority
       @is_test_index = init_options[:is_test_index] || false
       @fields = init_options[:fields] || {}
       @maps = index_map.is_a?(Array) ? index_map : [index_map]
