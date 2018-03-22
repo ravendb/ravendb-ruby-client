@@ -18,7 +18,7 @@ RSpec.describe RavenDB::SpatialCriteria, database: true, rdbc_145: true do
     index_definition = RavenDB::IndexDefinition.new(
       name: "eventsByLatLng",
       index_map: index_map,
-      init_options: {fields: fields}
+      fields: fields
     )
     store.operations.send(RavenDB::PutIndexesOperation.new(index_definition))
 
@@ -26,7 +26,7 @@ RSpec.describe RavenDB::SpatialCriteria, database: true, rdbc_145: true do
     index_definition2 = RavenDB::IndexDefinition.new(
       name: "eventsByLatLngWSpecialField",
       index_map: index_map,
-      init_options: {fields: fields}
+      fields: fields
     )
     store.operations.send(RavenDB::PutIndexesOperation.new(index_definition2))
 
