@@ -3,9 +3,9 @@ require "constants/database"
 
 module RavenDB
   class IndexDefinition
-    def initialize(name:, index_map:, configuration: nil, init_options: {})
+    def initialize(name:, index_map:, configuration: {}, init_options: {})
       @_name = name
-      @configuration = configuration || {}
+      @configuration = configuration
       @reduce = init_options[:reduce] || 0
       @lock_mode = init_options[:lock_mode]
       @priority = init_options[:priority]
