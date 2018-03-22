@@ -309,10 +309,7 @@ module RavenDB
     end
 
     def self.create_random(seed)
-      if seed.nil?
-        raise ArgumentError,
-              "Seed can't be null"
-      end
+      raise ArgumentError, "Seed can't be null" if seed.nil?
 
       new("random('#{seed.gsub("'", "''")}')")
     end
