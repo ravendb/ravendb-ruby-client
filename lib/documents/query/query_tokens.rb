@@ -288,24 +288,20 @@ module RavenDB
       new("score()", true)
     end
 
-    def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = if longitude_parameter_name.nil?
-                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
-                   else
-                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
-                   end
+    def self._distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      if longitude_parameter_name.nil?
+        "spatial.distance(#{field_name}, spatial.wkt($#{latitude_or_shape_wkt_parameter_name}))"
+      else
+        "spatial.distance(#{field_name}, spatial.point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      end
+    end
 
-      new(expression)
+    def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      new(_distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
     end
 
     def self.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = if longitude_parameter_name.nil?
-                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
-                   else
-                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
-                   end
-
-      new(expression, true)
+      new(_distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name), true)
     end
 
     def self.create_random(seed)
