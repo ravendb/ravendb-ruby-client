@@ -1,5 +1,6 @@
 require "constants/documents"
 require "constants/database"
+require "active_support/core_ext/array/wrap"
 
 module RavenDB
   class IndexDefinition
@@ -11,7 +12,7 @@ module RavenDB
       @priority = priority
       @is_test_index = is_test_index
       @fields = fields
-      @maps = index_map.is_a?(Array) ? index_map : [index_map]
+      @maps = Array.wrap(index_map)
     end
 
     def name
