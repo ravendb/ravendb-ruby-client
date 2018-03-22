@@ -24,7 +24,7 @@ module RavenDB
     end
 
     def self.within_radius(radius, latitude, longitude, radius_units = nil, dist_error_percent = SpatialConstants::DEFAULT_DISTANCE_ERROR_PCT)
-      CircleCriteria.new(radius, latitude, longitude, radius_units, SpatialRelations::Within, dist_error_percent)
+      CircleCriteria.new(radius, latitude, longitude, radius_units, SpatialRelation::WITHIN, dist_error_percent)
     end
 
     def initialize(relation, dist_error_percent)
@@ -41,13 +41,13 @@ module RavenDB
       shape_token = get_shape_token(&spatial_parameter_name_generator)
 
       case @relation
-      when SpatialRelations::Intersects
+      when SpatialRelation::INTERSECTS
         relation_token = WhereToken.intersects(field_name, shape_token, @distance_error_pct)
-      when SpatialRelations::Contains
+      when SpatialRelation::CONTAINS
         relation_token = WhereToken.contains(field_name, shape_token, @distance_error_pct)
-      when SpatialRelations::Within
+      when SpatialRelation::WITHIN
         relation_token = WhereToken.within(field_name, shape_token, @distance_error_pct)
-      when SpatialRelations::Disjoint
+      when SpatialRelation::DISJOINT
         relation_token = WhereToken.disjoint(field_name, shape_token, @distance_error_pct)
       end
 
