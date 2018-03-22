@@ -6,7 +6,7 @@ RSpec.describe RavenDB::QueryCommand, database: true do
       "Name = doc.Name,"\
       "DocNumber = doc.DocNumber} "
 
-    index_sort = RavenDB::IndexDefinition.new("Testing_Sort", index_map)
+    index_sort = RavenDB::IndexDefinition.new(name: "Testing_Sort", index_map: index_map)
     store.operations.send(RavenDB::PutIndexesOperation.new(index_sort))
 
     (0..99).each do |i|

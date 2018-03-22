@@ -12,15 +12,22 @@ RSpec.describe RavenDB::SpatialCriteria, database: true, rdbc_145: true do
       Shop.new("Shops/3-A", 44.418686, 34.043219)
     ]
 
-    configuration = nil
     fields = {"tag" => RavenDB::IndexFieldOptions.new(RavenDB::FieldIndexingOption::EXACT)}
 
-    query = "from e in docs.Shops select new { e.venue, coordinates = CreateSpatialField(e.latitude, e.longitude) }"
-    index_definition = RavenDB::IndexDefinition.new("eventsByLatLng", query, configuration, fields)
+    index_map = "from e in docs.Shops select new { e.venue, coordinates = CreateSpatialField(e.latitude, e.longitude) }"
+    index_definition = RavenDB::IndexDefinition.new(
+      name: "eventsByLatLng",
+      index_map: index_map,
+      init_options: {fields: fields}
+    )
     store.operations.send(RavenDB::PutIndexesOperation.new(index_definition))
 
-    query = "from e in docs.Shops select new { e.venue, mySpacialField = CreateSpatialField(e.latitude, e.longitude) }"
-    index_definition2 = RavenDB::IndexDefinition.new("eventsByLatLngWSpecialField", query, configuration, fields)
+    index_map = "from e in docs.Shops select new { e.venue, mySpacialField = CreateSpatialField(e.latitude, e.longitude) }"
+    index_definition2 = RavenDB::IndexDefinition.new(
+      name: "eventsByLatLngWSpecialField",
+      index_map: index_map,
+      init_options: {fields: fields}
+    )
     store.operations.send(RavenDB::PutIndexesOperation.new(index_definition2))
 
     store.open_session do |session|

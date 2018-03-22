@@ -3,7 +3,7 @@ require "constants/database"
 
 module RavenDB
   class IndexDefinition
-    def initialize(name, index_map, configuration = nil, init_options = {})
+    def initialize(name:, index_map:, configuration: nil, init_options: {})
       @_name = name
       @configuration = configuration || {}
       @reduce = init_options[:reduce] || 0
