@@ -366,16 +366,16 @@ module RavenDB
   class ShapeToken < QueryToken
     def self.circle(radius_parameter_name, latitute_parameter_name, longitude_parameter_name, radius_units = nil)
       expression = if radius_units.nil?
-                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
+                     "spatial.circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
                    else
-                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+                     "spatial.circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
                    end
 
       new(expression)
     end
 
     def self.wkt(shape_wkt_parameter_name)
-      new("wkt($#{shape_wkt_parameter_name})")
+      new("spatial.wkt($#{shape_wkt_parameter_name})")
     end
 
     def initialize(shape)
