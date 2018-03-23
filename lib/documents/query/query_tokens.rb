@@ -288,31 +288,24 @@ module RavenDB
       new("score()", true)
     end
 
-    def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = if longitude_parameter_name.nil?
-                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
-                   else
-                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
-                   end
+    def self._distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      if longitude_parameter_name.nil?
+        "spatial.distance(#{field_name}, spatial.wkt($#{latitude_or_shape_wkt_parameter_name}))"
+      else
+        "spatial.distance(#{field_name}, spatial.point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
+      end
+    end
 
-      new(expression)
+    def self.create_distance_ascending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
+      new(_distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name))
     end
 
     def self.create_distance_descending(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name = nil)
-      expression = if longitude_parameter_name.nil?
-                     "distance(#{field_name}, wkt($#{latitude_or_shape_wkt_parameter_name}))"
-                   else
-                     "distance(#{field_name}, point($#{latitude_or_shape_wkt_parameter_name}, $#{longitude_parameter_name}))"
-                   end
-
-      new(expression, true)
+      new(_distance_expression(field_name, latitude_or_shape_wkt_parameter_name, longitude_parameter_name), true)
     end
 
     def self.create_random(seed)
-      if seed.nil?
-        raise ArgumentError,
-              "Seed can't be null"
-      end
+      raise ArgumentError, "Seed can't be null" if seed.nil?
 
       new("random('#{seed.gsub("'", "''")}')")
     end
@@ -373,16 +366,16 @@ module RavenDB
   class ShapeToken < QueryToken
     def self.circle(radius_parameter_name, latitute_parameter_name, longitude_parameter_name, radius_units = nil)
       expression = if radius_units.nil?
-                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
+                     "spatial.circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name})"
                    else
-                     "circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
+                     "spatial.circle($#{radius_parameter_name}, $#{latitute_parameter_name}, $#{longitude_parameter_name}, '#{radius_units}')"
                    end
 
       new(expression)
     end
 
     def self.wkt(shape_wkt_parameter_name)
-      new("wkt($#{shape_wkt_parameter_name})")
+      new("spatial.wkt($#{shape_wkt_parameter_name})")
     end
 
     def initialize(shape)

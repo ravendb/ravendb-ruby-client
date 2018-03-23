@@ -8,7 +8,8 @@ class ProductsTestingSort
 
     @store = store
     @index_definition = RavenDB::IndexDefinition.new(
-      "Testing_Sort", index_map, nil,
+      name: "Testing_Sort",
+      index_map: index_map,
       fields: {
         "doc_id" => RavenDB::IndexFieldOptions.new(nil, true)
       }

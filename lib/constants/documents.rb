@@ -36,7 +36,7 @@ module RavenDB
   end
 
   class SpatialRelation
-    WITHIN = "within".freeze
+    WITHIN = "spatial.within".freeze
     CONTAINS = "contains".freeze
     DISJOINT = "disjoint".freeze
     INTERSECTS = "intersects".freeze

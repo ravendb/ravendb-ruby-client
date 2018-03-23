@@ -35,7 +35,11 @@ module RavenDB
         end
       end
 
-      exception_ctor.new(exception_message, status_code)
+      if exception_ctor == RavenException
+        exception_ctor.new(exception_message, status_code)
+      else
+        exception_ctor.new(exception_message)
+      end
     end
 
     def self.create_from(json_or_response, status_code = nil)

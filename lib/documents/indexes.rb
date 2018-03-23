@@ -1,17 +1,18 @@
 require "constants/documents"
 require "constants/database"
+require "active_support/core_ext/array/wrap"
 
 module RavenDB
   class IndexDefinition
-    def initialize(name, index_map, configuration = nil, init_options = {})
+    def initialize(name:, index_map:, configuration: {}, reduce: 0, lock_mode: nil, priority: nil, is_test_index: false, fields: {})
       @_name = name
-      @configuration = configuration || {}
-      @reduce = init_options[:reduce] || 0
-      @lock_mode = init_options[:lock_mode]
-      @priority = init_options[:priority]
-      @is_test_index = init_options[:is_test_index] || false
-      @fields = init_options[:fields] || {}
-      @maps = index_map.is_a?(Array) ? index_map : [index_map]
+      @configuration = configuration
+      @reduce = reduce
+      @lock_mode = lock_mode
+      @priority = priority
+      @is_test_index = is_test_index
+      @fields = fields
+      @maps = Array.wrap(index_map)
     end
 
     def name

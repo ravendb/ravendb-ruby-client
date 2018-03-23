@@ -1,6 +1,6 @@
 RSpec.describe RavenDB::PutIndexesOperation, database: true do
   it "puts index with success" do
-    @_index = RavenDB::IndexDefinition.new("region", index_map)
+    @_index = RavenDB::IndexDefinition.new(name: "region", index_map: index_map)
 
     expect do
       store.operations.send(described_class.new(@_index))
@@ -8,7 +8,7 @@ RSpec.describe RavenDB::PutIndexesOperation, database: true do
   end
 
   it "gets index with success" do
-    @_index = RavenDB::IndexDefinition.new("get_index", index_map)
+    @_index = RavenDB::IndexDefinition.new(name: "get_index", index_map: index_map)
     store.operations.send(described_class.new(@_index))
 
     result = store.operations.send(RavenDB::GetIndexOperation.new("get_index"))
@@ -22,7 +22,7 @@ RSpec.describe RavenDB::PutIndexesOperation, database: true do
   end
 
   it "deletes index with success" do
-    @_index = RavenDB::IndexDefinition.new("delete", index_map)
+    @_index = RavenDB::IndexDefinition.new(name: "delete", index_map: index_map)
     store.operations.send(described_class.new(@_index))
 
     expect do
