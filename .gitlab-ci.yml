@@ -12,47 +12,23 @@ image: $RUNNER_IMAGE_TAG
 
 stages:
   - docker
-  - extract
   - test
 
-docker_runner_image:
+docker:
   stage: docker
   tags:
     - dockerbuild
   image: docker:latest
   script:
-    - cd spec/fixtures && docker build -t $RUNNER_IMAGE_TAG -f Dockerfile.runner --build-arg RUBY_24=$RUBY_24 --build-arg RUBY_25=$RUBY_25 .
+    - cd spec/fixtures
     - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build -t $RUNNER_IMAGE_TAG -f Dockerfile.runner --build-arg RUBY_24=$RUBY_24 --build-arg RUBY_25=$RUBY_25 .
     - docker push $RUNNER_IMAGE_TAG
-
-docker_server_http_image:
-  stage: docker
-  tags:
-    - dockerbuild
-  image: docker:latest
-  script:
-    - cd spec/fixtures && docker build -t $SERVER_HTTP_IMAGE_TAG -f Dockerfile.server_http .
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build -t $SERVER_HTTP_IMAGE_TAG -f Dockerfile.server_http .
     - docker push $SERVER_HTTP_IMAGE_TAG
-
-docker_server_https_image:
-  stage: docker
-  tags:
-    - dockerbuild
-  image: docker:latest
-  script:
-    - cd spec/fixtures && docker build -t $SERVER_HTTPS_IMAGE_TAG -f Dockerfile.server_https --build-arg PASSPHRASE=$PASSPHRASE .
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker build -t $SERVER_HTTPS_IMAGE_TAG -f Dockerfile.server_https --build-arg PASSPHRASE=$PASSPHRASE .
     - docker push $SERVER_HTTPS_IMAGE_TAG
-
-extract_certificate:
-  stage: extract
-  tags:
-    - dockerbuild
-  image: docker:latest
-  script:
-    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
-    - docker pull $SERVER_HTTPS_IMAGE_TAG
+    - cd ../..
     - docker run --rm $SERVER_HTTPS_IMAGE_TAG cat /certs/ruby.pem > ruby.pem
     - docker run --rm $SERVER_HTTPS_IMAGE_TAG cat /certs/ca.crt > ca.crt
   artifacts:
@@ -100,7 +76,7 @@ extract_certificate:
     URL: https://ravendb:8433
     HTTPS: "true"
   dependencies:
-    - extract_certificate
+    - docker
 
 rspec_24_http:
   <<: *rspec
