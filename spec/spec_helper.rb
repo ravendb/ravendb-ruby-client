@@ -5,7 +5,7 @@ require "ravendb"
 require "date"
 require "securerandom"
 
-Dir[File.dirname(__FILE__) + "/support/**/*.rb"].each { |f| require f }
+Dir[File.dirname(__FILE__) + "/support/**/*.rb"].sort.each { |f| require f }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 RSpec.configure do |config|

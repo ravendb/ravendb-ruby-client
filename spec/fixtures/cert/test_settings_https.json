@@ -1,5 +1,5 @@
 {
-    "ServerUrl": "https://127.0.0.1:8433",
+    "ServerUrl": "https://0.0.0.0:8433",
     "Setup.Mode": "Initial",
     "DataDir": "RavenData",
     "Security.Certificate.Path": "PFX",

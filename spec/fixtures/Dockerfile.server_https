@@ -1,0 +1,39 @@
+FROM ubuntu:14.04
+
+RUN apt-get -qq update
+RUN apt-get install -y libunwind8 wget libicu52 libssl-dev curl unzip gettext libcurl4-openssl-dev zlib1g uuid-dev bzip2 openssl
+
+RUN mkdir /server
+RUN cd /server; wget -O RavenDB.tar.bz2 https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/latest
+RUN cd /server; tar xvjf RavenDB.tar.bz2
+
+RUN mkdir /config
+COPY cert/* /config/
+
+RUN cp /config/test_settings_https.json /server/RavenDB/Server/settings.json
+
+ARG PASSPHRASE
+
+RUN mkdir /certs
+RUN cd /certs; openssl genrsa -out ca.key 2048
+RUN cd /certs; openssl req -new -x509 -key ca.key -out ca.crt -subj "/C=US/ST=Arizona/L=Nevada/O=RavenDB Test CA/OU=RavenDB test CA/CN=ravendb/emailAddress=ravendbca@example.com"
+RUN cd /certs; openssl genrsa -out localhost.key 2048
+RUN cd /certs; openssl req -new  -key localhost.key -out localhost.csr -subj "/C=US/ST=Arizona/L=Nevada/O=RavenDB Test/OU=RavenDB test/CN=ravendb/emailAddress=ravendb@example.com"
+RUN cd /certs; openssl x509 -req -extensions ext -extfile /config/test_cert.conf -in localhost.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out localhost.crt
+RUN cd /certs; cat localhost.key localhost.crt > ruby.pem
+RUN cd /certs; openssl pkcs12 -passout pass:$PASSPHRASE -export -out server.pfx -inkey localhost.key -in localhost.crt
+RUN cd /certs; cp ca.crt /usr/local/share/ca-certificates/ca.crt
+
+RUN update-ca-certificates
+
+ENV RAVEN_PFX=/certs/server.pfx
+
+RUN sed -i 's@PFX@'"$RAVEN_PFX"'@' /server/RavenDB/Server/settings.json
+RUN sed -i s/PASS/$PASSPHRASE/ /server/RavenDB/Server/settings.json
+
+CMD /server/RavenDB/Server/Raven.Server --non-interactive
+
+EXPOSE 8433
+
+HEALTHCHECK --start-period=30s --interval=10s --timeout=5s --retries=3 \
+  CMD curl -f https://localhost:8433/ || exit 1

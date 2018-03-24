@@ -1,0 +1,123 @@
+variables:
+  DOCKER_IMAGE_VERSION: 1
+  RUNNER_IMAGE_TAG: $CI_REGISTRY_IMAGE/runner:$DOCKER_IMAGE_VERSION
+  SERVER_HTTP_IMAGE_TAG: $CI_REGISTRY_IMAGE/server_http:$DOCKER_IMAGE_VERSION
+  SERVER_HTTPS_IMAGE_TAG: $CI_REGISTRY_IMAGE/server_https:$DOCKER_IMAGE_VERSION
+  RUBY_24: "2.4.3"
+  RUBY_25: "2.5.0"
+  PASSPHRASE: client11
+  CERTIFICATE: ./ruby.pem
+
+image: $RUNNER_IMAGE_TAG
+
+stages:
+  - docker
+  - extract
+  - test
+
+docker_runner_image:
+  stage: docker
+  tags:
+    - dockerbuild
+  image: docker:latest
+  script:
+    - cd spec/fixtures && docker build -t $RUNNER_IMAGE_TAG -f Dockerfile.runner --build-arg RUBY_24=$RUBY_24 --build-arg RUBY_25=$RUBY_25 .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $RUNNER_IMAGE_TAG
+
+docker_server_http_image:
+  stage: docker
+  tags:
+    - dockerbuild
+  image: docker:latest
+  script:
+    - cd spec/fixtures && docker build -t $SERVER_HTTP_IMAGE_TAG -f Dockerfile.server_http .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $SERVER_HTTP_IMAGE_TAG
+
+docker_server_https_image:
+  stage: docker
+  tags:
+    - dockerbuild
+  image: docker:latest
+  script:
+    - cd spec/fixtures && docker build -t $SERVER_HTTPS_IMAGE_TAG -f Dockerfile.server_https --build-arg PASSPHRASE=$PASSPHRASE .
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker push $SERVER_HTTPS_IMAGE_TAG
+
+extract_certificate:
+  stage: extract
+  tags:
+    - dockerbuild
+  image: docker:latest
+  script:
+    - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
+    - docker pull $SERVER_HTTPS_IMAGE_TAG
+    - docker run --rm $SERVER_HTTPS_IMAGE_TAG cat /certs/ruby.pem > ruby.pem
+    - docker run --rm $SERVER_HTTPS_IMAGE_TAG cat /certs/ca.crt > ca.crt
+  artifacts:
+    paths:
+      - ruby.pem
+      - ca.crt
+    expire_in: 1 week
+
+.rspec: &rspec
+  stage: test
+  script:
+    - cp ca.crt /usr/local/share/ca-certificates/ca.crt; update-ca-certificates; true
+    - curl -v $URL
+    - bundle install --path=/cache/bundler
+    - bundle exec rspec
+
+.ruby_24: &ruby_24
+  tags:
+    - ruby
+  before_script:
+    - source /usr/share/rvm/scripts/rvm
+    - rvm use $RUBY_24
+    - ruby -v
+
+.ruby_25: &ruby_25
+  tags:
+    - ruby
+  before_script:
+    - source /usr/share/rvm/scripts/rvm
+    - rvm use $RUBY_25   
+    - ruby -v
+
+.http: &http
+  services:
+    - name: $SERVER_HTTP_IMAGE_TAG
+      alias: ravendb
+  variables:
+    URL: http://ravendb:8080
+
+.https: &https
+  services:
+    - name: $SERVER_HTTPS_IMAGE_TAG
+      alias: ravendb
+  variables:
+    URL: https://ravendb:8433
+    HTTPS: "true"
+  dependencies:
+    - extract_certificate
+
+rspec_24_http:
+  <<: *rspec
+  <<: *ruby_24
+  <<: *http
+
+rspec_24_https:
+  <<: *rspec
+  <<: *ruby_24
+  <<: *https
+
+rspec_25_http:
+  <<: *rspec
+  <<: *ruby_25
+  <<: *http
+
+rspec_25_https:
+  <<: *rspec
+  <<: *ruby_25
+  <<: *https

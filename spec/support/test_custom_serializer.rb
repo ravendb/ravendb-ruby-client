@@ -1,3 +1,5 @@
+require "support/test_custom_document_id"
+
 class TestCustomSerializer < TestCustomDocumentId
   attr_accessor :item_options
 

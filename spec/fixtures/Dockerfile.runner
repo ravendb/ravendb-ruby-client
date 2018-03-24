@@ -1,0 +1,21 @@
+FROM ubuntu:16.04
+
+RUN apt-get update && apt-get install \
+  software-properties-common \
+  -y
+
+RUN apt-add-repository ppa:rael-gc/rvm
+
+RUN apt-get update && apt-get install \
+  git \
+  rvm \
+  -y
+
+ARG RUBY_24
+ARG RUBY_25
+
+RUN /bin/bash -l -c "source /usr/share/rvm/scripts/rvm; rvm install ${RUBY_24}"
+RUN /bin/bash -l -c "source /usr/share/rvm/scripts/rvm; rvm install ${RUBY_25}"
+
+RUN /bin/bash -l -c "source /usr/share/rvm/scripts/rvm; rvm ${RUBY_24} do gem install bundler"
+RUN /bin/bash -l -c "source /usr/share/rvm/scripts/rvm; rvm ${RUBY_25} do gem install bundler"
