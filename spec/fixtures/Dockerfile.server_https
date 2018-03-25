@@ -36,4 +36,4 @@ CMD /server/RavenDB/Server/Raven.Server --non-interactive
 EXPOSE 8433
 
 HEALTHCHECK --start-period=30s --interval=10s --timeout=5s --retries=3 \
-  CMD curl -f https://localhost:8433/ || exit 1
+  CMD curl -f -k https://localhost:8433/ || exit 1
