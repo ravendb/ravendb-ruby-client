@@ -1,0 +1,20 @@
+FROM ubuntu:14.04
+
+RUN apt-get -qq update
+RUN apt-get install -y libunwind8 wget libicu52 libssl-dev curl unzip gettext libcurl4-openssl-dev zlib1g uuid-dev bzip2 openssl
+
+RUN mkdir /server
+RUN cd /server; wget -O RavenDB.tar.bz2 https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/latest
+RUN cd /server; tar xvjf RavenDB.tar.bz2
+
+RUN mkdir /config
+COPY cert/* /config/
+
+RUN cp /config/test_settings_http.json /server/RavenDB/Server/settings.json
+
+CMD /server/RavenDB/Server/Raven.Server --non-interactive
+
+EXPOSE 8080
+
+HEALTHCHECK --start-period=30s --interval=10s --timeout=5s --retries=3 \
+  CMD curl -f http://localhost:8080/ || exit 1
