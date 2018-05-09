@@ -22,6 +22,7 @@ module RavenDB
     end
 
     attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
+    attr_accessor :max_http_cache_size
 
     def initialize
       @set_id_only_if_property_is_defined = false
@@ -29,6 +30,7 @@ module RavenDB
       @_document_id_resolvers = []
       @_id_properties_names_cache = {}
       @serializers = []
+      @max_http_cache_size = 32.megabytes
     end
 
     def empty_collection

@@ -558,6 +558,14 @@ module RavenDB
       )
     end
 
+    def self.regex(field_name, parameter)
+      new(
+        field_name: field_name,
+        where_operator: WhereOperator::REGEX,
+        parameter_name: parameter
+      )
+    end
+
     def initialize(where_options)
       super()
 
@@ -601,7 +609,8 @@ module RavenDB
              WhereOperator::WITHIN,
              WhereOperator::CONTAINS,
              WhereOperator::DISJOINT,
-             WhereOperator::INTERSECTS
+             WhereOperator::INTERSECTS,
+             WhereOperator::REGEX
         writer
           .append(@where_operator)
           .append("(")
@@ -697,6 +706,11 @@ module RavenDB
         end
 
         writer
+          .append(")")
+      when WhereOperator::REGEX
+        writer
+          .append(", $")
+          .append(@parameter_name)
           .append(")")
       else
         raise IndexError, "Invalid where operator provided"

@@ -296,6 +296,17 @@ module RavenDB
       self
     end
 
+    def where_regex(where_params, parameter)
+      field_name = where_params[:field_name]
+
+      append_operator_if_needed(@where_tokens)
+      negate_if_needed(field_name)
+
+      @where_tokens.add_last(WhereToken.regex(field_name, parameter))
+
+      self
+    end
+
     def and_also
       if @where_tokens.last.nil?
         return self

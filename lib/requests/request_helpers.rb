@@ -3,7 +3,7 @@ require "constants/documents"
 
 module RavenDB
   class ServerNode
-    attr_reader :url, :database, :cluster_tag
+    attr_accessor :url, :database, :cluster_tag
 
     def initialize(url = "", database = nil, cluster_tag = nil)
       @url = url
@@ -28,7 +28,7 @@ module RavenDB
   end
 
   class Topology
-    attr_reader :etag, :nodes
+    attr_accessor :etag, :nodes
 
     def initialize(etag = 0, nodes = [])
       @etag = etag
@@ -109,6 +109,9 @@ module RavenDB
       @_timer.exit
       @_timer = nil
     end
+
+    def start_timer
+    end
   end
 
   class PatchRequest
@@ -129,11 +132,13 @@ module RavenDB
 
   class NodeSelector
     attr_reader :current_node_index
+    attr_reader :topology
 
     def initialize(request_executor, topology)
       @current_node_index = 0
       @topology = topology
       @_lock = Mutex.new
+      @_state = NodeSelectorState.new(@current_node_index, topology)
 
       request_executor.on(RavenServerEvent::TOPOLOGY_UPDATED) do |data|
         on_topology_updated(data)
@@ -159,6 +164,23 @@ module RavenDB
 
     def current_node
       nodes.at(@current_node_index)
+    end
+
+    def preferred_node
+      current_node
+    end
+
+    def preferred_node_and_index
+      [preferred_node, 0]
+    end
+
+    def on_failed_request(node_index)
+      state = @_state
+
+      # probably already changed
+      return if (node_index < 0) || (node_index >= state.failures.length)
+
+      state.failures[node_index].increment
     end
 
     protected
@@ -219,6 +241,25 @@ module RavenDB
       return unless !@topology || !@topology.nodes || @topology.nodes.empty?
 
       raise "Empty database topology, this shouldn't happen."
+    end
+  end
+
+  class NodeSelectorState
+    attr_accessor :topology
+    attr_accessor :current_node_index
+    attr_accessor :nodes
+    attr_accessor :failures
+    attr_accessor :fastest_records
+    attr_accessor :fastest
+    attr_accessor :speed_test_mode
+
+    def initialize(current_node_index, topology)
+      self.topology = topology
+      self.current_node_index = current_node_index
+      self.nodes = topology.nodes
+      self.failures = Array.new(topology.nodes.count) { Concurrent::AtomicFixnum.new(0) }
+      self.fastest_records = Array.new(topology.nodes.count) { 0 }
+      self.speed_test_mode = Concurrent::AtomicFixnum.new(0)
     end
   end
 end

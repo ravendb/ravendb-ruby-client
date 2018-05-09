@@ -207,4 +207,8 @@ module RavenDB
   end
   class ParseException < RavenException
   end
+  class DatabaseDoesNotExistException < RavenException
+  end
+  class MalformedURLException < RavenException
+  end
 end

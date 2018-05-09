@@ -31,13 +31,19 @@ module RavenDB
       end
 
       new(
-        session, request_executor, collection, index_name, document_type,
-        nested_object_types, with_statistics, index_query_options
+        session: session,
+        request_executor: request_executor,
+        collection: collection,
+        index_name: index_name,
+        document_type_or_class: document_type,
+        nested_object_types: nested_object_types,
+        with_statistics: with_statistics,
+        index_query_options: index_query_options
       )
     end
 
-    def initialize(session, request_executor, collection = nil, index_name = nil, document_type_or_class = nil?,
-                   nested_object_types = nil, with_statistics = false, index_query_options = {})
+    def initialize(session:, request_executor:, collection: nil, index_name: nil, document_type_or_class: nil,
+                   nested_object_types: nil, with_statistics: false, index_query_options: {})
       document_type = nil
 
       @session = session
@@ -226,6 +232,10 @@ module RavenDB
       end
 
       results
+    end
+
+    def to_list
+      all
     end
 
     protected
@@ -520,6 +530,19 @@ module RavenDB
 
     def where_exists(field_name)
       @builder.where_exists(field_name)
+
+      self
+    end
+
+    def where_regex(field_name, pattern)
+      where_params = {
+        value: pattern,
+        field_name: field_name
+      }
+
+      parameter = add_query_parameter(transform_value(where_params))
+
+      @builder.where_regex(where_params, parameter)
 
       self
     end

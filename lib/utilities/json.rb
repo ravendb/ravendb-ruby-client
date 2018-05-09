@@ -36,7 +36,7 @@ module RavenDB
   end
 
   class JsonSerializer
-    def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil)
+    def self.from_json(target, source = {}, metadata = {}, nested_object_types = {}, conventions = nil, parent_path = nil, key_mapper: nil)
       mappings = {}
 
       unless TypeUtilities.document?(target)
@@ -74,7 +74,7 @@ module RavenDB
         if key != "@metadata"
           serialized = {
             original_attribute: key,
-            serialized_attribute: key,
+            serialized_attribute: key_mapper ? key_mapper[key] : key,
             original_value: value,
             serialized_value: json_to_variable(value, key, mappings, conventions, parent_path),
             attribute_path: build_path(key, parent_path),

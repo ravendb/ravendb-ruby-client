@@ -25,7 +25,7 @@ Lint/UnusedMethodArgument:
 
 # Offense count: 76
 Metrics/AbcSize:
-  Max: 83
+  Max: 86
 
 # Offense count: 2
 # Configuration parameters: CountBlocks.
@@ -35,16 +35,16 @@ Metrics/BlockNesting:
 # Offense count: 14
 # Configuration parameters: CountComments.
 Metrics/ClassLength:
-  Max: 624
+  Max: 646
 
 # Offense count: 37
 Metrics/CyclomaticComplexity:
-  Max: 25
+  Max: 29
 
 # Offense count: 139
 # Configuration parameters: CountComments.
 Metrics/MethodLength:
-  Max: 135
+  Max: 141
 
 # Offense count: 6
 # Configuration parameters: CountKeywordArgs.
@@ -53,19 +53,13 @@ Metrics/ParameterLists:
 
 # Offense count: 29
 Metrics/PerceivedComplexity:
-  Max: 15
+  Max: 31
 
 # Offense count: 26
 Naming/AccessorMethodName:
   Exclude:
     - 'lib/database/commands.rb'
-    - 'lib/database/commands/attachments.rb'
-    - 'lib/database/commands/batch.rb'
-    - 'lib/database/commands/databases.rb'
-    - 'lib/database/commands/documents.rb'
-    - 'lib/database/commands/hilo.rb'
-    - 'lib/database/commands/indexes.rb'
-    - 'lib/database/commands/queries.rb'
+    - 'lib/database/commands/*.rb'
     - 'lib/documents/document_query.rb'
     - 'lib/documents/document_store.rb'
     - 'lib/documents/hilo.rb'
@@ -101,3 +95,6 @@ RSpec/FilePath:
 # rubocop-rspec
 RSpec/InstanceVariable:
   Enabled: false
+
+Metrics/BlockLength:
+  Max: 35

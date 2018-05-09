@@ -57,6 +57,7 @@ module RavenDB
     STARTS_WITH = "startsWith".freeze
     ENDS_WITH = "endsWith".freeze
     EXISTS = "exists".freeze
+    REGEX = "regex".freeze
   end
 
   class FieldConstants

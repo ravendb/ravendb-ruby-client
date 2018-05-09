@@ -1,45 +1,7 @@
+require "database/commands/put_document_command"
+require "database/commands/delete_document_command"
+
 module RavenDB
-  class DeleteDocumentCommand < RavenCommand
-    def initialize(id, change_vector = nil)
-      super("", Net::HTTP::Delete::METHOD)
-
-      @id = id
-      @change_vector = change_vector
-    end
-
-    def create_request(server_node)
-      assert_node(server_node)
-
-      unless @id
-        raise "Nil Id is not valid"
-      end
-
-      unless @id.is_a?(String)
-        raise "Id must be a string"
-      end
-
-      if @change_vector
-        @headers = {"If-Match" => "\"#{@change_vector}\""}
-      end
-
-      @params = {"id" => @id}
-      @end_point = "/databases/#{server_node.database}/docs"
-    end
-
-    def set_response(response)
-      super(response)
-      check_response(response)
-    end
-
-    protected
-
-    def check_response(response)
-      return if response.is_a?(Net::HTTPNoContent)
-
-      raise "Could not delete document #{@id}"
-    end
-  end
-
   class GetDocumentCommand < RavenCommand
     def initialize(id_or_ids, includes = nil, metadata_only = false)
       super("", Net::HTTP::Get::METHOD, nil, nil, {})
@@ -156,36 +118,6 @@ module RavenDB
       end
 
       result if response.body
-    end
-  end
-
-  class PutDocumentCommand < DeleteDocumentCommand
-    def initialize(id, document, change_vector = nil)
-      super(id, change_vector)
-
-      @document = document
-      @method = Net::HTTP::Put::METHOD
-    end
-
-    def create_request(server_node)
-      raise "Document must be an object" unless @document
-
-      @payload = @document
-      super(server_node)
-    end
-
-    def set_response(response)
-      super(response)
-      response.body
-    end
-
-    protected
-
-    def check_response(response)
-      return if response.body
-
-      raise ErrorResponseException, "Failed to store document to the database "\
-"please check the connection to the server"
     end
   end
 end
