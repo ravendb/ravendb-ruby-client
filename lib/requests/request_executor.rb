@@ -306,7 +306,7 @@ module RavenDB
       when Net::HTTPGone # request not relevant for the chosen node - the database has been moved to a different one
         return false unless should_retry
         update_topology_async(node: chosen_node, force_update: true).value!
-        current_index, current_node = choose_node_and_index_for_request(command, session_info)
+        current_node, current_index = choose_node_for_request(command, session_info)
         execute(current_node, current_index, command, false, session_info)
         return true
       when Net::HTTPGatewayTimeOut, Net::HTTPRequestTimeOut, Net::HTTPBadGateway, Net::HTTPServiceUnavailable
@@ -326,7 +326,7 @@ module RavenDB
       if chosen_node.nil?
         topology_update = @_first_topology_update
         if topology_update&.complete? || @_disable_topology_updates
-          current_node, current_index = choose_node_and_index_for_request(command, session_info)
+          current_node, current_index = choose_node_for_request(command, session_info)
           return execute_on_specific_node(command, chosen_node: current_node, node_index: current_index, should_retry: should_retry, session_info: session_info)
         else
           return unlikely_execute(command: command, topology_update: topology_update, session_info: session_info)
@@ -421,7 +421,7 @@ module RavenDB
         begin
           return if @_disposed
           command = GetClientConfigurationOperation::GetClientConfigurationCommand.new
-          current_index, current_node = choose_node_and_index_for_request(command, nil)
+          current_index, current_node = choose_node_for_request(command, nil)
           execute_on_specific_node(command, chosen_node: current_node, node_index: current_index)
           result = command.result
           return if result.nil?
@@ -460,7 +460,7 @@ module RavenDB
         throw ExceptionsUtils.unwrap_exception(e)
       end
 
-      current_node, current_index = choose_node_and_index_for_request(command, session_info)
+      current_node, current_index = choose_node_for_request(command, session_info)
       execute_on_specific_node(command,
                   chosen_node: current_node,
                   node_index: current_index,
@@ -468,7 +468,7 @@ module RavenDB
                   session_info:  session_info)
     end
 
-    def choose_node_and_index_for_request(cmd, session_info)
+    def choose_node_for_request(cmd, session_info)
       raise "@_node_selector empty" if @_node_selector.nil?
 
       return @_node_selector.preferred_node_and_index unless cmd.read_request?
