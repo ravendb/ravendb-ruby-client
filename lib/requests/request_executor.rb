@@ -322,12 +322,12 @@ module RavenDB
       ExceptionsFactory.raise_exception(e)
     end
 
-    def new_execute(command, chosen_node: nil, node_index: nil, should_retry: false, session_info: nil)
+    def execute_on_specific_node(command, chosen_node: nil, node_index: nil, should_retry: false, session_info: nil)
       if chosen_node.nil?
         topology_update = @_first_topology_update
         if topology_update&.complete? || @_disable_topology_updates
           current_node, current_index = choose_node_and_index_for_request(command, session_info)
-          return new_execute(command, chosen_node: current_node, node_index: current_index, should_retry: should_retry, session_info: session_info)
+          return execute_on_specific_node(command, chosen_node: current_node, node_index: current_index, should_retry: should_retry, session_info: session_info)
         else
           return unlikely_execute(command: command, topology_update: topology_update, session_info: session_info)
         end
@@ -422,7 +422,7 @@ module RavenDB
           return if @_disposed
           command = GetClientConfigurationOperation::GetClientConfigurationCommand.new
           current_index, current_node = choose_node_and_index_for_request(command, nil)
-          new_execute(command, chosen_node: current_node, node_index: current_index)
+          execute_on_specific_node(command, chosen_node: current_node, node_index: current_index)
           result = command.result
           return if result.nil?
           @conventions.update_from(result.configuration)
@@ -461,7 +461,7 @@ module RavenDB
       end
 
       current_node, current_index = choose_node_and_index_for_request(command, session_info)
-      new_execute(command,
+      execute_on_specific_node(command,
                   chosen_node: current_node,
                   node_index: current_index,
                   should_retry: true,
@@ -492,7 +492,7 @@ module RavenDB
         next false if disposed?
 
         command = GetDatabaseTopologyCommand.new
-        new_execute(command, chosen_node: node)
+        execute_on_specific_node(command, chosen_node: node)
 
         if @_node_selector.nil?
           @_node_selector = NodeSelector.new(self, command.result)

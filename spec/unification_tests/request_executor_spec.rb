@@ -16,13 +16,13 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
     40.times do
       expect do
         command = RavenDB::GetNextOperationIdCommand.new
-        executor.new_execute(command)
+        executor.execute_on_specific_node(command)
       end.to raise_error(RavenDB::RavenException)
     end
 
     database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
     command = database_names_operation.get_command(conventions: conventions)
-    executor.new_execute(command)
+    executor.execute_on_specific_node(command)
 
     expect(command.result).not_to include(nil)
   end
@@ -110,7 +110,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
       executor = create_executor(initial_urls: initial_urls, database_name: "db1", new_first_update_method: true)
       command =  RavenDB::GetNextOperationIdCommand.new
 
-      executor.new_execute(command)
+      executor.execute_on_specific_node(command)
     end.to raise_error(RavenDB::AllTopologyNodesDownException)
   end
 
