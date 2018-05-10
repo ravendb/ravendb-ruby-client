@@ -112,7 +112,7 @@ module RavenDB
       end
       return clean_urls unless require_https
       initial_urls.each do |initial_url|
-        next unless initial_url.starts_with("http://")
+        next unless initial_url.start_with?("http://")
         unless certificate.nil?
           raise "The url #{initial_url} is using HTTP, but a certificate is specified, which require us to use HTTPS"
         end
