@@ -10,7 +10,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
     create_executor
   end
 
-  it "failure should not block connection pool" do
+  it "failure should not block connection pool", rdbc_173: true do
     executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
 
     40.times do
@@ -20,11 +20,11 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
       end.to raise_error(RavenDB::RavenException)
     end
 
-    database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
-    command = database_names_operation.get_command(conventions: conventions)
-    executor.execute_on_specific_node(command)
-
-    expect(command.result).not_to include(nil)
+    expect do
+      database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
+      command = database_names_operation.get_command(conventions: conventions)
+      executor.execute_on_specific_node(command)
+    end.to raise_error(RavenDB::DatabaseDoesNotExistException)
   end
 
   it "can issue many requests" do

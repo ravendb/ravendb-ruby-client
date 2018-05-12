@@ -138,6 +138,12 @@ module RavenDB
             @_topology_taken_from_node = server_node
 
             true
+          rescue DatabaseDoesNotExistException => e
+            RavenDB.logger.warn(e)
+            # Will happen on all node in the cluster,
+            # so errors immediately
+            @_last_known_urls = initial_urls
+            raise e
           rescue StandardError => e
             RavenDB.logger.warn(e)
             if initial_urls.empty?
@@ -325,7 +331,7 @@ module RavenDB
     def execute_on_specific_node(command, chosen_node: nil, node_index: nil, should_retry: false, session_info: nil)
       if chosen_node.nil?
         topology_update = @_first_topology_update
-        if topology_update&.complete? || @_disable_topology_updates
+        if topology_update&.fulfilled? || @_disable_topology_updates
           current_node, current_index = choose_node_for_request(command, session_info)
           return execute_on_specific_node(command, chosen_node: current_node, node_index: current_index, should_retry: should_retry, session_info: session_info)
         else
