@@ -350,7 +350,9 @@ module RavenDB
         end
         request.add_header("If-None-Match", "\"#{cached_change_vector.value}\"")
       end
-      request[CLIENT_CONFIGURATION_ETAG] = "\"#{@client_configuration_etag}\"" unless @_disable_client_configuration_updates
+      unless @_disable_client_configuration_updates
+        request[CLIENT_CONFIGURATION_ETAG] = "\"#{@client_configuration_etag}\""
+      end
       request[TOPOLOGY_ETAG] = "\"#{@topology_etag}\"" unless @_disable_topology_updates
       response = nil
       begin
@@ -462,10 +464,10 @@ module RavenDB
 
       current_node, current_index = choose_node_for_request(command, session_info)
       execute_on_specific_node(command,
-                  chosen_node: current_node,
-                  node_index: current_index,
-                  should_retry: true,
-                  session_info:  session_info)
+                               chosen_node: current_node,
+                               node_index: current_index,
+                               should_retry: true,
+                               session_info:  session_info)
     end
 
     def choose_node_for_request(cmd, session_info)
