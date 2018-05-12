@@ -128,7 +128,7 @@ module RavenDB
         request_executor = session_options[:request_executor]
       end
 
-      if request_executor.nil? || (request_executor.initial_database != session_database)
+      if request_executor.nil? || (request_executor.database_name != session_database)
         request_executor = get_request_executor(session_database)
       end
 

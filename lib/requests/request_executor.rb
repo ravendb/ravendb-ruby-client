@@ -33,7 +33,7 @@ module RavenDB
       SocketError
     ].freeze
 
-    attr_reader :initial_database
+    attr_reader :database_name
     attr_accessor :request_post_processor
     attr_accessor :certificate
 
@@ -48,7 +48,7 @@ module RavenDB
       }
 
       @_disposed = false
-      @initial_database = database_name
+      @database_name = database_name
       @_first_topology_updates_tries = 0
       @_last_known_urls = nil
       @_failed_nodes_statuses = {}
@@ -129,7 +129,7 @@ module RavenDB
 
         return if initial_urls.any? do |url|
           begin
-            server_node = ServerNode.new(url, initial_database)
+            server_node = ServerNode.new(url, database_name)
 
             update_topology_async(node: server_node).value!
 
@@ -156,7 +156,7 @@ module RavenDB
         topology_nodes = self.topology_nodes
         if topology_nodes.nil?
           topology_nodes = initial_urls.map do |url|
-            ServerNode.new(url, initial_database, "!")
+            ServerNode.new(url, database_name, "!")
           end
         end
 
@@ -631,7 +631,7 @@ module RavenDB
 
         urls.each do |url|
           begin
-            update_topology(ServerNode.new(url, @initial_database))
+            update_topology(ServerNode.new(url, @database_name))
             @_first_topology_update_exception = nil
             updated = true
             break
