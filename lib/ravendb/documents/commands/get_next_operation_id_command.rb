@@ -1,5 +1,3 @@
-require "database/commands"
-
 module RavenDB
   class GetNextOperationIdCommand < RavenCommand
     def initialize

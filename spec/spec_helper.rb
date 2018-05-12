@@ -1,6 +1,8 @@
 require "simplecov"
 SimpleCov.start
 
+$LOAD_PATH << '../lib'
+
 require "ravendb"
 require "date"
 require "securerandom"

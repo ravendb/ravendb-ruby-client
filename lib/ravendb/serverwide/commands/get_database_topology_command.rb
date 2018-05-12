@@ -17,8 +17,7 @@ module RavenDB
 
       if url
         url.value = @end_point
-        request = Net::HTTP::Get.new(url.value)
-        request
+        Net::HTTP::Get.new(url.value)
       end
     end
 

@@ -1,0 +1,1 @@
+require "ravendb/serverwide/commands"

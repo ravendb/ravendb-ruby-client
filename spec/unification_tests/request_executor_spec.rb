@@ -1,4 +1,3 @@
-require "database/commands/get_next_operation_id_command"
 require "database/operations/get_database_names_operation"
 
 RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
@@ -88,8 +87,10 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   it "can choose online node" do
     url = store.urls[0]
 
-    initial_urls = ["http://no_such_host:8080", "http://another_offline:8080", url]
-    executor = create_executor(initial_urls: initial_urls)
+    prefix = default_url.downcase.split("//")[0]
+
+    initial_urls = ["#{prefix}//no_such_host:8080", "#{prefix}//another_offline:8080", url]
+    executor = create_executor(initial_urls: initial_urls, new_first_update_method: true)
 
     command = RavenDB::GetNextOperationIdCommand.new
     executor.execute(command)

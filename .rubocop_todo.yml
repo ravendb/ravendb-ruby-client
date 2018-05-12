@@ -65,6 +65,7 @@ Naming/AccessorMethodName:
     - 'lib/documents/hilo.rb'
     - 'lib/documents/query/query_builder.rb'
     - 'lib/requests/request_executor.rb'
+    - '**/*_command.rb'
 
 # Offense count: 294
 # Configuration parameters: AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.

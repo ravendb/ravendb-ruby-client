@@ -1,29 +1,4 @@
 module RavenDB
-  class DeleteByQueryCommand < QueryBasedCommand
-    def initialize(query, options = nil)
-      super(Net::HTTP::Delete::METHOD, query, options)
-    end
-
-    def create_request(server_node)
-      super(server_node)
-      @payload = @query.to_json
-    end
-  end
-
-  class PatchByQueryCommand < QueryBasedCommand
-    def initialize(query_to_update, options = nil)
-      super(Net::HTTP::Patch::METHOD, query_to_update, options)
-    end
-
-    def create_request(server_node)
-      super(server_node)
-
-      @payload = {
-        "Query" => @query.to_json
-      }
-    end
-  end
-
   class QueryCommand < RavenCommand
     def initialize(conventions, index_query, metadata_only = false, index_entries_only = false)
       super("", Net::HTTP::Post::METHOD)

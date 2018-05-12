@@ -1,5 +1,4 @@
 require "database/operations"
-require "database/commands/get_database_names_command"
 
 module RavenDB
   class GetDatabaseNamesOperation < ServerOperation
