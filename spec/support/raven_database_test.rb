@@ -1,5 +1,5 @@
 module RavenDatabaseTest
-  def self.setup(context)
+  def self.setup(context, _example)
     context.instance_eval do
       store.conventions.disable_topology_updates = false
       @_index_map =
@@ -15,7 +15,7 @@ module RavenDatabaseTest
     end
   end
 
-  def self.teardown(context)
+  def self.teardown(context, _example)
     context.instance_eval do
       store.maintenance.server.send(RavenDB::DeleteDatabaseOperation.new(current_database, true))
       @_request_executor = nil

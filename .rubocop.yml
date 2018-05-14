@@ -29,7 +29,7 @@ Style/DoubleNegation:
   Enabled: false
 
 Style/RegexpLiteral:
-  AllowInnerSlashes: true
+  Enabled: false
 
 Style/WordArray:
   EnforcedStyle: brackets
@@ -56,3 +56,10 @@ Metrics/BlockLength:
   Exclude: 
     - test/**/*.rb
     - spec/**/*.rb
+
+RSpec/DescribedClass:
+  Enabled: false
+
+Lint/UnusedMethodArgument:
+  AllowUnusedKeywordArguments: true
+  IgnoreEmptyMethods: true

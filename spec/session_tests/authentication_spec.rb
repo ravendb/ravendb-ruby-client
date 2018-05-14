@@ -51,7 +51,7 @@ CERTIFICATE
 
   it "raises not supported exception when trying to connect to secured server without auth options" do
     expect do
-      store = described_class.new(
+      store = RavenDB::DocumentStore.new(
         ["https://secured.db.somedomain.com"], "SomeDatabase"
       )
 
@@ -63,7 +63,7 @@ CERTIFICATE
     skip("HTTPS only test") unless default_url.downcase.include?("https://")
 
     expect do
-      store = described_class.new(
+      store = RavenDB::DocumentStore.new(
         [default_url], current_database,
         RavenDB::StoreAuthOptions.new(@_invalid_cert)
       )

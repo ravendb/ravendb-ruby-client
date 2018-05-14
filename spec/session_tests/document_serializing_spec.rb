@@ -60,7 +60,7 @@ RSpec.describe RavenDB::JsonSerializer do
     }
 
     @document = SerializingTest.new
-    described_class.from_json(@document, @json, {}, @nested_object_types, store.conventions)
+    RavenDB::JsonSerializer.from_json(@document, @json, {}, @nested_object_types, store.conventions)
   end
 
   it "parses scalars" do
@@ -176,7 +176,7 @@ RSpec.describe RavenDB::JsonSerializer do
   end
 
   it "serializes back to source json" do
-    serialized = described_class.to_json(@document, store.conventions)
+    serialized = RavenDB::JsonSerializer.to_json(@document, store.conventions)
 
     expect(@json).to eq(serialized)
   end

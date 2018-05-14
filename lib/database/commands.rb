@@ -4,6 +4,7 @@ require "json"
 require "date"
 require "net/http"
 require "utilities/json"
+require "utilities/mapper"
 require "database/exceptions"
 require "documents/query/index_query"
 require "documents/indexes"
@@ -13,6 +14,13 @@ require "constants/documents"
 
 module RavenDB
   class RavenCommand
+    ETAG_HEADER = "ETag".freeze
+
+    attr_accessor :result
+    attr_accessor :status_code
+    attr_reader :response_type
+    attr_reader :failed_nodes
+
     def initialize(end_point, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
       @end_point = end_point || ""
       @method = method
@@ -21,6 +29,12 @@ module RavenDB
       @headers = headers
       @failed_nodes = Set.new([])
       @_last_response = nil
+      @mapper = JsonObjectMapper.new
+      @response_type = :object
+    end
+
+    def can_cache?
+      false
     end
 
     def server_response
@@ -83,10 +97,75 @@ module RavenDB
       response.json
     end
 
+    def read_request?
+      raise NotImplementedError, "You should implement read_request? method"
+    end
+
+    def send_request(http_client, request)
+      RavenDB.logger.debug("#{self.class} send_request #{request.method} #{request.path} body: #{request.body} headers: #{request.to_hash}")
+      response = http_client.request(request)
+      RavenDB.logger.warn("#{self.class} send_request response: #{response.code} #{response.message}")
+      if response.code.to_i >= 400
+        RavenDB.logger.warn("#{self.class} send_request: #{response.body}")
+      end
+      response
+    end
+
+    def on_response_failure(_response)
+    end
+
+    def process_response(cache, response, url)
+      entity = response
+
+      if entity.nil?
+        return :automatic
+      end
+
+      if response_type == :empty || response.is_a?(Net::HTTPNoContent)
+        return :automatic
+      end
+
+      if response_type == :object
+        content_length = entity.content_length
+        if content_length == 0
+          return :automatic
+        end
+
+        # we intentionally don't dispose the reader here, we'll be using it
+        # in the command, any associated memory will be released on context reset
+        json = JSON.parse(entity.body)
+        unless cache.nil? # precaution
+          cache_response(cache, url, response, json)
+        end
+
+        parse_response(json, from_cache: false)
+        return :automatic
+      else
+        parse_response_raw(response, entity.getContent)
+      end
+
+      :automatic
+    end
+
+    def cache_response(cache, url, response, response_json)
+      unless can_cache?
+        return
+      end
+
+      change_vector = response[ETAG_HEADER]
+      return if change_vector.nil?
+
+      cache.set(url, change_vector, response_json)
+    end
+
     protected
 
     def assert_node(node)
       raise ArgumentError, "Argument \"node\" should be an instance of ServerNode" unless node.is_a? ServerNode
+    end
+
+    def raise_invalid_response!
+      raise ErrorResponseException, "Invalid server response"
     end
 
     def add_params(param_or_params, value)

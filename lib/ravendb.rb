@@ -1,3 +1,5 @@
+require_relative "./version.rb"
+require "logger"
 require "documents/document_store"
 
 module RavenDB
@@ -17,5 +19,15 @@ module RavenDB
   #
   def self.store
     @store ||= DocumentStore.new
+  end
+
+  class << self
+    attr_writer :logger
+
+    def logger
+      @logger ||= Logger.new(STDERR).tap do |log|
+        log.progname = name
+      end
+    end
   end
 end

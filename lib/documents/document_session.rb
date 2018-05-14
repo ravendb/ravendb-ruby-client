@@ -13,6 +13,7 @@ module RavenDB
     include Observable
 
     attr_reader :number_of_requests_in_session
+    attr_reader :documents_by_id
 
     def initialize(db_name, document_store, id, request_executor)
       @advanced = nil
@@ -34,34 +35,24 @@ module RavenDB
       end
     end
 
+    def documents_by_entity
+      @raw_entities_and_metadata
+    end
+
     def conventions
       @document_store.conventions
     end
 
     def advanced
-      unless @advanced
-        @advanced = AdvancedSessionOperations.new(self, @request_executor)
-        @advanced.on(RavenServerEvent::EVENT_QUERY_INITIALIZED) do |query|
-          attach_query(query)
-        end
-      end
-
-      @advanced
+      self
     end
 
-    def load(id_or_ids, options = nil)
-      includes = nil
+    def load(id_or_ids, includes: nil, nested_object_types: {}, document_type: nil)
       ids = id_or_ids
-      nested_object_types = {}
       loading_one_doc = !id_or_ids.is_a?(Array)
 
       if loading_one_doc
         ids = [id_or_ids]
-      end
-
-      if options.is_a?(Hash)
-        includes = options[:includes]
-        nested_object_types = options[:nested_object_types] || {}
       end
 
       ids_of_non_existing_documents = Set.new(ids)
@@ -93,7 +84,7 @@ module RavenDB
       )
 
       unless ids_of_non_existing_documents.empty?
-        fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types)
+        fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types, document_type: document_type)
       end
 
       results = ids.map do |id|
@@ -208,9 +199,7 @@ module RavenDB
       prepare_delete_commands(changes)
       prepare_update_commands(changes)
 
-      unless changes.commands_count
-        return nil
-      end
+      return nil unless changes.commands_count
 
       results = @request_executor.execute(changes.create_batch_command)
 
@@ -268,7 +257,7 @@ module RavenDB
       end
     end
 
-    def fetch_documents(ids, includes = nil, nested_object_types = {})
+    def fetch_documents(ids, includes = nil, nested_object_types = {}, document_type: nil)
       response_results = []
       response_includes = []
       increment_requests_count
@@ -286,7 +275,7 @@ module RavenDB
           return nil
         end
 
-        make_document(result, nil, nested_object_types)
+        make_document(result, document_type, nested_object_types)
       end
 
       return if response_includes.empty?
@@ -502,18 +491,11 @@ module RavenDB
         document_type: conversion_result[:document_type]
       }
     end
-  end
 
-  class AdvancedSessionOperations
-    include Observable
-
-    def initialize(document_session, request_executor)
-      @session = document_session
-      @request_executor = request_executor
-    end
+    public
 
     def raw_query(query, params = {}, options = nil)
-      document_query = RawDocumentQuery.create(@session, @request_executor, options)
+      document_query = RawDocumentQuery.create(self, @request_executor, options)
       document_query.raw_query(query)
 
       if params.is_a?(Hash) && !params.empty?
@@ -523,6 +505,59 @@ module RavenDB
       emit(RavenServerEvent::EVENT_QUERY_INITIALIZED, document_query)
 
       document_query
+    end
+
+    def get_change_vector_for(instance)
+      raise ArgumentError, "instance cannot be null" if instance.nil?
+
+      document_info = get_document_info(instance)
+      change_vector = document_info[:change_vector]
+      change_vector&.to_s || ""
+    end
+
+    def get_document_info(instance)
+      document_info = documents_by_entity[instance]
+
+      return document_info unless document_info.nil?
+
+      id = instance.id
+
+      assert_no_non_unique_instance(instance, id)
+
+      raise ArgumentError, "Document #{id} doesn't exist in the session"
+    end
+
+    def assert_no_non_unique_instance(entity, id)
+      return if id.empty? || id[-1] == "|" || id[-1] == "/"
+
+      RavenDB.logger.warn("documents_by_id = #{documents_by_id}")
+      info = documents_by_id[id]
+
+      return if info.nil? || info.entity == entity
+
+      raise "Attempted to associate a different object with id '#{id}'."
+    end
+
+    def document_query(klass, index_klass: nil, index_name: nil, collection_name: nil, is_map_reduce: false)
+      if index_name && collection_name
+        raise ArgumentError, "Parameters index_name and collection_name are mutually exclusive." \
+          "Please specify only one of them."
+      end
+
+      if index_klass
+        index = index_klass.new
+        index_name = index.index_name
+      end
+
+      if !index_name && !collection_name
+        collection_name = conventions.get_collection_name(klass)
+      end
+
+      DocumentQuery.new(session: self,
+                        request_executor: @request_executor,
+                        document_type_or_class: klass,
+                        index_name: index_name,
+                        collection: collection_name)
     end
   end
 end

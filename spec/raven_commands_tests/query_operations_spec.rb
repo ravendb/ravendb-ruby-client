@@ -10,12 +10,17 @@ RSpec.describe RavenDB::QueryCommand, database: true do
     store.operations.send(RavenDB::PutIndexesOperation.new(index_sort))
 
     (0..99).each do |i|
-      request_executor.execute(RavenDB::PutDocumentCommand.new("Testings/#{i}",
-                                                               "Name" => "test#{i}", "DocNumber" => i,
-                                                               "@metadata": {"@collection" => "Testings"}))
+      document = {
+        "Name" => "test#{i}",
+        "DocNumber" => i,
+        "@metadata": {
+          "@collection" => "Testings"
+        }
+      }
+      request_executor.execute(RavenDB::PutDocumentCommand.new(id: "Testings/#{i}", document: document))
     end
 
-    request_executor.execute(described_class.new(store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, wait_for_non_stale_results: true)))
+    request_executor.execute(RavenDB::QueryCommand.new(store.conventions, RavenDB::IndexQuery.new("from index 'Testing_Sort'", {}, nil, nil, wait_for_non_stale_results: true)))
   end
 
   it "update by index success" do
@@ -31,7 +36,7 @@ RSpec.describe RavenDB::QueryCommand, database: true do
     query = "from index 'Testing_Sort' where Name = $name"
     index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
 
-    response = request_executor.execute(described_class.new(store.conventions, index_query))
+    response = request_executor.execute(RavenDB::QueryCommand.new(store.conventions, index_query))
     expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).not_to be < 100
@@ -55,7 +60,7 @@ RSpec.describe RavenDB::QueryCommand, database: true do
     response = store.operations.send(delete_by_index_operation)
     expect(response["Status"]).to eq("Completed")
 
-    query_command = described_class.new(store.conventions, index_query)
+    query_command = RavenDB::QueryCommand.new(store.conventions, index_query)
     response = request_executor.execute(query_command)
     expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)

@@ -32,21 +32,21 @@ RSpec.configure do |config|
   config.order = :random
 
   config.around do |example|
-    RavenTest.setup(self)
+    RavenTest.setup(self, example)
     example.run
-    RavenTest.teardown(self)
+    RavenTest.teardown(self, example)
   end
 
   config.around :each, database: true do |example|
-    RavenDatabaseTest.setup(self)
+    RavenDatabaseTest.setup(self, example)
     example.run
-    RavenDatabaseTest.teardown(self)
+    RavenDatabaseTest.teardown(self, example)
   end
 
   config.around :each, database_indexes: true do |example|
-    RavenDatabaseIndexesTest.setup(self)
+    RavenDatabaseIndexesTest.setup(self, example)
     example.run
-    RavenDatabaseIndexesTest.teardown(self)
+    RavenDatabaseIndexesTest.teardown(self, example)
   end
 
   config.include RavenTestHelpers
