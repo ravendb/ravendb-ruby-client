@@ -95,34 +95,35 @@ module RavenDB
       end
     end
 
-    def validate_urls(initial_urls, certificate)
-      clean_urls = Array.new(initial_urls.length)
+    def self.valid_url?(url)
+      uri = URI.parse(url)
+      return false unless uri.is_a?(URI::HTTP)
+      return false unless uri.host
+      true
+    rescue URI::InvalidURIError
+      false
+    end
+
+    def self.validate_urls(urls:, certificate: nil)
       require_https = !certificate.nil?
-      index = 0
-      while index < initial_urls.length
-        url = initial_urls[index]
-        begin
-          URI.parse(url)
-        rescue MalformedURLException => _
-          raise "The url '#{url}' is not valid"
-        end
-        clean_urls[index] = url.gsub(/\/+$/, "")
+      clean_urls = urls.map do |url|
+        raise "The url '#{url}' is not valid." unless valid_url?(url)
         require_https |= url.start_with?("https://")
-        index += 1
+        url.gsub(/\/+$/, "")
       end
       return clean_urls unless require_https
-      initial_urls.each do |initial_url|
-        next unless initial_url.start_with?("http://")
+      urls.each do |url|
+        next unless url.start_with?("http://")
         unless certificate.nil?
-          raise "The url #{initial_url} is using HTTP, but a certificate is specified, which require us to use HTTPS"
+          raise "The url '#{url}' is using HTTP, but a certificate is specified, which require us to use HTTPS."
         end
-        raise "The url #{initial_url} is using HTTP, but other urls are using HTTPS, and mixing of HTTP and HTTPS is not allowed."
+        raise "The url '#{url}' is using HTTP, but other urls are using HTTPS, and mixing of HTTP and HTTPS is not allowed."
       end
       clean_urls
     end
 
     def new_first_topology_update(input_urls:)
-      initial_urls = validate_urls(input_urls, certificate)
+      initial_urls = RequestExecutor.validate_urls(urls: input_urls, certificate: certificate)
 
       func = lambda do
         list = {}
