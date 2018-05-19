@@ -6,31 +6,40 @@ module RavenDB
       @_stream = stream
       @_content_type = content_type
 
-      raise ArgumentError, "Attachment can't be empty" if
-          stream.nil? || stream.empty?
+      raise ArgumentError, "Attachment can't be empty" if stream.nil? || stream.empty?
     end
 
     def create_request(server_node)
-      super(server_node)
+      request = super(server_node)
 
-      @headers["Content-Type"] = "application/octet-stream"
-      @method = Net::HTTP::Put::METHOD
+      request["Content-Type"] = "application/octet-stream"
 
       unless @_change_vector.nil?
-        @headers["If-Match"] = "\"#{@_change_vector}\""
+        request["If-Match"] = "\"#{@_change_vector}\""
       end
 
-      return if @_content_type.blank?
+      unless @_content_type.blank?
+        request["Content-Type"] = @_content_type
+      end
 
-      @headers["Content-Type"] = @_content_type
-      @params["contentType"] = @_content_type
+      request.body = payload
+      request
     end
 
-    def to_request_options
-      request = super()
+    def params
+      params = super
+      unless @_content_type.blank?
+        params["contentType"] = @_content_type
+      end
+      params
+    end
 
-      request.body = @_stream
-      request
+    def payload
+      @_stream
+    end
+
+    def http_method
+      Net::HTTP::Put
     end
   end
 end

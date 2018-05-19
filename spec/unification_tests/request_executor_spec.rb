@@ -1,6 +1,6 @@
 require "database/operations/get_database_names_operation"
 
-RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
+RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true, rdbc_171: true do
   let :conventions do
     RavenDB::DocumentConventions.new
   end
@@ -27,17 +27,21 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "can issue many requests" do
+    executor = create_executor(new_first_update_method: true)
+
     50.times do
       database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
       command = database_names_operation.get_command(conventions: conventions)
-      executor.execute(command)
+      executor.execute_on_specific_node(command)
     end
   end
 
   it "can fetch databases names" do
+    executor = create_executor(new_first_update_method: true)
+
     database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
     command = database_names_operation.get_command(conventions: conventions)
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     db_names = command.result
 
@@ -45,7 +49,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "throws when updating topology of not existing db" do
-    executor = create_executor(database_name: "no_such_db")
+    executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
 
     server_node = RavenDB::ServerNode.new
     server_node.url = store.urls[0]
@@ -67,7 +71,9 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "can create single node request executor" do
-    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options)
+    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options,
+                                                               new_first_update_method: true,
+                                                               disable_configuration_updates: true)
 
     nodes = executor.topology_nodes
 
@@ -79,7 +85,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
 
     command = RavenDB::GetNextOperationIdCommand.new
 
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     expect(command.result).not_to be_nil
   end
@@ -93,7 +99,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
     executor = create_executor(initial_urls: initial_urls, new_first_update_method: true)
 
     command = RavenDB::GetNextOperationIdCommand.new
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     expect(command.result).not_to be_nil
 

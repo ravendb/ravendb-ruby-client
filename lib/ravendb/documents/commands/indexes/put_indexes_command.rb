@@ -8,7 +8,7 @@ module RavenDB
         indexes = indexes.concat(more_indexes_to_add)
       end
 
-      super("", Net::HTTP::Put::METHOD)
+      super()
 
       if indexes.empty?
         raise "No indexes specified"
@@ -29,8 +29,12 @@ module RavenDB
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "/databases/#{server_node.database}/admin/indexes"
-      @payload = {"Indexes" => @indexes.map { |index| index.to_json }}
+      end_point = "/databases/#{server_node.database}/admin/indexes"
+      payload = {"Indexes" => @indexes.map { |index| index.to_json }}
+
+      request = Net::HTTP::Put.new(end_point, "Content-Type" => "application/json")
+      request.body = payload.to_json
+      request
     end
 
     def set_response(response)

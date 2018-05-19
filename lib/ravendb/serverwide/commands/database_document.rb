@@ -11,10 +11,10 @@ module RavenDB
 
     def to_json
       {
-          "DatabaseName" => @database_id,
-          "Disabled" => @disabled,
-          "Encrypted" => @encrypted,
-          "Settings" => @settings
+        "DatabaseName" => @database_id,
+        "Disabled" => @disabled,
+        "Encrypted" => @encrypted,
+        "Settings" => @settings
       }
     end
   end

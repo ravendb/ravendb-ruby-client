@@ -37,7 +37,7 @@ module RavenDB
     attr_accessor :certificate
 
     def initialize(database_name:, conventions: nil, initial_urls: [], without_topology: false, auth_options: nil,
-                   topology_etag: 0, single_node_topology: nil, new_first_update_method: false)
+                   topology_etag: 0, single_node_topology: nil, new_first_update_method: false, disable_configuration_updates: false)
 
       urls = initial_urls
 
@@ -66,6 +66,8 @@ module RavenDB
       @number_of_server_requests = Concurrent::AtomicFixnum.new
       @cache = HttpCache.new(size: conventions&.max_http_cache_size)
       @_update_client_configuration_semaphore = Concurrent::Semaphore.new(1)
+      @_disable_client_configuration_updates = disable_configuration_updates
+      @_disable_topology_updates = disable_configuration_updates
 
       @self_lock = Mutex.new
 
@@ -79,12 +81,12 @@ module RavenDB
         end
       end
 
-      if new_first_update_method
+      if @_without_topology && single_node_topology
+        @_node_selector = NodeSelector.new(self, single_node_topology)
+      elsif new_first_update_method
         @_first_topology_update = new_first_topology_update(input_urls: urls)
       elsif !@_without_topology && !urls.empty?
         start_first_topology_update(urls)
-      elsif @_without_topology && single_node_topology
-        @_node_selector = NodeSelector.new(self, single_node_topology)
       end
     end
 
@@ -202,14 +204,17 @@ module RavenDB
           auth_options: auth_options)
     end
 
-    def self.create_for_single_node(url, database = nil, auth_options = nil)
+    def self.create_for_single_node(url, database = nil, auth_options = nil, new_first_update_method: false, disable_configuration_updates: false)
       topology = Topology.new(-1, [ServerNode.new(url, database)])
 
       new(database_name: database,
           without_topology: true,
           single_node_topology: topology,
           topology_etag: -2,
-          auth_options: auth_options)
+          auth_options: auth_options,
+          new_first_update_method: new_first_update_method,
+          disable_configuration_updates: disable_configuration_updates
+         )
     end
 
     def execute(command)
@@ -244,8 +249,8 @@ module RavenDB
       @_node_selector&.preferred_node&.url
     end
 
-    def create_request(node:, command:, url:)
-      request = command.create_request(node, url: url)
+    def create_request(node:, command:)
+      request = command.create_request(node)
 
       unless request.key?("Raven-Client-Version")
         request["Raven-Client-Version"] = RavenDB::VERSION
@@ -329,8 +334,9 @@ module RavenDB
     end
 
     def execute_on_specific_node(command, chosen_node: nil, node_index: nil, should_retry: false, session_info: nil)
+      topology_update = @_first_topology_update
+
       if chosen_node.nil?
-        topology_update = @_first_topology_update
         if topology_update&.fulfilled? || @_disable_topology_updates
           current_node, current_index = choose_node_for_request(command, session_info)
           return execute_on_specific_node(command, chosen_node: current_node, node_index: current_index, should_retry: should_retry, session_info: session_info)
@@ -339,11 +345,10 @@ module RavenDB
         end
       end
 
-      url_ref = Reference.new
-      request = create_request(node: chosen_node, command: command, url: url_ref)
+      request = create_request(node: chosen_node, command: command)
       cached_change_vector = Reference.new
       cached_value = Reference.new
-      cached_item = get_from_cache(command, url_ref.value, cached_change_vector, cached_value)
+      cached_item = get_from_cache(command, request.uri, cached_change_vector, cached_value)
       unless cached_change_vector.value.nil?
         aggressive_cache_options = AggressiveCaching.get
         if !aggressive_cache_options.nil? &&
@@ -370,7 +375,7 @@ module RavenDB
                    end
       rescue *ALL_NET_HTTP_ERRORS => e
         raise e unless should_retry
-        unless handle_server_down(url_ref.value, chosen_node, node_index, command, request, response, e, session_info)
+        unless handle_server_down(request.uri, chosen_node, node_index, command, request, response, e, session_info)
           throw_failed_to_contact_all_nodes(command, request, e, nil)
         end
         return
@@ -387,7 +392,7 @@ module RavenDB
           return
         end
         if response.code.to_i >= 400
-          unless handle_unsuccessful_response(chosen_node, node_index, command, request, response, url_ref.value, session_info, should_retry)
+          unless handle_unsuccessful_response(chosen_node, node_index, command, request, response, request.uri, session_info, should_retry)
             db_missing_header = response["Database-Missing"]
             unless db_missing_header.nil?
               raise DatabaseDoesNotExistException, db_missing_header
@@ -405,7 +410,7 @@ module RavenDB
           end
           return
         end
-        command.process_response(@cache, response, url_ref.value)
+        command.process_response(@cache, response, request.uri)
         @_last_returned_response = Date.new
       ensure
         if refresh_topology || refresh_client_configuration
@@ -448,9 +453,9 @@ module RavenDB
 
           synchronized do
             if @_first_topology_update.nil?
-              raise "No known topology and no previously known one, cannot proceed, likely a bug" if last_known_urls.nil?
+              raise "No known topology and no previously known one, cannot proceed, likely a bug" if @_last_known_urls.nil?
 
-              @_first_topology_update = first_topology_update(last_known_urls)
+              @_first_topology_update = first_topology_update(@_last_known_urls)
             end
 
             topology_update = @_first_topology_update
@@ -547,8 +552,7 @@ module RavenDB
     end
 
     def prepare_command(command, server_node)
-      command.create_request(server_node)
-      request = command.to_request_options
+      request = command.create_request(server_node)
 
       @headers.each do |header, value|
         request.add_field(header, value)
@@ -682,7 +686,8 @@ module RavenDB
             cancel_failing_nodes_timers
           end
         else
-          @_node_selector = NodeSelector.new(self, Topology.from_json(response))
+          response = Topology.from_json(response) if response.is_a?(Hash)
+          @_node_selector = NodeSelector.new(self, response)
         end
 
         @_topology_etag = @_node_selector.topology_etag
@@ -690,7 +695,7 @@ module RavenDB
     end
 
     def get_update_topology_command_class
-      GetTopologyCommand
+      GetDatabaseTopologyCommand
     end
 
     def handle_server_down(_url, chosen_node, node_index, command, _request, _response, _e, session_info)

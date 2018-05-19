@@ -1,7 +1,7 @@
 require "simplecov"
 SimpleCov.start
 
-$LOAD_PATH << '../lib'
+$LOAD_PATH << "../lib"
 
 require "ravendb"
 require "date"

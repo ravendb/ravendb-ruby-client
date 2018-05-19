@@ -1,7 +1,7 @@
 module RavenDB
   class PatchCommand < RavenCommand
     def initialize(id, patch, options = nil)
-      super("", Net::HTTP::Patch::METHOD)
+      super()
       opts = options || {}
 
       @id = id
@@ -15,37 +15,33 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      if @id.nil?
-        raise "Empty ID is invalid"
-      end
+      raise "Empty ID is invalid" if @id.nil?
+      raise "Empty patch is invalid" if @patch.nil?
+      raise "Empty script is invalid" if @patch_if_missing && !@patch_if_missing.script
 
-      if @patch.nil?
-        raise "Empty patch is invalid"
-      end
-
-      if @patch_if_missing && !@patch_if_missing.script
-        raise "Empty script is invalid"
-      end
-
-      @params = {"id" => @id}
-      @end_point = "/databases/#{server_node.database}/docs"
+      end_point = "/databases/#{server_node.database}/docs?id=#{@id}"
 
       if @skip_patch_if_change_vector_mismatch
-        add_params("skipPatchIfChangeVectorMismatch", "true")
+        end_point += "&skipPatchIfChangeVectorMismatch=true"
       end
 
       if @return_debug_information
-        add_params("debug", "true")
+        end_point += "&debug=true"
       end
+
+      request = Net::HTTP::Patch.new(end_point, "Content-Type" => "application/json")
 
       unless @change_vector.nil?
-        @headers = {"If-Match" => "\"#{@change_vector}\""}
+        request["If-Match"] = "\"#{@change_vector}\""
       end
 
-      @payload = {
-          "Patch" => @patch.to_json,
-          "PatchIfMissing" => @patch_if_missing ? @patch_if_missing.to_json : nil
+      payload = {
+        "Patch" => @patch.to_json,
+        "PatchIfMissing" => @patch_if_missing ? @patch_if_missing.to_json : nil
       }
+
+      request.body = payload.to_json
+      request
     end
 
     def set_response(response)

@@ -11,17 +11,21 @@ module RavenDB
     def create_request(server_node)
       raise "Document must be an object" unless @document
 
-      @payload = @document
+      payload = @document
       assert_node(server_node)
 
       raise "Id must be a string" unless @id.is_a?(String)
 
+      end_point = "/databases/#{server_node.database}/docs?id=#{@id}"
+
+      request = Net::HTTP::Put.new(end_point, "Content-Type" => "application/json")
+
       if @change_vector
-        @headers = {"If-Match" => "\"#{@change_vector}\""}
+        request["If-Match"] = "\"#{@change_vector}\""
       end
 
-      @params = {"id" => @id}
-      @end_point = "/databases/#{server_node.database}/docs"
+      request.body = payload.to_json
+      request
     end
 
     def set_response(response)

@@ -1,13 +1,17 @@
 module RavenDB
   class DeleteAttachmentCommand < AttachmentCommand
     def create_request(server_node)
-      super(server_node)
+      request = super(server_node)
 
       unless @_change_vector.nil?
-        @headers["If-Match"] = "\"#{@_change_vector}\""
+        request["If-Match"] = "\"#{@_change_vector}\""
       end
 
-      @method = Net::HTTP::Delete::METHOD
+      request
+    end
+
+    def http_method
+      Net::HTTP::Delete
     end
   end
 end

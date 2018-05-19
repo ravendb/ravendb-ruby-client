@@ -3,24 +3,36 @@ module RavenDB
     def initialize(document_id, name, type, change_vector = nil)
       super(document_id, name, change_vector)
 
-      raise ArgumentError, "Change Vector cannot be null for non-document attachment type" if
-          @_change_vector.nil? && !AttachmentType.document?(type)
+      if @_change_vector.nil? && !AttachmentType.document?(type)
+        raise ArgumentError, "Change Vector cannot be null for non-document attachment type"
+      end
 
       @_type = type
     end
 
-    def create_request(server_node)
-      super(server_node)
+    def payload
+      if has_payload?
+        {"Type" => @_type, "ChangeVector" => @_change_vector}.to_json
+      else
+        super
+      end
+    end
 
-      return if AttachmentType.document?(@_type)
+    def has_payload?
+      ret = !AttachmentType.document?(@_type)
+      ret
+    end
 
-      @payload = {"Type" => @_type, "ChangeVector" => @_change_vector}
-      @method = Net::HTTP::Post::METHOD
+    def http_method
+      if has_payload?
+        Net::HTTP::Post
+      else
+        Net::HTTP::Get
+      end
     end
 
     def set_response(response)
-      raise DocumentDoesNotExistException if
-          response.is_a?(Net::HTTPNotFound)
+      raise DocumentDoesNotExistException if response.is_a?(Net::HTTPNotFound)
 
       if response.json(false).nil?
         @_last_response = response
@@ -45,17 +57,17 @@ module RavenDB
       end
 
       {
-          stream: attachment,
-          attachment_details: {
-              content_type: content_type,
-              name: @_name,
-              hash: hash,
-              size: size,
-              change_vector: change_vector,
-              document_id: @_document_id
-          }
+        stream: attachment,
+        attachment_details: {
+          content_type: content_type,
+          name: @_name,
+          hash: hash,
+          size: size,
+          change_vector: change_vector,
+          document_id: @_document_id
+        }
       }
-    end
+        end
 
     protected
 

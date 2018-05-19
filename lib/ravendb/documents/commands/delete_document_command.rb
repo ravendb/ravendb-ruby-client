@@ -1,7 +1,7 @@
 module RavenDB
   class DeleteDocumentCommand < RavenCommand
     def initialize(id, change_vector = nil)
-      super("", Net::HTTP::Delete::METHOD)
+      super()
 
       @id = id
       @change_vector = change_vector
@@ -10,20 +10,18 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      unless @id
-        raise "Nil Id is not valid"
-      end
+      raise "Nil Id is not valid" unless @id
+      raise "Id must be a string" unless @id.is_a?(String)
 
-      unless @id.is_a?(String)
-        raise "Id must be a string"
-      end
+      end_point = "/databases/#{server_node.database}/docs?id=#{@id}"
+
+      request = Net::HTTP::Delete.new(end_point, "Content-Type" => "application/json")
 
       if @change_vector
-        @headers = {"If-Match" => "\"#{@change_vector}\""}
+        request["If-Match"] = "\"#{@change_vector}\""
       end
 
-      @params = {"id" => @id}
-      @end_point = "/databases/#{server_node.database}/docs"
+      request
     end
 
     def set_response(response)

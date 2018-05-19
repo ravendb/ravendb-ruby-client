@@ -1,27 +1,18 @@
 require "database/commands"
 
 module RavenDB
-  class GetDatabaseNamesCommand < RavenCommand
+  class GetDatabaseNamesCommand < RavenCommandUnified
     def initialize(start:, page_size:)
-      super("/databases?start=#{start}&pageSize=#{page_size}&namesOnly=true")
+      super()
+      @start = start
+      @page_size = page_size
     end
 
-    def create_request(server_node, url: nil)
+    def create_request(server_node)
       assert_node(server_node)
 
-      if url
-        url.value = @end_point
-        request = Net::HTTP::Get.new(url.value)
-        request
-      end
-    end
-
-    def set_response(response)
-      response = super(response)
-
-      raise_invalid_response! unless response.is_a?(Hash)
-
-      parse_response(response, from_cache: nil)
+      end_point = "/databases?start=#{@start}&pageSize=#{@page_size}&namesOnly=true"
+      Net::HTTP::Get.new(end_point)
     end
 
     def parse_response(json, from_cache:)

@@ -1,24 +1,23 @@
 require "database/commands"
 
 module RavenDB
-  class GetDatabaseTopologyCommand < RavenCommand
-    def initialize
-      super(nil)
-    end
+  class GetDatabaseTopologyCommand < RavenCommandUnified
+    def create_request(server_node)
+      assert_node(server_node)
 
-    def create_request(server_node, url: nil)
-      @end_point = "/topology?name=" + server_node.database
+      end_point = "/topology?name=#{server_node.database}"
+
       if server_node.url.downcase.include?(".fiddler")
         # we want to keep the '.fiddler' stuff there so we'll keep tracking request
         # so we are going to ask the server to respect it
-        @end_point += "&localUrl=" + CGI.escape(node.url)
+        end_point += "&localUrl=" + CGI.escape(node.url)
       end
-      assert_node(server_node)
 
-      if url
-        url.value = @end_point
-        Net::HTTP::Get.new(url.value)
-      end
+      Net::HTTP::Get.new(end_point)
+    end
+
+    def parse_response(json, from_cache:)
+      Topology.from_json(json)
     end
 
     def read_request?

@@ -1,7 +1,7 @@
 module RavenDB
   class DeleteDatabaseCommand < RavenCommand
     def initialize(database_id, hard_delete = false, from_node = nil, time_to_wait_for_confirmation = nil)
-      super("", Net::HTTP::Delete::METHOD)
+      super()
 
       @database_id = database_id
       @from_node = from_node
@@ -11,17 +11,20 @@ module RavenDB
       @from_node = from_node.cluster_tag if @from_node.is_a?(ServerNode)
     end
 
-    def create_request(server_node)
+    def create_request(_server_node)
       db_name = @database_id.gsub("Raven/Databases/", "")
-      @end_point = "/admin/databases"
+      end_point = "/admin/databases"
 
-      @payload = {
-          "DatabaseNames" => [db_name],
-          "HardDelete" => @hard_delete,
-          "TimeToWaitForConfirmation" => @time_to_wait_for_confirmation
+      payload = {
+        "DatabaseNames" => [db_name],
+        "HardDelete" => @hard_delete,
+        "TimeToWaitForConfirmation" => @time_to_wait_for_confirmation
       }
+      payload["FromNodes"] = [@from_node] if @from_node
 
-      @payload["FromNodes"] = [@from_node] if @from_node
+      request = Net::HTTP::Delete.new(end_point, "Content-Type" => "application/json")
+      request.body = payload.to_json
+      request
     end
   end
 end

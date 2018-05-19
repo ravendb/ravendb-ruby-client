@@ -1,14 +1,15 @@
 module RavenDB
   class GetOperationStateCommand < RavenCommand
     def initialize(id)
-      super("", Net::HTTP::Get::METHOD)
+      super()
       @id = id
     end
 
     def create_request(server_node)
       assert_node(server_node)
-      @params = {"id" => @id}
-      @end_point = "/databases/#{server_node.database}/operations/state"
+      end_point = "/databases/#{server_node.database}/operations/state?id=#{@id}"
+
+      Net::HTTP::Get.new(end_point)
     end
 
     def set_response(response)

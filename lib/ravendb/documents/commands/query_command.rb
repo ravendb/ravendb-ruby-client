@@ -1,7 +1,7 @@
 module RavenDB
   class QueryCommand < RavenCommand
     def initialize(conventions, index_query, metadata_only = false, index_entries_only = false)
-      super("", Net::HTTP::Post::METHOD)
+      super()
 
       unless index_query.is_a?(IndexQuery)
         raise "Query must be an instance of IndexQuery class"
@@ -20,18 +20,21 @@ module RavenDB
     def create_request(server_node)
       assert_node(server_node)
 
-      @end_point = "/databases/#{server_node.database}/queries"
-      @params = {"queryHash" => @index_query.query_hash}
+      end_point = "/databases/#{server_node.database}/queries?queryHash=" + @index_query.query_hash
 
       if @metadata_only
-        add_params("metadataOnly", "true")
+        end_point += "&metadataOnly=true"
       end
 
       if @index_entries_only
-        add_params("debug", "entries")
+        end_point += "&debug=entries"
       end
 
-      @payload = @index_query.to_json
+      payload = @index_query.to_json
+
+      request = Net::HTTP::Post.new(end_point, "Content-Type" => "application/json")
+      request.body = payload.to_json
+      request
     end
 
     def set_response(response)

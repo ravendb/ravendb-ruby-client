@@ -1,12 +1,15 @@
 module RavenDB
   class DeleteByQueryCommand < QueryBasedCommand
     def initialize(query, options = nil)
-      super(Net::HTTP::Delete::METHOD, query, options)
+      super(query, options)
     end
 
-    def create_request(server_node)
-      super(server_node)
-      @payload = @query.to_json
+    def payload
+      @query.to_json
+    end
+
+    def http_method
+      Net::HTTP::Delete
     end
   end
 end

@@ -1,15 +1,19 @@
 module RavenDB
   class GetIndexesCommand < RavenCommand
     def initialize(start = 0, page_size = 10)
-      super("", Net::HTTP::Get::METHOD, nil, nil, {})
+      super()
       @start = start
       @page_size = page_size
     end
 
     def create_request(server_node)
       assert_node(server_node)
-      @end_point = "/databases/#{server_node.database}/indexes"
-      @params = {"start" => @start, "page_size" => @page_size}
+      end_point = "/databases/#{server_node.database}/indexes?start=#{@start}&page_size=#{@page_size}#{extra_params}"
+      Net::HTTP::Get.new(end_point)
+    end
+
+    def extra_params
+      ""
     end
 
     def set_response(response)

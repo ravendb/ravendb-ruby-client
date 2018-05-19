@@ -1,7 +1,7 @@
 module RavenDB
   class GetDocumentCommand < RavenCommand
     def initialize(id_or_ids, includes = nil, metadata_only = false)
-      super("", Net::HTTP::Get::METHOD, nil, nil, {})
+      super()
 
       @id_or_ids = id_or_ids || []
       @includes = includes
@@ -19,30 +19,33 @@ module RavenDB
       first_id = ids.first
       multi_load = ids.size > 1
 
-      @params = {}
-      @end_point = "/databases/#{server_node.database}/docs"
+      end_point = "/databases/#{server_node.database}/docs?"
 
       if @includes
-        add_params("include", @includes)
+        end_point += "&" + URI.encode_www_form("include" => @includes)
       end
 
       if multi_load
         if @metadata_only
-          add_params("metadataOnly", "True")
+          end_point += "&metadataOnly=True"
         end
 
         if (ids.map { |id| id.size }).sum > 1024
           @payload = {"Ids" => ids}
-          @method = Net::HTTP::Post::METHOD
-
-          return
+          request = Net::HTTP::Post.new(end_point, "Content-Type" => "application/json")
+          request.body = payload.to_json
+          return request
         end
       end
 
-      add_params("id", multi_load ? ids : first_id)
+      end_point += "&" + URI.encode_www_form("id" => (multi_load ? ids : first_id))
+
+      Net::HTTP::Get.new(end_point)
     end
 
     def set_response(response)
+      RavenDB.logger.warn("GetDocuments -> #{response}")
+      RavenDB.logger.warn("GetDocuments -> #{response.body}")
       result = super(response)
 
       if response.is_a?(Net::HTTPNotFound)

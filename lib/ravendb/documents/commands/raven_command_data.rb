@@ -12,9 +12,9 @@ module RavenDB
 
     def to_json
       {
-          "Type" => @type,
-          "Id" => @id,
-          "ChangeVector" => @change_vector
+        "Type" => @type,
+        "Id" => @id,
+        "ChangeVector" => @change_vector
       }
     end
   end

@@ -5,9 +5,8 @@ module RavenDB
       @index_name = index_name
     end
 
-    def create_request(server_node)
-      super(server_node)
-      @params = {"name" => @index_name}
+    def extra_params
+      "&name=#{@index_name}"
     end
 
     def set_response(response)

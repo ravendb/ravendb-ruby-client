@@ -1,7 +1,7 @@
 module RavenDB
   class QueryBasedCommand < RavenCommand
-    def initialize(method, query, options = nil)
-      super("", method)
+    def initialize(query, options = nil)
+      super()
       @query = query
       @options = options || QueryOperationOptions.new
     end
@@ -19,17 +19,21 @@ module RavenDB
         raise "Options must be instance of QueryOperationOptions class"
       end
 
-      @params = {
-          "allowStale" => options.allow_stale,
-          "details" => options.retrieve_details,
-          "maxOpsPerSec" => options.max_ops_per_sec
+      params = {
+        "allowStale" => options.allow_stale,
+        "details" => options.retrieve_details,
+        "maxOpsPerSec" => options.max_ops_per_sec
       }
 
-      @end_point = "/databases/#{server_node.database}/queries"
+      end_point = "/databases/#{server_node.database}/queries?" + params.map { |k, v| "#{k}=#{v}" }.join("&")
 
-      return unless options.allow_stale && options.stale_timeout
+      if options.allow_stale && options.stale_timeout
+        end_point += "&staleTimeout=#{options.stale_timeout}"
+      end
 
-      add_params("staleTimeout", options.stale_timeout)
+      request = http_method.new(end_point, "Content-Type" => "application/json")
+      request.body = payload.to_json
+      request
     end
   end
 end

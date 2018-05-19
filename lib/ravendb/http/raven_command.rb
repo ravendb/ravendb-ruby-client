@@ -7,7 +7,7 @@ module RavenDB
     attr_reader :response_type
     attr_reader :failed_nodes
 
-    def initialize(end_point, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
+    def initialize(end_point = nil, method = Net::HTTP::Get::METHOD, params = {}, payload = nil, headers = {})
       @end_point = end_point || ""
       @method = method
       @params = params
@@ -41,7 +41,7 @@ module RavenDB
       @failed_nodes.include?(node)
     end
 
-    def create_request(server_node)
+    def create_request(_server_node)
       raise NotImplementedError, "You should implement create_request method"
     end
 
@@ -124,10 +124,10 @@ module RavenDB
           cache_response(cache, url, response, json)
         end
 
-        parse_response(json, from_cache: false)
+        self.result = parse_response(json, from_cache: false)
         return :automatic
       else
-        parse_response_raw(response, entity.getContent)
+        self.result = parse_response_raw(response, entity.getContent)
       end
 
       :automatic
@@ -177,6 +177,21 @@ module RavenDB
       end
 
       remove.each { |param| @params.delete(param) }
+    end
+
+    def parse_response(json, from_cache:)
+      json
+    end
+  end
+
+  # to be removed
+  class RavenCommandUnified < RavenCommand
+    def set_response(response)
+      response = super(response)
+
+      raise_invalid_response! unless response.is_a?(Hash)
+
+      parse_response(response, from_cache: nil)
     end
   end
 end
