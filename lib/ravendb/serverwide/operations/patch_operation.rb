@@ -9,7 +9,7 @@ module RavenDB
       @options = options
     end
 
-    def get_command(_conventions, _store = nil)
+    def get_command(conventions:, store: nil, http_cache: nil)
       PatchCommand.new(@id, @patch, @options)
     end
   end

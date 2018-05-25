@@ -11,7 +11,7 @@ module RavenDB
       @indexes = indexes
     end
 
-    def get_command(_conventions)
+    def get_command(conventions:, store: nil, http_cache: nil)
       PutIndexesCommand.new(@indexes)
     end
   end

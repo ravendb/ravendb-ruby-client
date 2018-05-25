@@ -5,7 +5,7 @@ module RavenDB
       @index_name = index_name
     end
 
-    def get_command(_conventions)
+    def get_command(conventions:, store: nil, http_cache: nil)
       DeleteIndexCommand.new(@index_name)
     end
   end

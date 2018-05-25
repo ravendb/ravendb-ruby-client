@@ -96,11 +96,7 @@ module RavenDB
 
       if operation.is_a?(AbstractOperation)
         begin
-          command = if operation.is_a?(Operation)
-                      operation.get_command(conventions, store)
-                    else
-                      operation.get_command(conventions)
-                    end
+          command = operation.get_command(conventions: conventions, store: store)
         rescue StandardError => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}"
         end

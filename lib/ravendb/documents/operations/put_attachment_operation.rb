@@ -7,7 +7,7 @@ module RavenDB
       @content_type = content_type
     end
 
-    def get_command(_conventions, _store = nil)
+    def get_command(conventions:, store: nil, http_cache: nil)
       PutAttachmentCommand.new(@document_id, @name, @stream, @content_type, @change_vector)
     end
   end

@@ -12,7 +12,7 @@ module RavenDB
       end
     end
 
-    def get_command(_conventions)
+    def get_command(conventions:, store: nil, http_cache: nil)
       DeleteDatabaseCommand.new(@database_id, @hard_delete, @from_node)
     end
   end
