@@ -1,5 +1,3 @@
-require "database/operations/get_database_names_operation"
-
 RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true, rdbc_171: true do
   let :conventions do
     RavenDB::DocumentConventions.new

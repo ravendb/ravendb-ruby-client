@@ -1,5 +1,3 @@
-require "database/operations"
-
 module RavenDB
   class GetDatabaseNamesOperation < ServerOperation
     def initialize(start:, page_size:)

@@ -1,0 +1,6 @@
+require "ravendb/serverwide/operations/server_operation.rb"
+require "ravendb/serverwide/operations/create_database_operation.rb"
+require "ravendb/serverwide/operations/delete_database_operation.rb"
+require "ravendb/serverwide/operations/get_statistics_operation.rb"
+require "ravendb/serverwide/operations/patch_operation.rb"
+require "ravendb/serverwide/operations/get_database_names_operation"
