@@ -9,15 +9,15 @@ module RavenDatabaseTest
         "LastModified = (DateTime)doc[\"@metadata\"][\"Last-Modified\"],"\
         "LastModifiedTicks = ((DateTime)doc[\"@metadata\"][\"Last-Modified\"]).Ticks}"
 
-      db_doc = RavenDB::DatabaseDocument.new(current_database, 'Raven/DataDir': "test")
-      store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(db_doc))
+      database_record = RavenDB::DatabaseDocument.new(current_database, 'Raven/DataDir': "test")
+      store.maintenance.server.send(RavenDB::CreateDatabaseOperation.new(database_record: database_record))
       @_request_executor = store.get_request_executor
     end
   end
 
   def self.teardown(context, _example)
     context.instance_eval do
-      store.maintenance.server.send(RavenDB::DeleteDatabaseOperation.new(current_database, true))
+      store.maintenance.server.send(RavenDB::DeleteDatabaseOperation.new(database_name: current_database, hard_delete: true))
       @_request_executor = nil
       @_index_map = nil
     end

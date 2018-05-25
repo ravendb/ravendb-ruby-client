@@ -1,9 +1,9 @@
 module RavenDB
   class DeleteDatabaseCommand < RavenCommand
-    def initialize(database_id, hard_delete = false, from_node = nil, time_to_wait_for_confirmation = nil)
+    def initialize(database_name, hard_delete = false, from_node = nil, time_to_wait_for_confirmation = nil)
       super()
 
-      @database_id = database_id
+      @database_name = database_name
       @from_node = from_node
       @hard_delete = hard_delete || false
       @time_to_wait_for_confirmation = time_to_wait_for_confirmation
@@ -12,7 +12,7 @@ module RavenDB
     end
 
     def create_request(_server_node)
-      db_name = @database_id.gsub("Raven/Databases/", "")
+      db_name = @database_name.gsub("Raven/Databases/", "")
       end_point = "/admin/databases"
 
       payload = {

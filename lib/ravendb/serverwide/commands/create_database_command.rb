@@ -1,17 +1,17 @@
 module RavenDB
   class CreateDatabaseCommand < RavenCommand
-    def initialize(database_document, replication_factor = 1)
-      super() # "", Net::HTTP::Put::METHOD)
-      @database_document = database_document
-      @replication_factor = replication_factor || 1
+    def initialize(database_record, replication_factor = 1)
+      super()
+      @database_record = database_record
+      @replication_factor = replication_factor
     end
 
     def create_request(server_node)
       assert_node(server_node)
 
-      db_name = @database_document.database_id.gsub("Raven/Databases/", "")
+      db_name = @database_record.database_id.gsub("Raven/Databases/", "")
       end_point = "/admin/databases?name=#{db_name}&replicationFactor=#{@replication_factor}"
-      payload = @database_document.to_json
+      payload = @database_record.to_json
 
       request = Net::HTTP::Put.new(end_point, "Content-Type" => "application/json")
       request.body = payload.to_json
