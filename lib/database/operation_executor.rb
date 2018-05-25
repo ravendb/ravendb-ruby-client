@@ -94,7 +94,7 @@ module RavenDB
       conventions = store.conventions
       error_message = "Invalid object passed as an operation"
 
-      if operation.is_a?(AbstractOperation)
+      if operation.is_a?(Operation)
         begin
           command = operation.get_command(conventions: conventions, store: store)
         rescue StandardError => exception

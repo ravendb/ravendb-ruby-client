@@ -1,4 +1,4 @@
 module RavenDB
-  class ServerOperation < AbstractOperation
+  class ServerOperation < Operation
   end
 end

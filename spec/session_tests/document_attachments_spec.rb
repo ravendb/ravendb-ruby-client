@@ -1,4 +1,4 @@
-RSpec.describe RavenDB::AttachmentOperation, database: true do
+RSpec.describe RavenDB::GetAttachmentOperation, database: true do
   ATTACHMENT = "47494638396101000100800000000000ffffff21f90401000000002c000000000100010000020144003b".freeze
 
   it "puts attachment" do
@@ -10,7 +10,12 @@ RSpec.describe RavenDB::AttachmentOperation, database: true do
 
       expect do
         store.operations.send(
-          RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif", [ATTACHMENT].pack("H*"), "image/gif"))
+          RavenDB::PutAttachmentOperation.new(
+            document_id: product.id,
+            name: "1x1.gif",
+            stream: [ATTACHMENT].pack("H*"),
+            content_type:  "image/gif"
+          ))
       end.not_to raise_error
     end
   end
@@ -24,10 +29,19 @@ RSpec.describe RavenDB::AttachmentOperation, database: true do
       session.save_changes
 
       store.operations.send(
-        RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif", attachment_raw, "image/gif"))
+        RavenDB::PutAttachmentOperation.new(
+          document_id: product.id,
+          name: "1x1.gif",
+          stream: attachment_raw,
+          content_type: "image/gif"
+        ))
 
       attachment_result = store.operations.send(
-        RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::DOCUMENT))
+        RavenDB::GetAttachmentOperation.new(
+          document_id: product.id,
+          name: "1x1.gif",
+          type: RavenDB::AttachmentType::DOCUMENT
+        ))
 
       expect(attachment_result[:stream]).to eq(attachment_raw)
       expect(attachment_result[:attachment_details][:document_id]).to eq(product.id)
@@ -45,14 +59,26 @@ RSpec.describe RavenDB::AttachmentOperation, database: true do
       session.save_changes
 
       store.operations.send(
-        RavenDB::PutAttachmentOperation.new(product.id, "1x1.gif", [ATTACHMENT].pack("H*"), "image/gif"))
+        RavenDB::PutAttachmentOperation.new(
+          document_id: product.id,
+          name: "1x1.gif",
+          stream: [ATTACHMENT].pack("H*"),
+          content_type: "image/gif"
+        ))
 
       store.operations.send(
-        RavenDB::DeleteAttachmentOperation.new(product.id, "1x1.gif"))
+        RavenDB::DeleteAttachmentOperation.new(
+          document_id: product.id,
+          name: "1x1.gif"
+        ))
 
       expect do
         store.operations.send(
-          RavenDB::GetAttachmentOperation.new(product.id, "1x1.gif", RavenDB::AttachmentType::DOCUMENT))
+          RavenDB::GetAttachmentOperation.new(
+            document_id: product.id,
+            name: "1x1.gif",
+            type: RavenDB::AttachmentType::DOCUMENT
+          ))
       end.to raise_error(RavenDB::DocumentDoesNotExistException)
     end
   end

@@ -1,8 +1,10 @@
 module RavenDB
-  class GetAttachmentOperation < AttachmentOperation
-    def initialize(document_id, name, type, change_vector = nil)
-      super(document_id, name, change_vector)
-
+  class GetAttachmentOperation < Operation
+    def initialize(document_id:, name:, type:, change_vector: nil)
+      super()
+      @document_id = document_id
+      @name = name
+      @change_vector = change_vector
       @type = type
     end
 
