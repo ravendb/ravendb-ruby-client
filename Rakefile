@@ -14,3 +14,7 @@ end
 desc "Run unit tests"
 task default: :spec
 task test_ci: ["ci:setup:rspec", :test]
+
+task :reset do
+  system("docker rm -f ravendb; docker run -d --name ravendb -p 8080:8080 ravendb/ravendb")
+end
