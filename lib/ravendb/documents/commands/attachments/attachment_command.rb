@@ -16,7 +16,7 @@ module RavenDB
 
       end_point = "/databases/#{server_node.database}/attachments?" + params.map { |k, v| "#{k}=#{v}" }.join("&")
 
-      request = if has_payload?
+      request = if payload?
                   http_method.new(end_point, "Content-Type" => "application/json")
                 else
                   http_method.new(end_point)
@@ -25,7 +25,7 @@ module RavenDB
       request
     end
 
-    def has_payload?
+    def payload?
       false
     end
 

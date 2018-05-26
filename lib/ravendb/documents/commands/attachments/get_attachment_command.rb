@@ -11,20 +11,19 @@ module RavenDB
     end
 
     def payload
-      if has_payload?
+      if payload?
         {"Type" => @_type, "ChangeVector" => @_change_vector}.to_json
       else
         super
       end
     end
 
-    def has_payload?
-      ret = !AttachmentType.document?(@_type)
-      ret
+    def payload?
+      !AttachmentType.document?(@_type)
     end
 
     def http_method
-      if has_payload?
+      if payload?
         Net::HTTP::Post
       else
         Net::HTTP::Get
@@ -67,7 +66,7 @@ module RavenDB
           document_id: @_document_id
         }
       }
-        end
+    end
 
     protected
 
