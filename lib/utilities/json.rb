@@ -2,6 +2,7 @@ require "json"
 require "net/http"
 require "database/exceptions"
 require "utilities/type_utilities"
+require "active_support/hash_with_indifferent_access"
 
 module Net
   class HTTPResponse
@@ -67,6 +68,8 @@ module RavenDB
         target.instance_variable_set("@metadata", current_metadata)
       end
 
+      mappings = ActiveSupport::HashWithIndifferentAccess.new(mappings)
+
       source.each do |key, value|
         variable_name = key
         variable_value = value
@@ -76,7 +79,7 @@ module RavenDB
             original_attribute: key,
             serialized_attribute: key_mapper ? key_mapper[key] : key,
             original_value: value,
-            serialized_value: json_to_variable(value, key, mappings, conventions, parent_path),
+            serialized_value: json_to_variable(value, key, mappings, conventions, parent_path, key_mapper: key_mapper),
             attribute_path: build_path(key, parent_path),
             source: source,
             target: target,
@@ -144,16 +147,18 @@ module RavenDB
       json
     end
 
-    def self.json_to_variable(json_value, key = nil, mappings = {}, conventions = nil, parent_path = nil)
-      if mappings.key?(key)
-        nested_object_type = mappings[key]
+    def self.json_to_variable(json_value, key = nil, mappings = {}, conventions = nil, parent_path = nil, key_mapper: nil)
+      mapped_key = key_mapper ? key_mapper[key] : key
+
+      if mappings.key?(mapped_key)
+        nested_object_type = mappings[mapped_key]
 
         if nested_object_type == "date"
           return TypeUtilities.parse_date(json_value)
         end
 
         if json_value.is_a?(Hash)
-          document = json_to_document(json_value, nested_object_type, conventions, build_path(key, parent_path))
+          document = json_to_document(json_value, nested_object_type, conventions, build_path(key, parent_path), key_mapper: key_mapper)
 
           unless document.nil?
             return document
@@ -164,7 +169,7 @@ module RavenDB
           documents = []
 
           if json_value.all? do |json_value_item|
-               document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path))
+               document = json_to_document(json_value_item, nested_object_type, conventions, build_path(key, parent_path), key_mapper: key_mapper)
                was_converted = !document.nil?
 
                unless document.nil?
@@ -201,7 +206,7 @@ module RavenDB
       json_value
     end
 
-    def self.json_to_document(json_value, nested_object_type, conventions = nil, parent_path = nil)
+    def self.json_to_document(json_value, nested_object_type, conventions = nil, parent_path = nil, key_mapper: nil)
       nested_object_metadata = {}
 
       if json_value.key?("@metadata") && json_value["@metadata"].is_a?(Hash)
@@ -213,7 +218,7 @@ module RavenDB
           nested_object_type = Object.const_get(nested_object_type)
         end
 
-        return from_json(nested_object_type.new, json_value, nested_object_metadata, nil, conventions, parent_path)
+        return from_json(nested_object_type.new, json_value, nested_object_metadata, nil, conventions, parent_path, key_mapper: key_mapper)
       end
 
       nil

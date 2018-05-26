@@ -740,7 +740,7 @@ module RavenDB
       end
 
       is_still_failed = nil
-      command = GetStatisticsCommand.new(true)
+      command = GetStatisticsCommand.new(check_for_failures: true)
 
       begin
         request = prepare_command(command, server_node)
