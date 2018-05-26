@@ -182,6 +182,11 @@ module RavenDB
     def parse_response(json, from_cache:)
       json
     end
+
+    def path_with_params(end_point, params)
+      end_point += "?" + URI.encode_www_form(params) if params && !params.empty?
+      end_point
+    end
   end
 
   # to be removed
