@@ -1,5 +1,3 @@
-require "database/commands"
-
 module RavenDB
   class GetDatabaseNamesCommand < RavenCommandUnified
     def initialize(start:, page_size:)
@@ -16,15 +14,12 @@ module RavenDB
     end
 
     def parse_response(json, from_cache:)
-      response = json
+      raise_invalid_response! unless json.key?("Databases")
 
-      raise_invalid_response! unless response.key?("Databases")
-
-      databases = response["Databases"]
+      databases = json["Databases"]
 
       raise_invalid_response! unless databases.is_a?(Array)
 
-      @result = databases
       databases
     end
 
