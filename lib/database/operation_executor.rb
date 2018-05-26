@@ -166,7 +166,7 @@ module RavenDB
         return awaiter.wait_for_completion
       end
 
-      if operation.is_a?(PatchResultOperation)
+      if operation.is_a?(PatchOperation)
         patch_result = nil
 
         case command.server_response

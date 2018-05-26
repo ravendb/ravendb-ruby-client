@@ -1,5 +1,5 @@
 module RavenDB
-  class PatchOperation < PatchResultOperation
+  class PatchOperation < Operation
     attr_reader :id
 
     def initialize(id, patch, options = nil)
