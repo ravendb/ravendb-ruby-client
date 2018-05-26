@@ -51,6 +51,12 @@ RSpec.configure do |config|
     RavenDatabaseIndexesTest.teardown(self, example)
   end
 
+  config.around :each, executor: true do |example|
+    RavenExecutorTest.setup(self, example)
+    example.run
+    RavenExecutorTest.teardown(self, example)
+  end
+
   config.include RavenTestHelpers
   config.include RavenDatabaseTestHelpers, database: true
 end

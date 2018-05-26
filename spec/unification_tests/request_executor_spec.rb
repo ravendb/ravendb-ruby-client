@@ -1,12 +1,4 @@
-RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true, rdbc_171: true do
-  let :conventions do
-    RavenDB::DocumentConventions.new
-  end
-
-  let :executor do
-    create_executor
-  end
-
+RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_148: true, rdbc_171: true do
   it "failure should not block connection pool", rdbc_173: true do
     executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
 
@@ -117,13 +109,5 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true, rdbc_17
 
       executor.execute_on_specific_node(command)
     end.to raise_error(RavenDB::AllTopologyNodesDownException)
-  end
-
-  def create_executor(initial_urls: store.urls, database_name: store.database, new_first_update_method: false)
-    RavenDB::RequestExecutor.new(initial_urls: initial_urls,
-                                 database_name: database_name,
-                                 conventions: conventions,
-                                 auth_options: store.auth_options,
-                                 new_first_update_method: new_first_update_method)
   end
 end
