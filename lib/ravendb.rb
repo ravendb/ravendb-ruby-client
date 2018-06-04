@@ -1,5 +1,14 @@
-require_relative "./version.rb"
 require "logger"
+require "set"
+require "uri"
+require "json"
+require "date"
+require "net/http"
+
+require_relative "./version.rb"
+require "ravendb/http"
+require "ravendb/documents"
+require "ravendb/serverwide"
 require "documents/document_store"
 
 module RavenDB

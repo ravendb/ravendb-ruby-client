@@ -1,15 +1,4 @@
-require "database/commands/get_next_operation_id_command"
-require "database/operations/get_database_names_operation"
-
-RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
-  let :conventions do
-    RavenDB::DocumentConventions.new
-  end
-
-  let :executor do
-    create_executor
-  end
-
+RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_148: true, rdbc_171: true do
   it "failure should not block connection pool", rdbc_173: true do
     executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
 
@@ -28,17 +17,21 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "can issue many requests" do
+    executor = create_executor(new_first_update_method: true)
+
     50.times do
       database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
       command = database_names_operation.get_command(conventions: conventions)
-      executor.execute(command)
+      executor.execute_on_specific_node(command)
     end
   end
 
   it "can fetch databases names" do
+    executor = create_executor(new_first_update_method: true)
+
     database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
     command = database_names_operation.get_command(conventions: conventions)
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     db_names = command.result
 
@@ -46,7 +39,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "throws when updating topology of not existing db" do
-    executor = create_executor(database_name: "no_such_db")
+    executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
 
     server_node = RavenDB::ServerNode.new
     server_node.url = store.urls[0]
@@ -68,7 +61,9 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   end
 
   it "can create single node request executor" do
-    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options)
+    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options,
+                                                               new_first_update_method: true,
+                                                               disable_configuration_updates: true)
 
     nodes = executor.topology_nodes
 
@@ -80,7 +75,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
 
     command = RavenDB::GetNextOperationIdCommand.new
 
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     expect(command.result).not_to be_nil
   end
@@ -88,11 +83,13 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
   it "can choose online node" do
     url = store.urls[0]
 
-    initial_urls = ["http://no_such_host:8080", "http://another_offline:8080", url]
-    executor = create_executor(initial_urls: initial_urls)
+    prefix = default_url.downcase.split("//")[0]
+
+    initial_urls = ["#{prefix}//no_such_host:8080", "#{prefix}//another_offline:8080", url]
+    executor = create_executor(initial_urls: initial_urls, new_first_update_method: true)
 
     command = RavenDB::GetNextOperationIdCommand.new
-    executor.execute(command)
+    executor.execute_on_specific_node(command)
 
     expect(command.result).not_to be_nil
 
@@ -112,13 +109,5 @@ RSpec.describe RavenDB::RequestExecutor, database: true, rdbc_148: true do
 
       executor.execute_on_specific_node(command)
     end.to raise_error(RavenDB::AllTopologyNodesDownException)
-  end
-
-  def create_executor(initial_urls: store.urls, database_name: store.database, new_first_update_method: false)
-    RavenDB::RequestExecutor.new(initial_urls: initial_urls,
-                                 database_name: database_name,
-                                 conventions: conventions,
-                                 auth_options: store.auth_options,
-                                 new_first_update_method: new_first_update_method)
   end
 end

@@ -1,4 +1,4 @@
-RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
+RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true, rdbc_171: true do
   ID = "Products/10".freeze
 
   before do
@@ -15,7 +15,7 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
   end
 
   it "patches success ignoring missing" do
-    result = store.operations.send(RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'")))
+    result = store.operations.send(RavenDB::PatchOperation.new(id: ID, patch: RavenDB::PatchRequest.new("this.name = 'testing'")))
 
     expect(result).to include(:Status)
     expect(result).to include(:Document)
@@ -26,7 +26,8 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
 
   it "patches success not ignoring missing" do
     result = store.operations.send(
-      RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
+      RavenDB::PatchOperation.new(id: ID,
+                                  patch: RavenDB::PatchRequest.new("this.name = 'testing'"),
                                   change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                   skip_patch_if_change_vector_mismatch: true
                                  ))
@@ -39,7 +40,8 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true do
   it "patches fail not ignoring missing" do
     expect do
       store.operations.send(
-        RavenDB::PatchOperation.new(ID, RavenDB::PatchRequest.new("this.name = 'testing'"),
+        RavenDB::PatchOperation.new(id: ID,
+                                    patch: RavenDB::PatchRequest.new("this.name = 'testing'"),
                                     change_vector: "#{@_change_vector}_BROKEN_VECTOR",
                                     skip_patch_if_change_vector_mismatch: false
                                    ))

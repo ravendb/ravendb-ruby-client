@@ -1,6 +1,8 @@
 require "simplecov"
 SimpleCov.start
 
+$LOAD_PATH << "../lib"
+
 require "ravendb"
 require "date"
 require "securerandom"
@@ -47,6 +49,12 @@ RSpec.configure do |config|
     RavenDatabaseIndexesTest.setup(self, example)
     example.run
     RavenDatabaseIndexesTest.teardown(self, example)
+  end
+
+  config.around :each, executor: true do |example|
+    RavenExecutorTest.setup(self, example)
+    example.run
+    RavenExecutorTest.teardown(self, example)
   end
 
   config.include RavenTestHelpers

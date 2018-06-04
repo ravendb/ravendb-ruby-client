@@ -370,7 +370,7 @@ end
 
 You can attach binary files to documents. 
 
-1. For attach a file, use `RavenDB::PutAttachmentOperation`. Pass document id, attachment name (it can be just a file name), content type and file contents:
+1. To attach a file, use `RavenDB::PutAttachmentOperation`. Pass document id, attachment name (it can be just a file name), content type and file contents:
 
 ```ruby
 require 'ravendb'
@@ -380,15 +380,15 @@ file_name = './iphone-x.png'
 
 store.operations.send(
   RavenDB::PutAttachmentOperation.new(
-    'Products/1-A', 
-    File.basename(fileName), 
-    File.read(fileName), 
-    'image/png' 
+    document_id: 'Products/1-A', 
+    name: File.basename(file_name), 
+    stream: File.read(file_name), 
+    content_type: 'image/png' 
   )
 )   
 ```
 
-2. For read an attachment, use `RavenDB::GetAttachmentOperation`. Pass document id and attachment name. File contents will be stored as `:stream` key of response:
+2. To read an attachment, use `RavenDB::GetAttachmentOperation`. Pass document id and attachment name. File contents will be stored as `:stream` key of response:
 
 ```ruby
 require 'ravendb'
@@ -398,18 +398,18 @@ file_name = 'iphone-x.png'
 
 attachment_result = store.operations.send(
   RavenDB::GetAttachmentOperation.new(
-    'Products/1-A', 
-    file_name, 
-    RavenDB::AttachmentType::DOCUMENT
+    document_id: 'Products/1-A', 
+    name: file_name, 
+    type: RavenDB::AttachmentType::DOCUMENT
   )
 )
 
-file = File.new(`./${fileName}`, "wb")
+file = File.new("./${file_name}", "wb")
 file.write(attachment_result[:stream])
 file.close
 ```
 
-3. For delete an attachment, use `RavenDB::DeleteAttachmentOperation`. Pass document id and attachment name.
+3. To delete an attachment, use `RavenDB::DeleteAttachmentOperation`. Pass document id and attachment name.
 
 ```ruby
 require 'ravendb'
@@ -419,8 +419,8 @@ file_name = 'iphone-x.png'
 
 store.operations.send(
   RavenDB::DeleteAttachmentOperation.new(
-    'Products/1-A', 
-    file_name
+    document_id: 'Products/1-A', 
+    name: file_name
   )
 )
 ```

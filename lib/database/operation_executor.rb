@@ -94,13 +94,9 @@ module RavenDB
       conventions = store.conventions
       error_message = "Invalid object passed as an operation"
 
-      if operation.is_a?(AbstractOperation)
+      if operation.is_a?(Operation)
         begin
-          command = if operation.is_a?(Operation)
-                      operation.get_command(conventions, store)
-                    else
-                      operation.get_command(conventions)
-                    end
+          command = operation.get_command(conventions: conventions, store: store)
         rescue StandardError => exception
           error_message = "Can't instantiate command required for run operation: #{exception.message}"
         end
@@ -170,7 +166,7 @@ module RavenDB
         return awaiter.wait_for_completion
       end
 
-      if operation.is_a?(PatchResultOperation)
+      if operation.is_a?(PatchOperation)
         patch_result = nil
 
         case command.server_response
