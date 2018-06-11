@@ -198,70 +198,70 @@ products_with_names_only = session.query({
     </tr>
     <tr>
         <td><pre lang="ruby">select_fields(fields, projections = nil)</pre></td>
-        <td><pre lang="sql">SELECT field1 [AS projection1], ...</pre></td>
+        <td><pre lang="sql">select field1 [as projection1], ...</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">distinct</pre></td>
-        <td><pre lang="sql">SELECT DISTINCT</pre></td>
+        <td><pre lang="sql">select distinct</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_equals(field_name, value, 
 exact = false)</pre></td>
-        <td><pre lang="sql">WHERE fieldName = &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName = &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_not_equals(field_name, value, 
 exact = false)</pre></td>
-        <td><pre lang="sql">WHERE fieldName != &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName != &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_in(field_name, values, exact = false)</pre></td>
-        <td><pre lang="sql">WHERE fieldName IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+        <td><pre lang="sql">where fieldName in (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_starts_with(field_name, value)</pre></td>
-        <td><pre lang="sql">WHERE startsWith(fieldName, '&lt;value&gt;')</pre></td>
+        <td><pre lang="sql">where startsWith(fieldName, '&lt;value&gt;')</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_ends_with(field_name, value)</pre></td>
-        <td><pre lang="sql">WHERE endsWith(fieldName, '&lt;value&gt;')</pre></td>
+        <td><pre lang="sql">where endsWith(fieldName, '&lt;value&gt;')</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_between(field_name, from, to, 
 exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName BETWEEN &lt;start&gt; AND &lt;end&gt;</pre></td>
+        <td><pre lang="sql">where fieldName BETWEEN &lt;start&gt; AND &lt;end&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_greater_than(field_name, value, 
 exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName > &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName > &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_greater_than_or_equal(field_name, 
 value, exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName >= &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName >= &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_less_than(field_name, value, 
 exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName < &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName < &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_less_than_or_equal(field_name, 
 value, exact = nil)</pre></td>
-        <td><pre lang="sql">WHERE fieldName <= &lt;value&gt;</pre></td>
+        <td><pre lang="sql">where fieldName <= &lt;value&gt;</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">where_exists(field_name)</pre></td>
-        <td><pre lang="sql">WHERE exists(fieldName)</pre></td>
+        <td><pre lang="sql">where exists(fieldName)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">contains_any(field_name, values)</pre></td>
-        <td><pre lang="sql">WHERE fieldName IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+        <td><pre lang="sql">where fieldName in (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">contains_all(field_name, values)</pre></td>
-        <td><pre lang="sql">WHERE fieldName ALL IN (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
+        <td><pre lang="sql">where fieldName all in (&lt;value1&gt;, &lt;value2&gt;, ...)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">search(field_name, search_terms, 
@@ -279,15 +279,15 @@ operator = RavenDB::SearchOperator::OR)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">negate_next</pre></td>
-        <td>Adds <code>NOT</code> before next condition</td>
+        <td>Adds <code>not</code> before next condition</td>
     </tr>
     <tr>
         <td><pre lang="ruby">and_also</pre></td>
-        <td>Adds <code>AND</code> before next condition</td>
+        <td>Adds <code>and</code> before next condition</td>
     </tr>
     <tr>
         <td><pre lang="ruby">or_else</pre></td>
-        <td>Adds <code>OR</code> before next condition</td>
+        <td>Adds <code>or</code> before next condition</td>
     </tr>
     <tr>
         <td><pre lang="ruby">using_default_operator(operator)</pre></td>
@@ -295,16 +295,16 @@ operator = RavenDB::SearchOperator::OR)</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">order_by(field, ordering_type = nil)</pre></td>
-        <td><pre lang="sql">ORDER BY field</pre></td>
+        <td><pre lang="sql">order by field</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">order_by_descending(field, 
 ordering_type = nil)</pre></td>
-        <td><pre lang="sql">ORDER BY field DESC</pre></td>
+        <td><pre lang="sql">order by field desc</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">random_ordering(seed = nil)</pre></td>
-        <td><pre lang="sql">ORDER BY random()</pre></td>
+        <td><pre lang="sql">order by random()</pre></td>
     </tr>
     <tr>
         <td><pre lang="ruby">take(count)</pre></td>
