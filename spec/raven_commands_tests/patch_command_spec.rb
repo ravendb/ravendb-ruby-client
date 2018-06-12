@@ -10,7 +10,9 @@ RSpec.describe RavenDB::PatchRequest, database: true, database_indexes: true, rd
       }
     }
     request_executor.execute(RavenDB::PutDocumentCommand.new(id: ID, document: document))
-    result = request_executor.execute(RavenDB::GetDocumentCommand.new(ID))
+    command = RavenDB::GetDocumentCommand.new(ID)
+    request_executor.execute(command)
+    result = command.result
     @_change_vector = result["Results"].first["@metadata"]["@change-vector"]
   end
 

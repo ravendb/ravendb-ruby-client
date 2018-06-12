@@ -4,10 +4,14 @@ RSpec.describe RavenDB::GetDocumentCommand, database: true do
     @_other_put_command = RavenDB::PutDocumentCommand.new(id: "Products/10", document: {"Name" => "test", "@metadata" => {}})
 
     request_executor.execute(@_put_command)
-    @_response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/101"))
+    command = RavenDB::GetDocumentCommand.new("Products/101")
+    request_executor.execute(command)
+    @_response = command.result
 
     request_executor.execute(@_other_put_command)
-    @_other_response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/10"))
+    command = RavenDB::GetDocumentCommand.new("Products/10")
+    request_executor.execute(command)
+    @_other_response = command.result
   end
 
   it "document id should be equal after load" do
@@ -19,7 +23,9 @@ RSpec.describe RavenDB::GetDocumentCommand, database: true do
   end
 
   it "unexisting document loading attempt should return empty response" do
-    result = request_executor.execute(RavenDB::GetDocumentCommand.new("product"))
+    command = RavenDB::GetDocumentCommand.new("product")
+    request_executor.execute(command)
+    result = command.result
     expect(result).to be_nil
   end
 end

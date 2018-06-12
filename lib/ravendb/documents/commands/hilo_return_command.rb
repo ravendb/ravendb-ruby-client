@@ -15,5 +15,9 @@ module RavenDB
       request["Content-Type"] = "application/json"
       request
     end
+
+    def read_request?
+      false
+    end
   end
 end

@@ -28,11 +28,12 @@ module RavenDB
       request
     end
 
-    def set_response(response)
-      check_response(response)
-      super(response)
+    def parse_response(json, from_cache:)
+      @mapper.read_value(json, PutResult)
+    end
 
-      @mapper.read_value(response, PutResult)
+    def read_request?
+      false
     end
 
     protected

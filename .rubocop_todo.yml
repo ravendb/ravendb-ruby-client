@@ -25,7 +25,7 @@ Lint/UnusedMethodArgument:
 
 # Offense count: 76
 Metrics/AbcSize:
-  Max: 86
+  Max: 94
 
 # Offense count: 2
 # Configuration parameters: CountBlocks.

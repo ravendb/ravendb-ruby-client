@@ -21,5 +21,9 @@ module RavenDB
 
       raise ErrorResponseException, "Invalid server response"
     end
+
+    def read_request?
+      true
+    end
   end
 end

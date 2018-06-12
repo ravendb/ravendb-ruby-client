@@ -26,5 +26,9 @@ module RavenDB
       request.body = payload.to_json
       request
     end
+
+    def read_request?
+      false
+    end
   end
 end

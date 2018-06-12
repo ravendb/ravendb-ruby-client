@@ -36,7 +36,9 @@ RSpec.describe RavenDB::QueryCommand, database: true do
     query = "from index 'Testing_Sort' where Name = $name"
     index_query = RavenDB::IndexQuery.new(query, {name: "Patched"}, nil, nil, wait_for_non_stale_results: true)
 
-    response = request_executor.execute(RavenDB::QueryCommand.new(store.conventions, index_query))
+    command = RavenDB::QueryCommand.new(store.conventions, index_query)
+    request_executor.execute(command)
+    response = command.result
     expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).not_to be < 100
@@ -61,7 +63,8 @@ RSpec.describe RavenDB::QueryCommand, database: true do
     expect(response["Status"]).to eq("Completed")
 
     query_command = RavenDB::QueryCommand.new(store.conventions, index_query)
-    response = request_executor.execute(query_command)
+    request_executor.execute(query_command)
+    response = query_command.result
     expect(response).to include("Results")
     expect(response["Results"]).to be_kind_of(Array)
     expect(response["Results"].length).to eq(0)

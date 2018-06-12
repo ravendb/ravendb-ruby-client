@@ -86,7 +86,8 @@ module RavenDB
 
     def get_next_range
       next_command = HiloNextCommand.new(@tag, @last_batch_size, @last_range_at, @identity_parts_separator, @range.max_id)
-      response = @store.get_request_executor(@db_name).execute(next_command)
+      @store.get_request_executor(@db_name).execute(next_command)
+      response = next_command.result
 
       @prefix = response["prefix"]
       @last_batch_size = response["last_size"]

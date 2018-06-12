@@ -1,11 +1,11 @@
 RSpec.describe RavenDB::GetStatisticsOperation, database: true, executor: true, rdbc_171: true do
   it "can get stats" do
-    executor = create_executor(new_first_update_method: true)
+    executor = create_executor
     sample_data = RavenDB::CreateSampleDataOperation.new
     store.maintenance.send(sample_data)
     wait_for_indexing(store, store.database, nil)
     command = RavenDB::GetStatisticsCommand.new
-    executor.execute_on_specific_node(command)
+    executor.execute(command)
     stats = command.result
     expect(stats).not_to be_nil
     expect(stats.last_doc_etag).not_to be_nil
@@ -41,9 +41,7 @@ RSpec.describe RavenDB::GetStatisticsOperation, database: true, executor: true, 
     timeout ||= Time.now + 1.minute
 
     while timeout > Time.now
-      # TODO: remove explicit parse_response
-      database_statistics_json = admin.send(RavenDB::GetStatisticsOperation.new)
-      database_statistics = RavenDB::GetStatisticsCommand.new.parse_response(database_statistics_json, from_cache: false)
+      database_statistics = admin.send(RavenDB::GetStatisticsOperation.new)
 
       indexes = database_statistics.indexes.reject { |x| x.state == :disabled }
       if indexes.all? { |x| (!x.stale? && !x.name.start_with?(SIDE_BY_SIDE_INDEX_NAME_PREFIX)) }

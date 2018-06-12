@@ -245,7 +245,8 @@ module RavenDB
 
       query = get_index_query
       query_command = QueryCommand.new(conventions, query)
-      response = @request_executor.execute(query_command)
+      @request_executor.execute(query_command)
+      response = query_command.result
 
       if response.nil? || !response
         {

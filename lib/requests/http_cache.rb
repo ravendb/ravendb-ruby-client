@@ -3,7 +3,7 @@ require "active_support/cache/memory_store"
 
 module RavenDB
   class HttpCache
-    def initialize(size)
+    def initialize(size:)
       @items = ActiveSupport::Cache::MemoryStore.new(size: size)
     end
 
@@ -11,7 +11,7 @@ module RavenDB
       http_cache_item = HttpCacheItem.new
       http_cache_item.change_vector = change_vector
       http_cache_item.payload = result
-      http_cache_item.cache = self
+      # http_cache_item.cache = self # disabled because of Marshal
 
       @items.put(url, http_cache_item)
     end
@@ -30,12 +30,10 @@ module RavenDB
       ReleaseCacheItem(nil).new
     end
 
-    def set_not_found(url) # rubocop:disable Naming/AccessorMethodName
+    def not_found=(url)
       http_cache_item = HttpCacheItem.new
       http_cache_item.change_vector = "404 response"
-      http_cache_item.cache = self
-
-      @items.put(url, http_cache_item)
+      @items.write(url, http_cache_item)
     end
 
     class ReleaseCacheItem
@@ -45,7 +43,7 @@ module RavenDB
 
       def not_modified
         unless @item.nil?
-          @item.last_server_update = LocalDateTime.now
+          @item.last_server_update = DateTime.now
         end
       end
 
