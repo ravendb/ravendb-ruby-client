@@ -1,31 +1,31 @@
 module RavenDB
   class SearchOperator
-    OR = "OR".freeze
-    AND = "AND".freeze
+    OR = "or".freeze
+    AND = "and".freeze
   end
 
   class QueryOperator < SearchOperator
-    NOT = "NOT".freeze
+    NOT = "not".freeze
   end
 
   class QueryKeyword
-    SELECT = "SELECT".freeze
-    DISTINCT = "DISTINCT".freeze
-    AS = "AS".freeze
-    FROM = "FROM".freeze
-    INDEX = "INDEX".freeze
-    INCLUDE = "INCLUDE".freeze
-    WHERE = "WHERE".freeze
-    GROUP = "GROUP".freeze
-    ORDER = "ORDER".freeze
-    LOAD = "LOAD".freeze
-    BY = "BY".freeze
-    ASC = "ASC".freeze
-    DESC = "DESC".freeze
-    IN = "IN".freeze
-    BETWEEN = "BETWEEN".freeze
-    ALL = "ALL".freeze
-    UPDATE = "UPDATE".freeze
+    SELECT = "select".freeze
+    DISTINCT = "distinct".freeze
+    AS = "as".freeze
+    FROM = "from".freeze
+    INDEX = "index".freeze
+    INCLUDE = "include".freeze
+    WHERE = "where".freeze
+    GROUP = "group".freeze
+    ORDER = "order".freeze
+    LOAD = "load".freeze
+    BY = "by".freeze
+    ASC = "asc".freeze
+    DESC = "desc".freeze
+    IN = "in".freeze
+    BETWEEN = "between".freeze
+    ALL = "all".freeze
+    UPDATE = "update".freeze
   end
 
   class OrderingType

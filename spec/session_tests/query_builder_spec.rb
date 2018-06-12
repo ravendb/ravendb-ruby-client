@@ -1,4 +1,4 @@
-RSpec.describe RavenDB::QueryBuilder do
+RSpec.describe RavenDB::QueryBuilder, rdbc_88: true do
   it "can understand equality" do
     query = store
             .open_session
@@ -7,7 +7,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE Name = $p0")
+    expect(index_query.query).to eq("from Users where Name = $p0")
     expect(index_query.query_parameters[:p0]).to eq("red")
   end
 
@@ -19,7 +19,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE exact(Name = $p0)")
+    expect(index_query.query).to eq("from index 'IndexName' where exact(Name = $p0)")
     expect(index_query.query_parameters[:p0]).to eq("ayende")
   end
 
@@ -33,7 +33,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Birthday = $p0")
+    expect(index_query.query).to eq("from index 'IndexName' where Birthday = $p0")
     expect(index_query.query_parameters[:p0]).to eq("2010-05-15T00:00:00.0000000")
   end
 
@@ -45,7 +45,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE Active = $p0")
+    expect(index_query.query).to eq("from Users where Active = $p0")
     expect(index_query.query_parameters[:p0]).to eq(false)
   end
 
@@ -57,7 +57,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE Active != $p0")
+    expect(index_query.query).to eq("from Users where Active != $p0")
     expect(index_query.query_parameters[:p0]).to eq(false)
   end
 
@@ -69,7 +69,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Name IN ($p0)")
+    expect(index_query.query).to eq("from index 'IndexName' where Name in ($p0)")
     expect(index_query.query_parameters[:p0]).to eq(["ryan", "heath"])
   end
 
@@ -80,7 +80,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName'")
+    expect(index_query.query).to eq("from index 'IndexName'")
   end
 
   it "can understand and" do
@@ -93,7 +93,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Name = $p0 AND Email = $p1")
+    expect(index_query.query).to eq("from index 'IndexName' where Name = $p0 and Email = $p1")
     expect(index_query.query_parameters[:p0]).to eq("ayende")
     expect(index_query.query_parameters[:p1]).to eq("ayende@ayende.com")
   end
@@ -107,7 +107,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Name = $p0 OR Email = $p1")
+    expect(index_query.query).to eq("from index 'IndexName' where Name = $p0 or Email = $p1")
     expect(index_query.query_parameters[:p0]).to eq("ayende")
     expect(index_query.query_parameters[:p1]).to eq("ayende@ayende.com")
   end
@@ -120,7 +120,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age < $p0")
+    expect(index_query.query).to eq("from index 'IndexName' where Age < $p0")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -132,7 +132,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age <= $p0")
+    expect(index_query.query).to eq("from index 'IndexName' where Age <= $p0")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -143,7 +143,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age > $p0")
+    expect(index_query.query).to eq("from index 'IndexName' where Age > $p0")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -155,7 +155,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age >= $p0")
+    expect(index_query.query).to eq("from index 'IndexName' where Age >= $p0")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -168,7 +168,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name")
+    expect(index_query.query).to eq("from index 'IndexName' where Age >= $p0 select Name")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -181,7 +181,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM INDEX 'IndexName' WHERE Age >= $p0 SELECT Name, Age")
+    expect(index_query.query).to eq("from index 'IndexName' where Age >= $p0 select Name, Age")
     expect(index_query.query_parameters[:p0]).to eq(16)
   end
 
@@ -196,7 +196,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM IndexedUsers WHERE Rate BETWEEN $p0 AND $p1")
+    expect(index_query.query).to eq("from IndexedUsers where Rate between $p0 and $p1")
     expect(index_query.query_parameters[:p0]).to eq(min)
     expect(index_query.query_parameters[:p1]).to eq(max)
   end
@@ -208,7 +208,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE startsWith(Name, $p0)")
+    expect(index_query.query).to eq("from Users where startsWith(Name, $p0)")
     expect(index_query.query_parameters[:p0]).to eq("foo")
   end
 
@@ -220,7 +220,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE endsWith(Name, $p0)")
+    expect(index_query.query).to eq("from Users where endsWith(Name, $p0)")
     expect(index_query.query_parameters[:p0]).to eq("foo")
   end
 
@@ -234,7 +234,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE true AND NOT startsWith(Name, $p0)")
+    expect(index_query.query).to eq("from Users where true and not startsWith(Name, $p0)")
     expect(index_query.query_parameters[:p0]).to eq("foo")
   end
 
@@ -252,7 +252,7 @@ RSpec.describe RavenDB::QueryBuilder do
 
     index_query = query.get_index_query
 
-    expect(index_query.query).to eq("FROM Users WHERE Age >= $p0 AND (Name = $p1 OR Name = $p2)")
+    expect(index_query.query).to eq("from Users where Age >= $p0 and (Name = $p1 or Name = $p2)")
     expect(index_query.query_parameters[:p0]).to eq(16)
     expect(index_query.query_parameters[:p1]).to eq("rob")
     expect(index_query.query_parameters[:p2]).to eq("dave")
