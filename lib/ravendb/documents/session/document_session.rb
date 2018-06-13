@@ -1,5 +1,3 @@
-require "active_support/core_ext/object/deep_dup"
-require "net/http"
 require "database/exceptions"
 require "documents/conventions"
 require "constants/documents"

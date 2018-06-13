@@ -1,5 +1,5 @@
 require "date"
-require_relative "./lib/version.rb"
+require_relative "./lib/ravendb/version.rb"
 
 Gem::Specification.new do |spec|
   spec.name        = "ravendb"

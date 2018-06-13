@@ -4,7 +4,6 @@ require "documents/conventions"
 require "requests/request_executor"
 require "database/exceptions"
 require "documents/hilo"
-require "documents/document_session"
 require "auth/auth_options"
 require "active_support/core_ext/array/wrap"
 
