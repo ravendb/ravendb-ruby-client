@@ -138,6 +138,8 @@ module RavenDB
             @_topology_taken_from_node = server_node
 
             true
+          rescue AuthorizationException
+            raise
           rescue DatabaseDoesNotExistException => e
             RavenDB.logger.warn(e)
             # Will happen on all node in the cluster,
@@ -456,7 +458,7 @@ module RavenDB
           end
         end
 
-        throw ExceptionsUtils.unwrap_exception(e)
+        raise ExceptionsUtils.unwrap_exception(e)
       end
 
       current_node, current_index = choose_node_for_request(command, session_info)
