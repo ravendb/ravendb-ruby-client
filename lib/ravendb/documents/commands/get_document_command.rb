@@ -43,6 +43,10 @@ module RavenDB
       Net::HTTP::Get.new(end_point)
     end
 
+    def read_request?
+      true
+    end
+
     def set_response(response)
       RavenDB.logger.warn("GetDocuments -> #{response}")
       RavenDB.logger.warn("GetDocuments -> #{response.body}")

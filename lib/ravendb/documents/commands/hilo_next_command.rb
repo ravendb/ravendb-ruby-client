@@ -23,21 +23,21 @@ module RavenDB
       Net::HTTP::Get.new(end_point)
     end
 
-    def set_response(response)
-      result = super(response)
+    def parse_response(json, from_cache:)
+      result = json
 
-      if response.is_a?(Net::HTTPCreated)
-        return {
-          "low" => result["Low"],
-          "high" => result["High"],
-          "prefix" => result["Prefix"],
-          "last_size" => result["LastSize"],
-          "server_tag" => result["ServerTag"],
-          "last_range_at" => result["LastRangeAt"]
-        }
-      end
+      {
+        "low" => result["Low"],
+        "high" => result["High"],
+        "prefix" => result["Prefix"],
+        "last_size" => result["LastSize"],
+        "server_tag" => result["ServerTag"],
+        "last_range_at" => result["LastRangeAt"]
+      }
+    end
 
-      raise ErrorResponseException, "Something is wrong with the request"
+    def read_request?
+      false
     end
   end
 end

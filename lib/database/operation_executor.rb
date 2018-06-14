@@ -29,7 +29,8 @@ module RavenDB
       status_command = GetOperationStateCommand.new(@operation_id)
 
       begin
-        response = @request_executor.execute(status_command)
+        @request_executor.execute(status_command)
+        response = status_command.result
 
         if @timeout && ((Time.now.to_f - start_time) > @timeout)
           return {
@@ -102,11 +103,10 @@ module RavenDB
         end
       end
 
-      unless command
-        raise error_message
-      end
+      raise error_message unless command
 
-      result = executor.execute(command)
+      executor.execute(command)
+      result = command.result
 
       set_response(operation, command, result)
     end

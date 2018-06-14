@@ -25,5 +25,9 @@ module RavenDB
 
       result
     end
+
+    def read_request?
+      false
+    end
   end
 end

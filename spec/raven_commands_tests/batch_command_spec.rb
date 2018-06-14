@@ -9,18 +9,24 @@ RSpec.describe RavenDB::BatchCommand, database: true, database_indexes: true do
   end
 
   it "is success with one command" do
-    result = request_executor.execute(RavenDB::BatchCommand.new([@_put_command1]))
+    command = RavenDB::BatchCommand.new([@_put_command1])
+    request_executor.execute(command)
+    result = command.result
     expect(result.size).to eq(1)
   end
 
   it "is success with multi commands" do
-    result = request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_put_command2, @_delete_command]))
+    command = RavenDB::BatchCommand.new([@_put_command1, @_put_command2, @_delete_command])
+    request_executor.execute(command)
+    result = command.result
     expect(result.size).to eq(3)
   end
 
   it "is success with a scripted patch" do
     request_executor.execute(RavenDB::BatchCommand.new([@_put_command1, @_scripted_patch_command]))
-    result = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/999"))
+    command = RavenDB::GetDocumentCommand.new("Products/999")
+    request_executor.execute(command)
+    result = command.result
     expect(result["Results"].first["Name"]).to eq("testing")
   end
 

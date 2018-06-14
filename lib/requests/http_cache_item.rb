@@ -4,10 +4,10 @@ module RavenDB
     attr_accessor :payload
     attr_accessor :last_server_update
     # TBD attr_accessor :generation
-    attr_accessor :cache
+    # attr_accessor :cache
 
     def initialize
-      self.last_server_update = LocalDateTime.now
+      self.last_server_update = DateTime.now
     end
   end
 end

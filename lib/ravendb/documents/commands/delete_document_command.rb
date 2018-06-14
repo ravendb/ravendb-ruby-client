@@ -29,6 +29,10 @@ module RavenDB
       check_response(response)
     end
 
+    def read_request?
+      false
+    end
+
     protected
 
     def check_response(response)

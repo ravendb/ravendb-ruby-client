@@ -11,5 +11,9 @@ module RavenDB
     def http_method
       Net::HTTP::Delete
     end
+
+    def read_request?
+      false
+    end
   end
 end

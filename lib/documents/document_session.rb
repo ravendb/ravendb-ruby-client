@@ -201,7 +201,9 @@ module RavenDB
 
       return nil unless changes.commands_count
 
-      results = @request_executor.execute(changes.create_batch_command)
+      command = changes.create_batch_command
+      @request_executor.execute(command)
+      results = command.result
 
       unless results
         raise RuntimeError.new, "Cannot call Save Changes after the document store was disposed."
@@ -262,7 +264,9 @@ module RavenDB
       response_includes = []
       increment_requests_count
 
-      response = @request_executor.execute(GetDocumentCommand.new(ids, includes))
+      command = GetDocumentCommand.new(ids, includes)
+      @request_executor.execute(command)
+      response = command.result
 
       if response
         response_results = conventions.try_fetch_results(response)

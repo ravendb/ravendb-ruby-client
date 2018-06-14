@@ -16,21 +16,27 @@ RSpec.describe RavenDB::QueryCommand, database: true, database_indexes: true do
   end
 
   it "does query" do
-    result = request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query))
+    command = RavenDB::QueryCommand.new(@_conventions, @_index_query)
+    request_executor.execute(command)
+    result = command.result
 
     expect(result["Results"].first).to include("Name")
     expect(result["Results"].first["Name"]).to eq("test")
   end
 
   it "test should query only metadata" do
-    result = request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query, true, false))
+    command = RavenDB::QueryCommand.new(@_conventions, @_index_query, true, false)
+    request_executor.execute(command)
+    result = command.result
 
     expect(result["Results"].first.key?("Name")).to eq(false)
   end
 
   it "queries only documents" do
     request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query))
-    result = request_executor.execute(RavenDB::QueryCommand.new(@_conventions, @_index_query, false, true))
+    command = RavenDB::QueryCommand.new(@_conventions, @_index_query, false, true)
+    request_executor.execute(command)
+    result = command.result
 
     expect(result["Results"].first.key?("@metadata")).to eq(false)
   end

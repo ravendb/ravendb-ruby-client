@@ -1,11 +1,15 @@
 RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
   before do
     request_executor.execute(RavenDB::PutDocumentCommand.new(id: "Products/101", document: {"Name" => "test", "@metadata" => {}}))
-    response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/101"))
+    command = RavenDB::GetDocumentCommand.new("Products/101")
+    request_executor.execute(command)
+    response = command.result
     @_change_vector = response["Results"].first["@metadata"]["@change-vector"]
 
     request_executor.execute(RavenDB::PutDocumentCommand.new(id: "Products/102", document: {"Name" => "test", "@metadata" => {}}))
-    response = request_executor.execute(RavenDB::GetDocumentCommand.new("Products/102"))
+    command = RavenDB::GetDocumentCommand.new("Products/102")
+    request_executor.execute(command)
+    response = command.result
     @_other_change_vector = response["Results"].first["@metadata"]["@change-vector"]
   end
 

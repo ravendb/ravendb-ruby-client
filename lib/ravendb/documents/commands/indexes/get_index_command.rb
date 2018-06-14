@@ -14,5 +14,9 @@ module RavenDB
 
       results.first if results.is_a?(Array)
     end
+
+    def read_request?
+      true
+    end
   end
 end

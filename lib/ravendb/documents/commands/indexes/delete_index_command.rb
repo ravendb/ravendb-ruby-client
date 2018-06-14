@@ -13,5 +13,9 @@ module RavenDB
       end_point = "/databases/#{server_node.database}/indexes?name=#{@index_name}"
       Net::HTTP::Delete.new(end_point)
     end
+
+    def read_request?
+      false
+    end
   end
 end

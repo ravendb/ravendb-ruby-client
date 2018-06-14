@@ -7,6 +7,7 @@ module RavenDB
         raise ArgumentError, "Change Vector cannot be null for non-document attachment type"
       end
 
+      @response_type = :attachment
       @_type = type
     end
 
@@ -30,13 +31,11 @@ module RavenDB
       end
     end
 
-    def set_response(response)
+    def parse_response_raw(response)
       raise DocumentDoesNotExistException if response.is_a?(Net::HTTPNotFound)
 
       if response.json(false).nil?
         @_last_response = response
-      else
-        super(response)
       end
 
       attachment = response.body.force_encoding("ASCII-8BIT")
@@ -66,6 +65,10 @@ module RavenDB
           document_id: @_document_id
         }
       }
+    end
+
+    def read_request?
+      true
     end
 
     protected

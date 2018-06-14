@@ -1,37 +1,37 @@
 RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_148: true, rdbc_171: true do
   it "failure should not block connection pool", rdbc_173: true do
-    executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
+    executor = create_executor(database_name: "no_such_db")
 
     40.times do
       expect do
         command = RavenDB::GetNextOperationIdCommand.new
-        executor.execute_on_specific_node(command)
+        executor.execute(command)
       end.to raise_error(RavenDB::RavenException)
     end
 
     expect do
       database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
       command = database_names_operation.get_command(conventions: conventions)
-      executor.execute_on_specific_node(command)
+      executor.execute(command)
     end.to raise_error(RavenDB::DatabaseDoesNotExistException)
   end
 
   it "can issue many requests" do
-    executor = create_executor(new_first_update_method: true)
+    executor = create_executor
 
     50.times do
       database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
       command = database_names_operation.get_command(conventions: conventions)
-      executor.execute_on_specific_node(command)
+      executor.execute(command)
     end
   end
 
   it "can fetch databases names" do
-    executor = create_executor(new_first_update_method: true)
+    executor = create_executor
 
     database_names_operation = RavenDB::GetDatabaseNamesOperation.new(start: 0, page_size: 20)
     command = database_names_operation.get_command(conventions: conventions)
-    executor.execute_on_specific_node(command)
+    executor.execute(command)
 
     db_names = command.result
 
@@ -39,7 +39,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_14
   end
 
   it "throws when updating topology of not existing db" do
-    executor = create_executor(database_name: "no_such_db", new_first_update_method: true)
+    executor = create_executor(database_name: "no_such_db")
 
     server_node = RavenDB::ServerNode.new
     server_node.url = store.urls[0]
@@ -61,9 +61,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_14
   end
 
   it "can create single node request executor" do
-    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options,
-                                                               new_first_update_method: true,
-                                                               disable_configuration_updates: true)
+    executor = RavenDB::RequestExecutor.create_for_single_node(store.urls[0], store.database, store.auth_options, disable_configuration_updates: true)
 
     nodes = executor.topology_nodes
 
@@ -75,7 +73,7 @@ RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_14
 
     command = RavenDB::GetNextOperationIdCommand.new
 
-    executor.execute_on_specific_node(command)
+    executor.execute(command)
 
     expect(command.result).not_to be_nil
   end
@@ -86,10 +84,10 @@ RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_14
     prefix = default_url.downcase.split("//")[0]
 
     initial_urls = ["#{prefix}//no_such_host:8080", "#{prefix}//another_offline:8080", url]
-    executor = create_executor(initial_urls: initial_urls, new_first_update_method: true)
+    executor = create_executor(initial_urls: initial_urls)
 
     command = RavenDB::GetNextOperationIdCommand.new
-    executor.execute_on_specific_node(command)
+    executor.execute(command)
 
     expect(command.result).not_to be_nil
 
@@ -104,10 +102,10 @@ RSpec.describe RavenDB::RequestExecutor, database: true, executor: true, rdbc_14
     expect do
       # don't even start server
       initial_urls = ["http://no_such_host:8081"]
-      executor = create_executor(initial_urls: initial_urls, database_name: "db1", new_first_update_method: true)
+      executor = create_executor(initial_urls: initial_urls, database_name: "db1")
       command =  RavenDB::GetNextOperationIdCommand.new
 
-      executor.execute_on_specific_node(command)
+      executor.execute(command)
     end.to raise_error(RavenDB::AllTopologyNodesDownException)
   end
 end

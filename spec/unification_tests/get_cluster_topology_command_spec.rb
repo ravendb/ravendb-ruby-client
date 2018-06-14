@@ -7,14 +7,13 @@ RSpec.describe RavenDB::GetClusterTopologyCommand, database: true, rdbc_171: tru
     RavenDB::RequestExecutor.new(initial_urls: store.urls,
                                  database_name: store.database,
                                  conventions: conventions,
-                                 auth_options: store.auth_options,
-                                 new_first_update_method: true)
+                                 auth_options: store.auth_options)
   end
 
   it "can get topology" do
     command = RavenDB::GetClusterTopologyCommand.new
 
-    executor.execute_on_specific_node(command)
+    executor.execute(command)
 
     result = command.result
 

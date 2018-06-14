@@ -21,14 +21,12 @@ module RavenDB
       request
     end
 
-    def set_response(response)
-      result = super(response)
+    def parse_response(json, from_cache:)
+      json["Results"]
+    end
 
-      unless response.body
-        raise "Invalid response body received"
-      end
-
-      result["Results"]
+    def read_request?
+      false
     end
   end
 end

@@ -42,7 +42,7 @@ module RavenDB
     end
 
     def create_request(_server_node)
-      raise NotImplementedError, "You should implement create_request method"
+      raise NotImplementedError, "You should implement create_request method in #{self.class}"
     end
 
     def to_request_options
@@ -84,7 +84,7 @@ module RavenDB
     end
 
     def read_request?
-      raise NotImplementedError, "You should implement read_request? method"
+      raise NotImplementedError, "You should implement read_request? method in #{self.class}"
     end
 
     def send_request(http_client, request)
@@ -127,10 +127,15 @@ module RavenDB
         self.result = parse_response(json, from_cache: false)
         return :automatic
       else
-        self.result = parse_response_raw(response, entity.getContent)
+        self.result = parse_response_raw(response)
       end
 
       :automatic
+    end
+
+    def set_response_raw(response)
+      set_response(response)
+      parse_response_raw(response)
     end
 
     def cache_response(cache, url, response, response_json)

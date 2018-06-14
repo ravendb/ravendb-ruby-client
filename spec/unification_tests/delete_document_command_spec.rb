@@ -36,6 +36,6 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true, rdbc_148: true do
 
     command = RavenDB::DeleteDocumentCommand.new("users/1", change_vector)
 
-    expect {  store.get_request_executor.execute(command) }.to raise_error(RavenDB::ConcurrencyException)
+    expect { store.get_request_executor.execute(command) }.to raise_error(RavenDB::ConcurrencyException)
   end
 end
