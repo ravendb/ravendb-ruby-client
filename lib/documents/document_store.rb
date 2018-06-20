@@ -188,6 +188,15 @@ module RavenDB
       end
     end
 
+    def identifier
+      # return @identifier unless @identifier.nil?
+      return nil if @_urls.nil?
+      unless @_database.nil?
+        return "#{@_urls.join(',')} (DB: #{@_database})"
+      end
+      @_urls.join(",")
+    end
+
     protected
 
     def set_urls(url_or_urls)

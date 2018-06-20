@@ -1,1 +1,5 @@
+require "ravendb/documents/session/loaders"
+require "ravendb/documents/session/operations"
+require "ravendb/documents/session/in_memory_document_session_operations"
 require "ravendb/documents/session/document_session"
+require "ravendb/documents/session/document_info"
