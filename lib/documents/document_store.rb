@@ -4,7 +4,6 @@ require "documents/conventions"
 require "requests/request_executor"
 require "database/exceptions"
 require "documents/hilo"
-require "documents/document_session"
 require "auth/auth_options"
 require "active_support/core_ext/array/wrap"
 
@@ -187,6 +186,15 @@ module RavenDB
       @_request_executors.each_value do |executors|
         executors.each_value { |executor| executor.dispose }
       end
+    end
+
+    def identifier
+      # return @identifier unless @identifier.nil?
+      return nil if @_urls.nil?
+      unless @_database.nil?
+        return "#{@_urls.join(',')} (DB: #{@_database})"
+      end
+      @_urls.join(",")
     end
 
     protected

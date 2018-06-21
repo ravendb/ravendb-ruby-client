@@ -1,5 +1,3 @@
-require "active_support/core_ext/object/deep_dup"
-require "net/http"
 require "database/exceptions"
 require "documents/conventions"
 require "constants/documents"
@@ -9,19 +7,20 @@ require "utilities/type_utilities"
 require "utilities/observable"
 
 module RavenDB
-  class DocumentSession
+  class DocumentSession < InMemoryDocumentSessionOperations
     include Observable
 
     attr_reader :number_of_requests_in_session
     attr_reader :documents_by_id
 
     def initialize(db_name, document_store, id, request_executor)
+      super()
+
       @advanced = nil
       @database = db_name
       @document_store = document_store
       @session_id = id
       @request_executor = request_executor
-      @documents_by_id = {}
       @included_raw_entities_by_id = {}
       @deleted_documents = Set.new([])
       @raw_entities_and_metadata = {}
@@ -228,7 +227,7 @@ module RavenDB
       end
 
       query.on(RavenServerEvent::EVENT_DOCUMENTS_QUERIED) do
-        increment_requests_count
+        increment_requests_count!
       end
 
       query.on(RavenServerEvent::EVENT_DOCUMENT_FETCHED) do |conversion_result|
@@ -242,7 +241,9 @@ module RavenDB
       @attached_queries[query] = true
     end
 
-    def increment_requests_count
+    public
+
+    def increment_requests_count!
       max_requests = DocumentConventions.max_number_of_request_per_session
 
       @number_of_requests_in_session += 1
@@ -259,10 +260,12 @@ module RavenDB
       end
     end
 
+    protected
+
     def fetch_documents(ids, includes = nil, nested_object_types = {}, document_type: nil)
       response_results = []
       response_includes = []
-      increment_requests_count
+      increment_requests_count!
 
       command = GetDocumentCommand.new(ids, includes)
       @request_executor.execute(command)
@@ -562,6 +565,35 @@ module RavenDB
                         document_type_or_class: klass,
                         index_name: index_name,
                         collection: collection_name)
+    end
+
+    def include(path)
+      MultiLoaderWithInclude.new(self).include(path)
+    end
+
+    def load_internal(klass:, ids:, includes:)
+      load_operation = LoadOperation.new(self)
+      load_operation.by_ids(ids)
+      load_operation.with_includes(includes)
+      command = load_operation.create_request
+      unless command.nil?
+        @request_executor.execute(command, session_info: @session_info)
+        load_operation.result = command.result
+      end
+      load_operation.get_documents(klass)
+    end
+
+    def number_of_requests
+      number_of_requests_in_session
+    end
+
+    # TODO
+    def load_new(klass, ids)
+      single_doc = !ids.is_a?(Array)
+      ids = [ids] if single_doc
+      ret = load_internal(klass: klass, ids: ids, includes: nil)
+      ret = ret.values.first if single_doc
+      ret
     end
   end
 end

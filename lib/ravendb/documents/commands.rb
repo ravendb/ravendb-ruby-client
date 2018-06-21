@@ -10,6 +10,7 @@ require "ravendb/documents/commands/hilo_next_command"
 require "ravendb/documents/commands/hilo_return_command"
 require "ravendb/documents/commands/delete_by_query_command"
 require "ravendb/documents/commands/get_next_operation_id_command"
+require "ravendb/documents/commands/get_documents_command"
 
 require "ravendb/documents/commands/attachments"
 require "ravendb/documents/commands/batches"
