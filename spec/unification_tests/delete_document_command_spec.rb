@@ -3,7 +3,7 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true, rdbc_148: true do
     store.open_session do |session|
       user = User.new
       user.name = "Marcin"
-      session.store(user, "users/1")
+      session.store(user, id: "users/1")
       session.save_changes
     end
 
@@ -11,7 +11,7 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true, rdbc_148: true do
     store.get_request_executor.execute(command)
 
     store.open_session do |session|
-      loaded_user = session.load("users/1", document_type: User)
+      loaded_user = session.load_new(User, "users/1")
       expect(loaded_user).to be_nil
     end
   end
@@ -22,14 +22,14 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true, rdbc_148: true do
     store.open_session do |session|
       user = User.new
       user.name = "Marcin"
-      session.store(user, "users/1")
+      session.store(user, id: "users/1")
       session.save_changes
 
       change_vector = session.advanced.get_change_vector_for(user)
     end
 
     store.open_session do |session|
-      loaded_user = session.load("users/1", document_type: User)
+      loaded_user = session.load_new(User, "users/1")
       loaded_user.age = 5
       session.save_changes
     end

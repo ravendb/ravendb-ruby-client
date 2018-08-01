@@ -35,6 +35,7 @@ module RavenDB
     attr_reader :database_name
     attr_accessor :request_post_processor
     attr_accessor :certificate
+    attr_reader :conventions
 
     def initialize(database_name:, conventions: nil, initial_urls: [], without_topology: false, auth_options: nil,
                    topology_etag: 0, single_node_topology: nil, disable_configuration_updates: false)
@@ -46,6 +47,7 @@ module RavenDB
         "Raven-Client-Version" => RavenDB::VERSION
       }
 
+      @conventions = DocumentConventions.new # ?
       @_disposed = false
       @database_name = database_name
       @_first_topology_updates_tries = 0
@@ -392,7 +394,7 @@ module RavenDB
           end
           return
         end
-        command.process_response(@cache, response, request.path)
+        command.process_response(@cache, response, request.path, conventions: conventions)
         @_last_returned_response = Date.new
       ensure
         if refresh_topology || refresh_client_configuration
@@ -667,24 +669,5 @@ module RavenDB
     end
   end
 
-  class ConcurrentHashMap
-    def initialize
-      @data = Concurrent::Hash.new
-      @self_lock = Mutex.new
-    end
-
-    def synchronized
-      @self_lock.synchronize do
-        yield
-      end
-    end
-
-    def put_if_absent(index, value)
-      synchronized do
-        ret = @data[index]
-        @data[index] = value unless ret
-        ret
-      end
-    end
-  end
+  require_relative "../ravendb/utils/concurrent_hash_map.rb"
 end

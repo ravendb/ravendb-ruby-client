@@ -17,7 +17,7 @@ module RavenDB
       true
     end
 
-    def parse_response(json, from_cache:)
+    def parse_response(json, from_cache:, conventions: nil)
       ClusterTopologyResponse.from_json(json)
     end
   end

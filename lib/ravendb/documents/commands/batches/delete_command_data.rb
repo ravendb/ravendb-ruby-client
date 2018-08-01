@@ -4,5 +4,13 @@ module RavenDB
       super(id, change_vector)
       @type = Net::HTTP::Delete::METHOD
     end
+
+    def serialize(_conventions)
+      {
+        "Id" => @id,
+        "ChangeVector" => @change_vector,
+        "Type" => @type
+      }
+    end
   end
 end

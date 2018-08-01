@@ -1,3 +1,5 @@
 require "ravendb/documents/operations"
 require "ravendb/documents/commands"
 require "ravendb/documents/session"
+require "ravendb/documents/id_type_and_name"
+require "ravendb/documents/identity"

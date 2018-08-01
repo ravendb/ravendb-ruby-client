@@ -7,9 +7,11 @@ require "net/http"
 require "active_support/core_ext/object/deep_dup"
 
 require "ravendb/version"
+require "ravendb/utils"
 require "ravendb/http"
 require "ravendb/documents"
 require "ravendb/serverwide"
+require "ravendb/json"
 require "documents/document_store"
 
 module RavenDB

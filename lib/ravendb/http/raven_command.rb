@@ -88,19 +88,30 @@ module RavenDB
     end
 
     def send_request(http_client, request)
-      RavenDB.logger.debug("#{self.class} send_request #{request.method} #{request.path} body: #{request.body} headers: #{request.to_hash}")
+      RavenDB.logger.debug(_color("#{self.class} #{request.method} #{request.path} body: #{request.body} headers: #{request.to_hash}", :cyan, :bold))
       response = http_client.request(request)
-      RavenDB.logger.warn("#{self.class} send_request response: #{response.code} #{response.message}")
-      if response.code.to_i >= 400
-        RavenDB.logger.warn("#{self.class} send_request: #{response.body}")
+      error = response.code.to_i >= 400
+      RavenDB.logger.warn(_color("#{self.class} response: #{response.code} #{response.message}", error ? :red : :green, :bold))
+      if ENV["DEBUG"] || error
+        RavenDB.logger.warn(_color("#{self.class} #{response.body}", error ? :red : :green))
       end
       response
+    end
+
+    def _color(text, *colors)
+      if defined?(Rainbow)
+        text = Rainbow(text)
+        colors.each do |color|
+          text = text.send(color)
+        end
+      end
+      text
     end
 
     def on_response_failure(_response)
     end
 
-    def process_response(cache, response, url)
+    def process_response(cache, response, url, conventions:)
       entity = response
 
       if entity.nil?
@@ -124,7 +135,7 @@ module RavenDB
           cache_response(cache, url, response, json)
         end
 
-        self.result = parse_response(json, from_cache: false)
+        self.result = parse_response(json, from_cache: false, conventions: conventions)
         return :automatic
       else
         self.result = parse_response_raw(response)
@@ -184,7 +195,7 @@ module RavenDB
       remove.each { |param| @params.delete(param) }
     end
 
-    def parse_response(json, from_cache:)
+    def parse_response(json, from_cache:, conventions:)
       json
     end
 

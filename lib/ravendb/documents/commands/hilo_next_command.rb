@@ -23,7 +23,7 @@ module RavenDB
       Net::HTTP::Get.new(end_point)
     end
 
-    def parse_response(json, from_cache:)
+    def parse_response(json, from_cache:, conventions: nil)
       result = json
 
       {

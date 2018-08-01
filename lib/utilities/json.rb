@@ -48,6 +48,9 @@ module RavenDB
         raise "Invalid source passed. Should be a Hash object"
       end
 
+      source.delete("@id") if source.key?("@id")
+      source.delete("@nested_object_types") if source.key?("@nested_object_types")
+
       if metadata.key?("@nested_object_types") &&
          metadata["@nested_object_types"].is_a?(Hash)
         mappings = mappings.merge(metadata["@nested_object_types"])
@@ -101,8 +104,12 @@ module RavenDB
       target
     end
 
-    def self.to_json(source, conventions = nil, parent_path = nil)
+    def self.to_json(source, conventions = nil, parent_path = nil, encode_types: false, metadata: nil)
       json = {}
+
+      if source.is_a?(DocumentInfo)
+        metadata ||= source.instance_variable_get("@metadata")
+      end
 
       unless TypeUtilities.document?(source)
         raise "Invalid source passed. Should be a user-defined class instance"
@@ -127,7 +134,7 @@ module RavenDB
             original_attribute: json_property,
             serialized_attribute: json_property,
             original_value: variable_value,
-            serialized_value: variable_to_json(variable_value, json_property, conventions, parent_path),
+            serialized_value: variable_to_json(variable_value, json_property, conventions, parent_path, metadata: metadata),
             attribute_path: build_path(json_property, parent_path),
             source: source,
             metadata: current_metadata
@@ -224,21 +231,41 @@ module RavenDB
       nil
     end
 
-    def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil)
+    def self.store_metadata_type(metadata, _parent_path, variable, type)
+      if metadata
+        metadata["@nested_object_types"] ||= {}
+        metadata["@nested_object_types"][variable] = type
+      end
+    end
+
+    def self.store_object_type(variable)
+      metadata = if variable.instance_variable_defined?("@metadata")
+                   variable.instance_variable_get("@metadata")
+                 else
+                   {}
+                 end
+      metadata["Raven-Ruby-Type"] = variable.class.name
+      variable.instance_variable_set("@metadata", metadata)
+    end
+
+    def self.variable_to_json(variable_value, variable = nil, conventions = nil, parent_path = nil, metadata: nil)
       if variable != "@metadata" && !!variable_value != variable_value
         if variable_value.is_a?(Date) || variable_value.is_a?(DateTime)
+          store_metadata_type(metadata, parent_path, variable, "date")
           return TypeUtilities.stringify_date(variable_value)
         end
 
         if TypeUtilities.document?(variable_value)
-          return to_json(variable_value, conventions, build_path(variable, parent_path))
+          store_metadata_type(metadata, parent_path, variable, variable_value.class.name)
+          store_object_type(variable_value)
+          return to_json(variable_value, conventions, build_path(variable, parent_path), metadata: metadata)
         end
 
         if variable_value.is_a?(Hash)
           json = {}
 
           variable_value.each do |key, value|
-            json[key.to_s] = variable_to_json(value, key.to_s, conventions, build_path(variable, parent_path))
+            json[key.to_s] = variable_to_json(value, key.to_s, conventions, build_path(variable, parent_path), metadata: metadata)
           end
 
           return json
@@ -248,7 +275,7 @@ module RavenDB
           json = []
 
           variable_value.each do |value|
-            json.push(variable_to_json(value, variable, conventions, parent_path))
+            json.push(variable_to_json(value, variable, conventions, parent_path, metadata: metadata))
           end
 
           return json

@@ -10,11 +10,11 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
     end
 
     store.open_session do |session|
-      products = session.load(IDS.map { |id| "Products/#{id}" })
-    end
+      products = session.load_new(Product, IDS.map { |id| "Products/#{id}" })
 
-    @change_vectors = products.map do |product|
-      product.instance_variable_get("@metadata")["@change-vector"]
+      @change_vectors = products.map do |_id, product|
+        session.documents_by_entity[product].change_vector
+      end
     end
   end
 
@@ -25,7 +25,7 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
       session.delete(id)
       session.save_changes
 
-      product = session.load(id)
+      product = session.load_new(Product, id)
       expect(product).to be_nil
     end
   end
@@ -36,7 +36,7 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
     store.open_session do |session|
       session.delete(id)
 
-      product = session.load(id)
+      product = session.load_new(Product, id)
       expect(product).to be_nil
     end
   end
@@ -45,22 +45,22 @@ RSpec.describe RavenDB::DeleteDocumentCommand, database: true do
     id = "Products/107"
 
     store.open_session do |session|
-      product = session.load(id)
+      product = session.load_new(Product, id)
       product.name = "Testing"
 
       session.delete(product)
       session.save_changes
 
-      product = session.load(id)
+      product = session.load_new(Product, id)
       expect(product).to be_nil
     end
   end
 
-  it "fails delete document by id after it has been changed" do
+  it "fails to delete document by id after it has been changed" do
     id = "Products/107"
 
     store.open_session do |session|
-      product = session.load(id)
+      product = session.load_new(Product, id)
       product.name = "Testing"
 
       expect { session.delete(id) }.to raise_error(RuntimeError)

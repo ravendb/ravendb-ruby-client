@@ -70,7 +70,7 @@ CERTIFICATE
 
       store.configure
       store.open_session do |session|
-        session.load("DocumentWillNotLoad/1")
+        session.load_new(Foo, "DocumentWillNotLoad/1")
       end
     end.to raise_error(RavenDB::AuthorizationException)
   end

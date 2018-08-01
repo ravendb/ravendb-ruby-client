@@ -30,6 +30,9 @@ module RavenDB
       @_disposed = false
       @_auth_options = auth_options
       set_urls(url_or_urls)
+      @_conventions = DocumentConventions.new
+      generator = MultiDatabaseHiLoIdGenerator.new(self, @_conventions)
+      @_conventions.document_id_generator = ->(db_name, entity) { generator.generate_document_id(db_name, entity) }
     end
 
     def self.create(url_or_urls, database, auth_options = nil)
@@ -103,7 +106,7 @@ module RavenDB
     end
 
     def conventions
-      @_conventions ||= DocumentConventions.new
+      @_conventions
     end
 
     def open_session(database_name = nil, options = nil)
@@ -131,7 +134,7 @@ module RavenDB
         request_executor = get_request_executor(session_database)
       end
 
-      session = DocumentSession.new(session_database, self, SecureRandom.uuid, request_executor)
+      session = DocumentSession.new(session_database, self, SecureRandom.uuid, request_executor, conventions: conventions)
 
       if block_given?
         yield(session)
@@ -166,6 +169,10 @@ module RavenDB
       end
 
       @_request_executors[for_single_node][db_name]
+    end
+
+    def request_executor
+      get_request_executor
     end
 
     def dispose

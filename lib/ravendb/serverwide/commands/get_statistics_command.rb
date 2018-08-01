@@ -20,8 +20,8 @@ module RavenDB
       true
     end
 
-    def parse_response(json, from_cache:)
-      @mapper.read_value(json, DatabaseStatistics, nested: {size_on_disk: Size, indexes: IndexInformation})
+    def parse_response(json, from_cache:, conventions: nil)
+      @mapper.read_value(json, DatabaseStatistics, nested: {size_on_disk: Size, indexes: IndexInformation}, conventions: conventions)
     end
   end
 

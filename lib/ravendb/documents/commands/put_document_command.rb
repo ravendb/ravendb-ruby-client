@@ -28,8 +28,8 @@ module RavenDB
       request
     end
 
-    def parse_response(json, from_cache:)
-      @mapper.read_value(json, PutResult)
+    def parse_response(json, from_cache:, conventions: nil)
+      @mapper.read_value(json, PutResult, conventions: conventions)
     end
 
     def read_request?

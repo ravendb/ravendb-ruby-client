@@ -12,9 +12,10 @@ module RavenDB
 
     attr_reader :number_of_requests_in_session
     attr_reader :documents_by_id
+    attr_reader :documents_by_entity
 
-    def initialize(db_name, document_store, id, request_executor)
-      super()
+    def initialize(db_name, document_store, id, request_executor, conventions:)
+      super(conventions: conventions)
 
       @advanced = nil
       @database = db_name
@@ -25,7 +26,6 @@ module RavenDB
       @deleted_documents = Set.new([])
       @raw_entities_and_metadata = {}
       @known_missing_ids = Set.new([])
-      @defer_commands = Set.new([])
       @attached_queries = {}
       @number_of_requests_in_session = 0
 
@@ -34,181 +34,12 @@ module RavenDB
       end
     end
 
-    def documents_by_entity
-      @raw_entities_and_metadata
-    end
-
     def conventions
       @document_store.conventions
     end
 
     def advanced
       self
-    end
-
-    def load(id_or_ids, includes: nil, nested_object_types: {}, document_type: nil)
-      ids = id_or_ids
-      loading_one_doc = !id_or_ids.is_a?(Array)
-
-      if loading_one_doc
-        ids = [id_or_ids]
-      end
-
-      ids_of_non_existing_documents = Set.new(ids)
-
-      if !includes.nil? && !includes.is_a?(Array)
-        includes = if includes.is_a?(String)
-                     [includes]
-                   end
-      end
-
-      if includes.nil?
-        ids_of_non_existing_documents
-          .to_a
-          .keep_if { |id| @included_raw_entities_by_id.key?(id) }
-          .each do |id|
-          make_document(@included_raw_entities_by_id[id], nil, nested_object_types)
-          @included_raw_entities_by_id.delete(id)
-        end
-
-        ids_of_non_existing_documents = Set.new(
-          ids.deep_dup
-          .delete_if { |id| @documents_by_id.key?(id) }
-        )
-      end
-
-      ids_of_non_existing_documents = Set.new(
-        ids_of_non_existing_documents.to_a
-        .delete_if { |id| @known_missing_ids.include?(id) }
-      )
-
-      unless ids_of_non_existing_documents.empty?
-        fetch_documents(ids_of_non_existing_documents.to_a, includes, nested_object_types, document_type: document_type)
-      end
-
-      results = ids.map do |id|
-        !@known_missing_ids.include?(id) && @documents_by_id.key?(id) ? @documents_by_id[id] : nil
-      end
-
-      if loading_one_doc
-        return results.first
-      end
-
-      results
-    end
-
-    def delete(document_or_id, options = nil)
-      id = nil
-      info = nil
-      document = nil
-      expected_change_vector = nil
-
-      unless document_or_id.is_a?(String) || TypeUtilities.document?(document_or_id)
-        raise "Invalid argument passed. Should be document model instance or document id string"
-      end
-
-      if options.is_a?(Hash)
-        expected_change_vector = options[:expected_change_vector]
-      end
-
-      if document_or_id.is_a?(String)
-        id = document_or_id
-
-        if @documents_by_id.key?(id) && document_changed?(@documents_by_id[id])
-          raise "Can't delete changed document using identifier. Pass document instance instead"
-        end
-      else
-        document = document_or_id
-        info = @raw_entities_and_metadata[document]
-        id = conventions.get_id_from_document(document)
-      end
-
-      if document.nil?
-        @defer_commands.add(DeleteCommandData.new(id, expected_change_vector))
-      else
-        unless @raw_entities_and_metadata.key?(document)
-          raise "Document is not associated with the session, cannot delete unknown document instance"
-        end
-
-        id = info[:id]
-        original_metadata = info[:original_metadata]
-
-        if original_metadata.key?("Raven-Read-Only")
-          raise "Document is marked as read only and cannot be deleted"
-        end
-
-        unless expected_change_vector.nil?
-          info[:expected_change_vector] = expected_change_vector
-          @raw_entities_and_metadata[document] = info
-        end
-
-        @deleted_documents.add(document)
-      end
-
-      @known_missing_ids.add(id)
-      @included_raw_entities_by_id.delete(id)
-
-      document
-    end
-
-    def store(document, id = nil, options = nil)
-      change_vector = nil
-
-      if options.is_a?(Hash)
-        change_vector = options[:expected_change_vector]
-      end
-
-      document = check_document_and_metadata_before_store(document)
-      check_result = check_association_and_change_vectore_before_store(document, id, change_vector)
-      document = check_result[:document]
-      is_new_document = check_result[:is_new]
-
-      if is_new_document
-        original_metadata = document.instance_variable_get("@metadata").deep_dup
-        document = prepare_document_id_before_store(document, id)
-        id = conventions.get_id_from_document(document)
-
-        @defer_commands.each do |command|
-          if id == command.document_id
-            raise "Can't store document, there is a deferred command registered "\
-                  "for this document in the session. Document id: #{id}"
-          end
-        end
-
-        if @deleted_documents.include?(document)
-          raise "Can't store object, it was already deleted in this "\
-                "session. Document id: #{id}"
-        end
-
-        on_document_fetched(
-          document: document,
-          metadata: document.instance_variable_get("@metadata"),
-          original_metadata: original_metadata,
-          raw_entity: conventions.convert_to_raw_entity(document)
-        )
-      end
-
-      document
-    end
-
-    def save_changes
-      changes = SaveChangesData.new(@defer_commands.to_a, @defer_commands.size)
-
-      @defer_commands.clear
-      prepare_delete_commands(changes)
-      prepare_update_commands(changes)
-
-      return nil unless changes.commands_count
-
-      command = changes.create_batch_command
-      @request_executor.execute(command)
-      results = command.result
-
-      unless results
-        raise RuntimeError.new, "Cannot call Save Changes after the document store was disposed."
-      end
-
-      process_batch_command_results(results, changes)
     end
 
     def query(options = nil)
@@ -518,7 +349,7 @@ module RavenDB
       raise ArgumentError, "instance cannot be null" if instance.nil?
 
       document_info = get_document_info(instance)
-      change_vector = document_info[:change_vector]
+      change_vector = document_info.change_vector
       change_vector&.to_s || ""
     end
 
@@ -537,7 +368,6 @@ module RavenDB
     def assert_no_non_unique_instance(entity, id)
       return if id.empty? || id[-1] == "|" || id[-1] == "/"
 
-      RavenDB.logger.warn("documents_by_id = #{documents_by_id}")
       info = documents_by_id[id]
 
       return if info.nil? || info.entity == entity
@@ -594,6 +424,23 @@ module RavenDB
       ret = load_internal(klass: klass, ids: ids, includes: nil)
       ret = ret.values.first if single_doc
       ret
+    end
+
+    def save_changes
+      save_change_operation = BatchOperation.new(self)
+      command = save_change_operation.create_request
+      return if command.nil?
+      @request_executor.execute(command, session_info: @session_info)
+      save_change_operation.result = command.result
+      save_change_operation
+    end
+
+    def database_name
+      @database
+    end
+
+    def generate_id(entity)
+      conventions.generate_document_id(database_name, entity)
     end
   end
 end

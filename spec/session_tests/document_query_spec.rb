@@ -199,7 +199,7 @@ RSpec.describe RavenDB::DocumentQuery, database: true do
              .wait_for_non_stale_results
              .all
 
-      session.load("Products/108")
+      session.load_new(Product, "Products/108")
       expect(session.number_of_requests_in_session).to eq(1)
     end
   end
