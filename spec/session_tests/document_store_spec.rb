@@ -8,7 +8,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      foo = session.load(foo.id)
+      foo = session.load_new(Foo, foo.id)
 
       expect(foo.name).to eq("test")
     end
@@ -19,12 +19,12 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     foo = Foo.new(id, "test", 20)
 
     store.open_session do |session|
-      session.store(foo, id)
+      session.store(foo, id: id)
       session.save_changes
     end
 
     store.open_session do |session|
-      foo = session.load(id)
+      foo = session.load_new(Foo, id)
 
       expect(foo.name).to eq("test")
       expect(foo.order).to eq(20)
@@ -38,11 +38,11 @@ RSpec.describe RavenDB::DocumentStore, database: true do
       session.store(product)
       session.save_changes
 
-      expect(/^Products\/\d+(\-\w)?$/ =~ product.id).to be_truthy
+      expect(/^products\/\d+(\-\w)?$/ =~ product.id).to be_truthy
     end
 
     store.open_session do |session|
-      product = session.load(product.id)
+      product = session.load_new(Product, product.id)
       metadata = product.instance_variable_get("@metadata")
 
       expect(metadata["@id"]).to eq(product.id)
@@ -60,14 +60,14 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      product = session.load(product.id)
-      cached_documents = session.instance_variable_get("@raw_entities_and_metadata")
-      info = cached_documents[product]
+      product = session.load_new(Product, product.id)
+      cached_documents = session.instance_variable_get("@documents_by_id")
+      info = cached_documents[product.id]
 
       expect(product.id.nil?).to eq(false)
       expect(product.id.empty?).to eq(false)
-      expect(product.id).to eq(info[:original_metadata]["@id"])
-      expect(info[:original_value].key?("id")).to eq(false)
+      expect(product.id).to eq(info.metadata["@id"])
+      expect(info.document.key?("id")).to eq(false)
     end
   end
 
@@ -83,7 +83,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      order = session.load(order.id)
+      order = session.load_new(Order, order.id)
       metadata = order.instance_variable_get("@metadata")
 
       expect(metadata).to include("@expires")
@@ -118,7 +118,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      foo = session.load(key)
+      foo = session.load_new(Foo, key)
       foo.name = "name changed"
       foo.order = 10
 
@@ -126,7 +126,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      foo = session.load(key)
+      foo = session.load_new(Foo, key)
 
       expect(foo.name).to eq("name changed")
       expect(foo.order).to eq(10)
@@ -143,7 +143,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      foo = session.load(key)
+      foo = session.load_new(Foo, key)
       session.delete(foo)
 
       foo.name = "name changed"
@@ -153,7 +153,7 @@ RSpec.describe RavenDB::DocumentStore, database: true do
     end
 
     store.open_session do |session|
-      foo = session.load(key)
+      foo = session.load_new(Order, key)
       expect(foo).to be_nil
     end
   end

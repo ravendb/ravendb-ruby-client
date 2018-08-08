@@ -27,7 +27,7 @@ before_install:
   - sudo cp ca.crt /usr/local/share/ca-certificates/ca.crt
   - sudo update-ca-certificates
   - cd ..  
-  - wget -O RavenDB.tar.bz2 https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/latest?buildType=nightly
+  - wget -O RavenDB.tar.bz2 https://hibernatingrhinos.com/downloads/RavenDB%20for%20Linux%20x64/latest?buildType=stable
   - tar xvjf RavenDB.tar.bz2
   - cp ./spec/fixtures/cert/test_settings_$RAVEN_PROTOCOL.json ./RavenDB/Server/settings.json
   - export RAVEN_PFX=$PWD/certs/server.pfx

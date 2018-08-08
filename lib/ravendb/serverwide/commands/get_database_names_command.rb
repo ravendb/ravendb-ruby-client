@@ -13,7 +13,7 @@ module RavenDB
       Net::HTTP::Get.new(end_point)
     end
 
-    def parse_response(json, from_cache:)
+    def parse_response(json, from_cache:, conventions: nil)
       raise_invalid_response! unless json.key?("Databases")
 
       databases = json["Databases"]

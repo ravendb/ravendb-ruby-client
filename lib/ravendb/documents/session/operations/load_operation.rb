@@ -8,12 +8,12 @@ module RavenDB
     end
 
     def by_id(id)
-      if id.nil?
-        return self
-      end
+      return self if id.nil?
 
       if @ids.nil?
         @ids = [id]
+      else
+        @ids << id
       end
 
       if @session.loaded_or_deleted?(id)
@@ -25,7 +25,7 @@ module RavenDB
     end
 
     def by_ids(ids)
-      ids.uniq.compact.each { |id| by_id(id) }
+      ids.compact.each { |id| by_id(id) }
       self
     end
 
@@ -52,11 +52,11 @@ module RavenDB
 
     def get_document(klass, id)
       if id.nil?
-        return Defaults.default_value(klass)
+        return nil
       end
 
       if @session.deleted?(id)
-        return Defaults.default_value(klass)
+        return nil
       end
 
       doc = @session.documents_by_id[id]
@@ -69,7 +69,7 @@ module RavenDB
         return @session.track_entity(klass: klass, document_found: doc)
       end
 
-      Defaults.default_value(klass)
+      nil
     end
 
     def get_documents(klass)
@@ -84,12 +84,6 @@ module RavenDB
         @session.documents_by_id[new_document_info.id] = new_document_info
       end
       @session.register_missing_includes(result["Results"], result["Includes"], @_includes)
-    end
-  end
-
-  class Defaults
-    def self.default_value(klass)
-      klass.new
     end
   end
 end

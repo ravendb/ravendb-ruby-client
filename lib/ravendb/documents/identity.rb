@@ -1,0 +1,5 @@
+require "ravendb/documents/identity/generate_entity_id_on_the_client"
+require "ravendb/documents/identity/multi_database_hi_lo_id_generator"
+require "ravendb/documents/identity/multi_type_hi_lo_id_generator"
+require "ravendb/documents/identity/hi_lo_id_generator"
+require "ravendb/documents/identity/hi_lo_result"

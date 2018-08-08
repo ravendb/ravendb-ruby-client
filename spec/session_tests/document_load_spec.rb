@@ -16,7 +16,7 @@ RSpec.describe RavenDB::DocumentSession, database: true do
 
   it "loads existing document" do
     store.open_session do |session|
-      product = session.load("Products/101")
+      product = session.load_new(Product, "Products/101")
 
       expect(product.name).to eq("test")
     end
@@ -24,7 +24,7 @@ RSpec.describe RavenDB::DocumentSession, database: true do
 
   it "does not load missing document" do
     store.open_session do |session|
-      product = session.load("Products/0")
+      product = session.load_new(Product, "Products/0")
 
       expect(product).to be_nil
     end
@@ -32,24 +32,23 @@ RSpec.describe RavenDB::DocumentSession, database: true do
 
   it "loads few documents" do
     store.open_session do |session|
-      products = session.load(["Products/101", "Products/10"])
-
+      products = session.load_new(Product, ["Products/101", "Products/10"])
       expect(products.size).to eq(2)
     end
   end
 
   it "loads few documents with duplicate id" do
     store.open_session do |session|
-      products = session.load(["Products/101", "Products/10", "Products/101"])
+      products = session.load_new(Product, ["Products/101", "Products/10", "Products/101"])
 
-      expect(products.size).to eq(3)
+      expect(products.size).to eq(2)
       products.each { |product| expect(product.nil?).to eq(false) }
     end
   end
 
   it "loads track entity" do
     store.open_session do |session|
-      product = session.load("Products/101")
+      product = session.load_new(Product, "Products/101")
 
       expect(product).to be_kind_of(Product)
       expect(product.instance_variable_get("@metadata")["Raven-Ruby-Type"]).to eq("Product")
@@ -58,7 +57,7 @@ RSpec.describe RavenDB::DocumentSession, database: true do
 
   it "loads track entity with nested object" do
     store.open_session do |session|
-      company = session.load("Companies/1")
+      company = session.load_new(Company, "Companies/1")
 
       expect(company).to be_kind_of(Company)
       expect(company.product).to be_kind_of(Product)
@@ -68,8 +67,8 @@ RSpec.describe RavenDB::DocumentSession, database: true do
 
   it "loads with includes" do
     store.open_session do |session|
-      session.load("Orders/105", includes: ["product_id"])
-      session.load("Products/101")
+      session.include("product_id").load(Order, ["Orders/105"])
+      session.load_new(Product, "Products/101")
 
       expect(session.number_of_requests_in_session).to eq(1)
     end

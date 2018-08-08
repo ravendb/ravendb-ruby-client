@@ -14,7 +14,7 @@ RSpec.describe RavenDB::PutDocumentCommand, database: true, rdbc_148: true do
     expect(result.change_vector).not_to be_nil
 
     store.open_session do |session|
-      loaded_user = session.load("users/1", document_type: User)
+      loaded_user = session.load_new(User, "users/1")
 
       expect(loaded_user.name).to eq("Marcin")
     end

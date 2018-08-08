@@ -21,7 +21,7 @@ module RavenDB
       request
     end
 
-    def parse_response(json, from_cache:)
+    def parse_response(json, from_cache:, conventions: nil)
       json["Results"]
     end
 

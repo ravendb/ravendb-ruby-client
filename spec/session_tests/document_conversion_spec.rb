@@ -13,7 +13,7 @@ RSpec.describe RavenDB::DocumentConventions, database: true do
     id = "TestConversions/1"
 
     store.open_session do |session|
-      doc = session.load(id)
+      doc = session.load_new(TestConversion, id)
       check_doc(id, doc)
     end
   end
@@ -27,7 +27,7 @@ RSpec.describe RavenDB::DocumentConventions, database: true do
     end
 
     store.open_session do |session|
-      doc = session.load(id)
+      doc = session.load_new(TestConversion, id)
       check_doc(id, doc)
     end
   end
@@ -63,7 +63,7 @@ RSpec.describe RavenDB::DocumentConventions, database: true do
     end
 
     store.open_session do |session|
-      doc = session.load(id)
+      doc = session.load_new(TestCustomDocumentId, id)
 
       expect(doc.item_id).to eq(id)
       expect(doc.item_title).to eq("New Item")
@@ -90,15 +90,14 @@ RSpec.describe RavenDB::DocumentConventions, database: true do
     end
 
     store.open_session do |session|
-      doc = session.load(id)
+      doc = session.load_new(TestCustomSerializer, id)
 
       expect(id).to eq(doc.item_id)
       expect(doc.item_title).to eq("New Item")
       expect(doc.item_options).to eq([1, 2, 3])
 
-      raw_entities_and_metadata = session.instance_variable_get("@raw_entities_and_metadata")
-      info = raw_entities_and_metadata[doc]
-      raw_entity = info[:original_value]
+      info = session.documents_by_entity[doc]
+      raw_entity = info.document
 
       expect(raw_entity["itemTitle"]).to eq("New Item")
       expect(raw_entity["itemOptions"]).to eq("1,2,3")

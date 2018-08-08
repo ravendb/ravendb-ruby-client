@@ -23,6 +23,8 @@ module RavenDB
 
     attr_accessor :set_id_only_if_property_is_defined, :disable_topology_updates, :serializers
     attr_accessor :max_http_cache_size
+    attr_accessor :document_id_generator
+    attr_accessor :transform_class_collection_name_to_document_id_prefix
 
     def initialize
       @set_id_only_if_property_is_defined = false
@@ -31,6 +33,14 @@ module RavenDB
       @_id_properties_names_cache = {}
       @serializers = []
       @max_http_cache_size = 32.megabytes
+
+      @_find_collection_name = ->(type) { default_get_collection_name(type) }
+
+      @_list_of_registered_id_conventions = []
+
+      @document_id_generator = nil
+
+      @transform_class_collection_name_to_document_id_prefix = ->(collection_name) { default_transform_collection_name_to_document_id_prefix(collection_name) }
     end
 
     def empty_collection
@@ -316,6 +326,38 @@ module RavenDB
       metadata
     end
 
+    def collection_name(entity_or_klass)
+      return nil if entity_or_klass.nil?
+      klass = if entity_or_klass.is_a?(Class)
+                entity_or_klass
+              else
+                entity_or_klass.class
+              end
+      @_find_collection_name.call(klass) || default_get_collection_name(klass)
+    end
+
+    def default_get_collection_name(klass)
+      klass.name.pluralize
+    end
+
+    def ruby_class_name(klass)
+      klass.name
+    end
+
+    def identity_property(klass)
+      get_id_property_name(klass)
+    end
+
+    def generate_document_id(database_name, entity)
+      klass = entity.class
+      @_list_of_registered_id_conventions.each do |key, value|
+        if key.assignable_from?(klass)
+          return value[database_name, entity]
+        end
+      end
+      @document_id_generator[database_name, entity]
+    end
+
     protected
 
     def find_nested_type(instance_variable_value)
@@ -328,6 +370,12 @@ module RavenDB
       end
 
       nil
+    end
+
+    def default_transform_collection_name_to_document_id_prefix(collection_name)
+      upper_count = collection_name.chars.select { |x| x == x.upcase }.count
+      return collection_name.downcase if upper_count <= 1
+      collection_name
     end
   end
 end
